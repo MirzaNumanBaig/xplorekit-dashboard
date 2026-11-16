@@ -1,0 +1,37 @@
+name: Recheck links
+# Weekly: re-check every saved entry's source, refresh last_checked, flag dead or too-old entries as stale, then update the site PR.
+on:
+  schedule: [{cron: "41 5 * * 1"}]
+  workflow_dispatch:
+concurrency: {group: research, cancel-in-progress: false}
+permissions:
+  contents: write
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SITE_REPO: MirzaNumanBaig/xplorekit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SITE_REPO }}
+          token: ${{ secrets.SITE_REPO_TOKEN }}
+          path: site
+          fetch-depth: 1
+      - run: python -m xplorekit.run --recheck
+      - name: Commit
+        run: |
+          git config user.name "xplorekit-research-bot"
+          git config user.email "xplorekit-research-bot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || { git commit -m "Recheck links, flag stale entries" && bash scripts/push_retry.sh; }
+      - name: Update the site pull request
+        env:
+          GH_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
+        run: |
+          python -m xplorekit.sync_site --site-dir site --pr-body pr.md
+          bash scripts/open_site_pr.sh site pr.md
