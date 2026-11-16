@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>__TITLE__ | Xplorekit</title>
+<meta name="description" content="__DESC__">
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#16181d;--mute:#5d6572;--line:#e1e4ea;--acc:#2d5bff;--chip:#eef1f7}
+@media(prefers-color-scheme:dark){:root{--bg:#101216;--card:#181b21;--ink:#eceff4;--mute:#9aa3b2;--line:#2a2f38;--acc:#7b9bff;--chip:#232834}}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+header,main{max-width:1000px;margin:0 auto;padding:16px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}nav a{padding:6px 12px;border-radius:99px;background:var(--chip);color:var(--ink);text-decoration:none;font-size:14px}nav a.on{background:var(--acc);color:#fff}
+h1{margin:8px 0 4px;font-size:26px}p.sub{margin:0 0 12px;color:var(--mute)}
+input[type=search]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.chips button{border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:4px 10px;border-radius:99px;cursor:pointer;font-size:13px}.chips button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.card h2{margin:0;font-size:17px}.card p{margin:0;color:var(--mute);font-size:14px}.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:1px 7px;font-size:12px;margin:0 4px 4px 0}
+.card a{color:var(--acc)}pre{white-space:pre-wrap;background:var(--chip);padding:8px;border-radius:6px;font-size:13px;max-height:170px;overflow:auto;margin:0}
+button.copy{align-self:flex-start;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:4px 10px;border-radius:6px;cursor:pointer}
+.meta{font-size:12px;color:var(--mute)}.empty{color:var(--mute);padding:24px 0}
+</style></head><body>
+<header><nav id="nav"></nav><h1>__TITLE__</h1><p class="sub">__DESC__ Every entry links to its source and was checked by the Xplorekit verifier.</p>
+<input type="search" id="q" placeholder="Search __TITLE__..." aria-label="Search"><div class="chips" id="chips"></div></header>
+<main><div class="grid" id="grid"></div><p class="empty" id="empty" hidden>Nothing matches. Clear the search or filter.</p></main>
+<script>
+const SECTION="__SECTION__",DATA=__DATA__,PAGES=__PAGES__;
+const $=s=>document.getElementById(s);
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function link(h,t){const a=el("a",null,t);if(/^https?:\/\//.test(h)){a.href=h;a.target="_blank";a.rel="noopener noreferrer"}return a}
+PAGES.forEach(p=>{const a=el("a",p.id===SECTION?"on":"",p.name);a.href=p.href;$("nav").appendChild(a)});
+const facet=e=>SECTION==="prompts"?e.use_case:SECTION==="skills"?e.skill_type:e.pricing;
+const title=e=>e.title||e.name;
+const text=e=>[title(e),e.summary,e.prompt,e.example_use_case,(e.tags||[]).join(" "),facet(e),e.audience].join(" ").toLowerCase();
+let cur="";
+const facets=[...new Set(DATA.map(facet).filter(x=>x&&x!=="unknown"))].sort();
+function chips(){const c=$("chips");c.textContent="";["All",...facets].forEach(f=>{const b=el("button",(f==="All"?"":f)===cur?"on":"",f);b.onclick=()=>{cur=f==="All"?"":f;chips();draw()};c.appendChild(b)})}
+function card(e){const c=el("div","card");c.appendChild(el("h2",null,title(e)));
+ if(SECTION==="prompts"){c.appendChild(el("p",null,e.example_output_summary||""));c.appendChild(el("pre",null,e.prompt));
+  const b=el("button","copy","Copy prompt");b.onclick=()=>navigator.clipboard.writeText(e.prompt).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy prompt",1500)});c.appendChild(b);
+  const t=el("div");[e.use_case,...(e.models||[]),...(e.tags||[])].filter(Boolean).forEach(x=>t.appendChild(el("span","tag",x)));c.appendChild(t)}
+ else if(SECTION==="skills"){c.appendChild(el("p",null,e.summary));if(e.example_use_case)c.appendChild(el("p",null,"Use it for: "+e.example_use_case));
+  if((e.install_steps||[]).length){const ol=el("ol");e.install_steps.forEach(s=>ol.appendChild(el("li",null,s)));c.appendChild(ol)}
+  c.appendChild(el("span","tag",e.skill_type||"skill"));if(e.repo_url)c.appendChild(link(e.repo_url,"Repository"))}
+ else{c.appendChild(el("p",null,e.summary));if(e.audience)c.appendChild(el("p",null,"For: "+e.audience));
+  (e.pros||[]).forEach(s=>c.appendChild(el("p",null,"+ "+s)));(e.cons||[]).forEach(s=>c.appendChild(el("p",null,"- "+s)));
+  const t=el("div");[e.pricing==="unknown"?"":e.pricing,e.ai_related?"AI":""].filter(Boolean).forEach(x=>t.appendChild(el("span","tag",x)));c.appendChild(t);
+  if(e.store_url)c.appendChild(link(e.store_url,"Chrome Web Store"));
+  if(e.extension_last_updated)c.appendChild(el("div","meta","Store page last updated: "+e.extension_last_updated))}
+ const m=el("div","meta");m.appendChild(document.createTextNode("Source: "));m.appendChild(link(e.source_url,"original"));m.appendChild(document.createTextNode(" · checked "+e.last_checked));c.appendChild(m);return c}
+function draw(){const q=$("q").value.toLowerCase().trim(),g=$("grid");g.textContent="";
+ const r=DATA.filter(e=>(!cur||facet(e)===cur)&&(!q||text(e).includes(q)));r.forEach(e=>g.appendChild(card(e)));$("empty").hidden=r.length>0}
+$("q").oninput=draw;chips();draw();
+</script></body></html>

@@ -3,7 +3,7 @@ name: Dashboard
 on:
   push:
     branches: [main]
-    paths: [data/**, xplorekit/config/**, xplorekit/build_dashboard.py, xplorekit/dashboard_template.html]
+    paths: [data/**, xplorekit/config/**, xplorekit/build_dashboard.py, xplorekit/dashboard_template.html, xplorekit/build_libraries.py, xplorekit/library_template.html]
   workflow_dispatch:
 concurrency: {group: dashboard, cancel-in-progress: false}
 permissions:

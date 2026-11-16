@@ -148,7 +148,8 @@ def main(argv=None):
     (out / "index.html").write_text(render(build_dataset(a.data_dir)), "utf-8")
     (out / ".nojekyll").write_text("")
     print(f"wrote {out / 'index.html'}")
-    return 0
+    from xplorekit import build_libraries
+    return build_libraries.main(["--data-dir", a.data_dir, "--out", a.out])
 
 
 if __name__ == "__main__":
