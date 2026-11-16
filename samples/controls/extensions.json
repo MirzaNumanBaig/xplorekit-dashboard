@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Phantom Summarizer",
+    "summary": "Summarises any page with AI in one click and shows a short list of key points for each article you read.",
+    "audience": "Readers who skim.",
+    "pros": [
+      "Fast"
+    ],
+    "cons": [
+      "Unknown"
+    ],
+    "pricing": "unknown",
+    "pricing_note": "",
+    "ai_related": true,
+    "store_url": "https://chromewebstore.google.com/detail/phantom-summarizer/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "extension_last_updated": "unknown",
+    "alternatives": [],
+    "source_url": "https://github.com/example-does-not-exist-xk/phantom",
+    "source_urls": [
+      "https://github.com/example-does-not-exist-xk/phantom"
+    ]
+  }
+]

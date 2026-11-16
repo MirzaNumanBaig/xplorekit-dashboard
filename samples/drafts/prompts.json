@@ -1,0 +1,79 @@
+[
+  {
+    "title": "Summarise a long document with XML-tagged sections",
+    "prompt": "<instructions>\nYou are a careful research assistant. Read the document in <document> and write a summary for [AUDIENCE].\n1. Give a three-sentence overview.\n2. List the five most important points as bullets, each with the section or page it comes from.\n3. List anything that is unclear, missing or contradicts itself.\nDo not add facts that are not in the document.\n</instructions>\n<context>The reader needs this to [PURPOSE] and has [TIME] minutes.</context>\n<document>\n[PASTE DOCUMENT HERE]\n</document>",
+    "models": [
+      "claude"
+    ],
+    "use_case": "research",
+    "example_output_summary": "A short overview, five sourced bullet points and a list of gaps or contradictions found in the document.",
+    "tags": [
+      "summarising",
+      "xml-tags",
+      "long-documents",
+      "research"
+    ],
+    "source_url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+    "source_urls": [
+      "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct"
+    ]
+  },
+  {
+    "title": "Label customer comments with three examples",
+    "prompt": "# Identity\nYou label short customer comments as Positive, Negative or Neutral.\n\n# Instructions\n* Answer with one word only: Positive, Negative or Neutral.\n* If a comment mixes praise and complaint, choose the label that fits its main point.\n\n# Examples\n<comment>[EXAMPLE OF A POSITIVE COMMENT]</comment>\n<label>Positive</label>\n\n<comment>[EXAMPLE OF A NEGATIVE COMMENT]</comment>\n<label>Negative</label>\n\n<comment>[EXAMPLE OF A NEUTRAL COMMENT]</comment>\n<label>Neutral</label>\n\n# Task\n<comment>[NEW COMMENT TO LABEL]</comment>",
+    "models": [
+      "chatgpt",
+      "claude"
+    ],
+    "use_case": "business",
+    "example_output_summary": "A single word label for the new comment, matching the pattern shown in the examples.",
+    "tags": [
+      "few-shot",
+      "classification",
+      "customer-feedback"
+    ],
+    "source_url": "https://platform.openai.com/docs/guides/prompt-engineering",
+    "source_urls": [
+      "https://platform.openai.com/docs/guides/prompt-engineering",
+      "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct"
+    ]
+  },
+  {
+    "title": "Rewrite a vague request so a new colleague could follow it",
+    "prompt": "I will give you a draft prompt in <draft>. Act as a new colleague who knows nothing about my work.\n1. List every place where you would have to guess: missing context, audience, format, length or constraints.\n2. Ask me up to five short questions to fill those gaps, then wait for my answers.\n3. After I answer, rewrite the prompt with numbered steps, the exact output format and the constraints.\n<draft>[PASTE YOUR DRAFT PROMPT]</draft>",
+    "models": [
+      "claude",
+      "chatgpt"
+    ],
+    "use_case": "productivity",
+    "example_output_summary": "A list of gaps in the draft, up to five questions, then a clearer rewritten prompt once you have answered.",
+    "tags": [
+      "prompt-writing",
+      "clarity",
+      "productivity"
+    ],
+    "source_url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+    "source_urls": [
+      "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct"
+    ]
+  },
+  {
+    "title": "Draft a short client proposal with a role set up front",
+    "prompt": "You are an experienced freelance [YOUR SERVICE] who writes short, specific proposals. Use the job post in <job_post> and my notes in <my_background>.\nWrite a proposal under 200 words that:\n1. Opens with the client's main problem in their own words.\n2. Names one relevant example from my background.\n3. Suggests a first step and asks one clear question.\nDo not promise results and do not invent experience that is not in my notes.\n<job_post>[PASTE JOB POST]</job_post>\n<my_background>[PASTE YOUR NOTES]</my_background>",
+    "models": [
+      "claude",
+      "chatgpt"
+    ],
+    "use_case": "freelancing",
+    "example_output_summary": "A proposal under 200 words that restates the client's problem, cites one real example and ends with a first step and a question.",
+    "tags": [
+      "proposals",
+      "freelancing",
+      "role-prompting"
+    ],
+    "source_url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+    "source_urls": [
+      "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct"
+    ]
+  }
+]

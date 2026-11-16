@@ -1,0 +1,71 @@
+[
+  {
+    "name": "socratic-tutor (Jane Street agent skills)",
+    "summary": "A SKILL.md that turns an AI assistant into a strict tutor: it starts with a diagnostic, builds a skill map with levels 0 to 5, asks one question at a time, schedules spaced review and ends with a final assessment.",
+    "install_steps": [
+      "Download or clone the janestreet/agent_skills repository",
+      "Copy the socratic-tutor folder into your coding agent's skills folder",
+      "Ask the agent to use it, for example: teach me [TOPIC]",
+      "In a plain chatbot, paste the body of the skill's SKILL.md into the chat or a custom prompt, then say what you want to learn"
+    ],
+    "repo_url": "https://github.com/janestreet/agent_skills",
+    "example_use_case": "Learning a new subject such as basic statistics step by step, with the assistant testing you before it moves on.",
+    "skill_type": "agent-skill",
+    "source_url": "https://github.com/janestreet/agent_skills",
+    "source_urls": [
+      "https://github.com/janestreet/agent_skills",
+      "https://github.com/janestreet/agent_skills/blob/master/socratic-tutor/SKILL.md"
+    ]
+  },
+  {
+    "name": "Modern Web Guidance",
+    "summary": "A set of skills from the Chrome, Edge, Firefox and MDN teams and community that steers coding agents toward built-in web platform features instead of legacy JavaScript, with guides, browser-compatibility data and a legacy-code scanner.",
+    "install_steps": [
+      "Run npx modern-web-guidance@latest install and follow the wizard",
+      "Or use another route from the README, such as npx skills add GoogleChrome/modern-web-guidance",
+      "For Claude Code, run /plugin marketplace add GoogleChrome/modern-web-guidance, then /plugin install modern-web-guidance@googlechrome",
+      "To try it first, run npx modern-web-guidance@latest search followed by a short description of what you want to build"
+    ],
+    "repo_url": "https://github.com/GoogleChrome/modern-web-guidance",
+    "example_use_case": "Asking your coding agent to add a modal dialog and having it use the browser's native dialog support instead of custom scripts.",
+    "skill_type": "agent-skill",
+    "source_url": "https://github.com/GoogleChrome/modern-web-guidance",
+    "source_urls": [
+      "https://github.com/GoogleChrome/modern-web-guidance"
+    ]
+  },
+  {
+    "name": "graphify",
+    "summary": "A /graphify skill for coding assistants that maps a codebase, its docs and configs into a queryable knowledge graph. Code is parsed locally, and each connection is marked as read directly or inferred.",
+    "install_steps": [
+      "Install the official package, spelled graphifyy with two y's, using uv tool install graphifyy (pipx also works); other graphify packages on PyPI are not affiliated",
+      "Run graphify install once; it detects your assistant and registers the skill",
+      "In your AI assistant, run /graphify . to build the graph for the current project",
+      "Open the generated graph.html in a browser, or read GRAPH_REPORT.md for the highlights"
+    ],
+    "repo_url": "https://github.com/Graphify-Labs/graphify",
+    "example_use_case": "Asking how two parts of a large project connect and getting a traced path through the code, docs and configs instead of searching files by hand.",
+    "skill_type": "agent-skill",
+    "source_url": "https://github.com/Graphify-Labs/graphify",
+    "source_urls": [
+      "https://github.com/Graphify-Labs/graphify"
+    ]
+  },
+  {
+    "name": "The Agency (agency-agents)",
+    "summary": "A large collection of specialist agent definitions written as markdown files, from frontend to community roles, each with its own process and deliverables, installable into Claude Code, Cursor, Codex, Gemini CLI and other tools. These are agent personas rather than SKILL.md skills.",
+    "install_steps": [
+      "Easiest: install the project's desktop app from its releases page, or on a Mac run brew install --cask msitarzewski/agency-agents/agency-agents",
+      "Or, from a clone of the repository, run ./scripts/install.sh --tool claude-code",
+      "Or copy only one division, for example cp engineering/*.md ~/.claude/agents/",
+      "Then activate an agent inside Claude Code"
+    ],
+    "repo_url": "https://github.com/msitarzewski/agency-agents",
+    "example_use_case": "Picking a code-review or frontend specialist for one task instead of writing a long role prompt from scratch.",
+    "skill_type": "collection",
+    "source_url": "https://github.com/msitarzewski/agency-agents",
+    "source_urls": [
+      "https://github.com/msitarzewski/agency-agents"
+    ]
+  }
+]

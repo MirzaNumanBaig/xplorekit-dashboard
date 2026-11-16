@@ -1,0 +1,101 @@
+[
+  {
+    "title": "Earn $10,000 a month with ChatGPT on autopilot",
+    "audience": "Anyone who wants easy money.",
+    "summary": "A guaranteed income method with no work needed. Quit your job and become a millionaire with this secret formula.",
+    "workflow_steps": [
+      "Sign up",
+      "Paste a prompt",
+      "Collect money"
+    ],
+    "tools_and_prompts": [
+      "ChatGPT"
+    ],
+    "income": {
+      "stated_in_source": true,
+      "low": 10000,
+      "high": 10000,
+      "currency": "USD",
+      "period": "month",
+      "basis": "Claimed on a sales page."
+    },
+    "time_to_first_result": "Overnight",
+    "difficulty": "easy",
+    "risks": [
+      "None"
+    ],
+    "models": [
+      "chatgpt"
+    ],
+    "source_url": "https://kdp.amazon.com/en_US/help/topic/G200672390",
+    "source_urls": [
+      "https://kdp.amazon.com/en_US/help/topic/G200672390"
+    ]
+  },
+  {
+    "title": "Publish KDP books for steady monthly income",
+    "audience": "Writers.",
+    "summary": "Publish books on KDP for steady income, with figures taken from the guidelines page that it does not actually contain.",
+    "workflow_steps": [
+      "Write a book",
+      "Upload it",
+      "Wait for sales"
+    ],
+    "tools_and_prompts": [
+      "KDP"
+    ],
+    "income": {
+      "stated_in_source": true,
+      "low": 500,
+      "high": 2000,
+      "currency": "USD",
+      "period": "month",
+      "basis": "Invented to test the income gate."
+    },
+    "time_to_first_result": "A few weeks",
+    "difficulty": "medium",
+    "risks": [
+      "Sales vary"
+    ],
+    "models": [
+      "chatgpt"
+    ],
+    "source_url": "https://kdp.amazon.com/en_US/help/topic/G200672390?ref_=ctrl",
+    "source_urls": [
+      "https://kdp.amazon.com/en_US/help/topic/G200672390?ref_=ctrl"
+    ]
+  },
+  {
+    "title": "Get paid to train AI models",
+    "audience": "Anyone with spare hours.",
+    "summary": "Rate and correct chatbot answers on a platform that pays for expert work, with rates up to those the site lists for generalists.",
+    "workflow_steps": [
+      "Apply on the platform",
+      "Pass the assessment",
+      "Pick projects"
+    ],
+    "tools_and_prompts": [
+      "Platform account"
+    ],
+    "income": {
+      "stated_in_source": true,
+      "low": null,
+      "high": 50,
+      "currency": "USD",
+      "period": "hour",
+      "basis": "Platform's own published rate for generalists."
+    },
+    "time_to_first_result": "Varies",
+    "difficulty": "easy",
+    "risks": [
+      "Work is not guaranteed"
+    ],
+    "models": [
+      "chatgpt"
+    ],
+    "source_url": "https://www.dataannotation.tech/",
+    "source_urls": [
+      "https://www.dataannotation.tech/"
+    ]
+  }
+]

@@ -1,0 +1,90 @@
+[
+  {
+    "title": "Publish your own books on Amazon KDP, using AI only within its rules",
+    "audience": "Writers and subject experts who already write their own material and want to publish through KDP.",
+    "summary": "Write your own books, use AI tools to edit and refine them, and publish through KDP while following its AI-content disclosure rules. The source gives no income figure, and results vary.",
+    "workflow_steps": [
+      "Choose a topic you can write about yourself, and avoid copyrighted material that is freely available on the web",
+      "Write the content yourself; if you use AI only to edit, refine or error-check it, KDP calls that AI-assisted",
+      "If an AI tool created any text, images or translations, note it so you can disclose it to KDP when you publish or republish",
+      "Read KDP's content guidelines, including the section on poor customer experience, before you upload",
+      "Create a KDP account and publish the book, answering the AI-content question truthfully",
+      "Check the live book page and fix any problems you find"
+    ],
+    "tools_and_prompts": [
+      "A KDP account",
+      "An AI assistant for editing, with a prompt such as: point out unclear sentences and suggest edits, but keep my wording",
+      "Your own manuscript"
+    ],
+    "income": {
+      "stated_in_source": false,
+      "low": null,
+      "high": null,
+      "currency": "USD",
+      "period": "none",
+      "basis": "No income figure appears in the source; it covers rules, not earnings. Results vary."
+    },
+    "time_to_first_result": "Varies; not stated in the source",
+    "difficulty": "medium",
+    "risks": [
+      "AI-generated text, images or translations must be disclosed to KDP; AI-assisted editing does not need to be",
+      "Copyrighted content that is freely available on the web is not accepted",
+      "KDP's guidelines include a section on poor customer experience, so low-quality books may be refused",
+      "Sales are not guaranteed and may be zero",
+      "Rules can change, so re-read the guidelines before each upload"
+    ],
+    "models": [
+      "chatgpt",
+      "claude",
+      "gemini"
+    ],
+    "source_url": "https://kdp.amazon.com/en_US/help/topic/G200672390",
+    "source_urls": [
+      "https://kdp.amazon.com/en_US/help/topic/G200672390"
+    ]
+  },
+  {
+    "title": "Sell digital downloads you design yourself on Etsy",
+    "audience": "Designers and hobbyists who can make their own files, such as planners or templates, and want to sell them.",
+    "summary": "Etsy lets sellers list digital files, as long as the seller made or designed them. AI tools can help you brainstorm, but this Etsy page does not address AI, so check Etsy's current rules first. No income figure is given.",
+    "workflow_steps": [
+      "Pick a digital product you can design yourself, since Etsy says digital items must be made and/or designed by the seller",
+      "Check Etsy's current rules on AI-assisted creation before you start; this help page does not cover them",
+      "Create the file or files: up to five per listing, each up to 20MB, in a supported type such as PDF, PNG, JPEG, ZIP or EPUB",
+      "Create the listing, choose Digital files, and pick instant download or made-to-order",
+      "Name your files carefully: buyers see the same names and you cannot edit them after upload",
+      "Optionally add a note for buyers, which they see on their Downloads page after purchase"
+    ],
+    "tools_and_prompts": [
+      "An Etsy seller account",
+      "A design tool for the final file",
+      "An AI assistant for ideas, with a prompt such as: suggest ten layout ideas for a [PRODUCT]; I will design the final file myself"
+    ],
+    "income": {
+      "stated_in_source": false,
+      "low": null,
+      "high": null,
+      "currency": "USD",
+      "period": "none",
+      "basis": "No income figure appears in the source; it covers rules, not earnings. Results vary."
+    },
+    "time_to_first_result": "Varies; not stated in the source",
+    "difficulty": "medium",
+    "risks": [
+      "Etsy requires digital items to be made and/or designed by you",
+      "This help page does not state Etsy's AI policy, so check the current rules before listing",
+      "Digital items cannot offer variations",
+      "Cancelling an order is the only way to revoke a buyer's access to a file after purchase",
+      "Sales are not guaranteed and may be zero"
+    ],
+    "models": [
+      "chatgpt",
+      "claude",
+      "gemini"
+    ],
+    "source_url": "https://help.etsy.com/hc/en-us/articles/115015628347",
+    "source_urls": [
+      "https://help.etsy.com/hc/en-us/articles/115015628347"
+    ]
+  }
+]

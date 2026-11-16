@@ -1,0 +1,80 @@
+{
+  "https://github.com/sparticleinc/chatgpt-google-summary-extension": {
+    "supported": true,
+    "score": 88,
+    "issues": [
+      "Privacy wording is the developer's own claim; kept as a caution"
+    ]
+  },
+  "https://github.com/anc95/writely": {
+    "supported": true,
+    "score": 84,
+    "issues": [
+      "Price not stated on the store page; marked unknown"
+    ]
+  },
+  "https://github.com/kazuki-sf/YouTube_Summary_with_ChatGPT": {
+    "supported": true,
+    "score": 88,
+    "issues": [
+      "Store listing is by a different publisher than the GitHub repo owner; both link to the same extension ID"
+    ]
+  },
+  "https://github.com/ttop32/MouseTooltipTranslator": {
+    "supported": true,
+    "score": 86,
+    "issues": [
+      "Not an AI chat tool; included as a lower-priority non-AI entry"
+    ]
+  },
+  "https://github.com/janestreet/agent_skills": {
+    "supported": true,
+    "score": 92,
+    "issues": []
+  },
+  "https://github.com/GoogleChrome/modern-web-guidance": {
+    "supported": true,
+    "score": 92,
+    "issues": []
+  },
+  "https://github.com/Graphify-Labs/graphify": {
+    "supported": true,
+    "score": 90,
+    "issues": []
+  },
+  "https://github.com/msitarzewski/agency-agents": {
+    "supported": true,
+    "score": 88,
+    "issues": [
+      "Agent personas, not SKILL.md skills; the summary says so"
+    ]
+  },
+  "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct": {
+    "supported": true,
+    "score": 86,
+    "issues": [
+      "Technique is grounded in the docs; the prompt text itself is original and untested"
+    ]
+  },
+  "https://platform.openai.com/docs/guides/prompt-engineering": {
+    "supported": true,
+    "score": 86,
+    "issues": [
+      "Few-shot structure follows the guide; the prompt text itself is original and untested"
+    ]
+  },
+  "https://kdp.amazon.com/en_US/help/topic/G200672390": {
+    "supported": true,
+    "score": 90,
+    "issues": [
+      "No income figure; limited to what the guidelines state"
+    ]
+  },
+  "https://help.etsy.com/hc/en-us/articles/115015628347": {
+    "supported": true,
+    "score": 88,
+    "issues": [
+      "Etsy AI policy not stated on this page; the entry says so"
+    ]
+  }
+}
