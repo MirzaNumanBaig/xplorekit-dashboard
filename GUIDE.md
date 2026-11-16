@@ -12,6 +12,17 @@
 | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `YOUTUBE_API_KEY` | secrets, optional | each source is skipped when its key is missing |
 | `XK_CONTACT` | variable, optional | a URL or email added to our User-Agent so site owners can reach you |
 
+**Get the Claude token (`CLAUDE_CODE_OAUTH_TOKEN`)** (only you can do this: it is tied to your Claude account, and nobody else, including an AI tool, can create or read it):
+1. You need a paid Claude plan that includes Claude Code (Pro or Max). The agents use that plan's usage, so a heavy run can hit its limit; this is why the pipeline accepts a second and third token as fallbacks.
+2. On any computer, install Node.js 18+ and the CLI: `npm install -g @anthropic-ai/claude-code`.
+3. Run `claude setup-token` in a terminal. It opens a browser page: sign in to Claude and click **Authorize**.
+4. The terminal then prints a long-lived token that starts with `sk-ant-oat01-`. Copy it at once; it is shown only one time (run the command again to get a new one).
+5. GitHub → this repo → Settings → Secrets and variables → Actions → **New repository secret**. Name: `CLAUDE_CODE_OAUTH_TOKEN`. Value: the token. Save.
+6. Optional fallbacks: repeat with a second Claude account and save it as `CLAUDE_CODE_OAUTH_TOKEN_2` (and `_3`). They are tried in this order when one fails or is out of usage.
+7. Never paste the token into chat, an issue, a file or a commit. If it leaks, revoke it in your Claude account settings and run `claude setup-token` again.
+8. Test it: Actions → *Research* → *Run workflow* with `dry_run: true`. The log names the token slot that worked (never its value).
+Alternative without a subscription: an API key from console.anthropic.com saved as `ANTHROPIC_API_KEY` (pay per use; wins if both are set).
+
 **Create `SITE_REPO_TOKEN`** (only you can do this, from your GitHub account):
 1. GitHub → your avatar → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token.
 2. Resource owner: your account. Repository access: **Only select repositories** → the private site repo (`xplorekit`) and nothing else.
