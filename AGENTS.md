@@ -14,6 +14,16 @@ collectors -> prefilter (already on the site / already rejected / relevant) -> e
   -> section agent (Claude writes drafts) -> Editor/Verifier -> data/ -> dashboard (docs/) + PR on the site repo
 ```
 
+## Project goal and scope (updated)
+The site's front end is to become three data-driven libraries, each filled by this pipeline: a **Prompt library** (grouped by job: marketing,
+SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome Extension library**. "Make Money with AI" stays a fourth section.
+- Libraries are for the site visitor. Pages read `public/data/<section>/index.json` in the private site repo; no page may invent data.
+- Done when: all three library pages are live on the site, show merged data, and the dashboard shows entries and Claude token usage.
+- Open-source images are optional: use one only when its licence is clear and it is stored with the entry's source. Skipping is fine.
+- Rollout: the owner checks the pages after the **first real run**; scheduled automatic runs are turned on only after that.
+- `Researcher-agents` (celebrity news) is a workflow reference only. Never copy its data, names or sources.
+- Status: pipeline and dashboard are built; the first workflow run, the secrets and the three site pages are still pending (see Known gaps).
+
 ## Where things are
 | What | Where |
 |---|---|
