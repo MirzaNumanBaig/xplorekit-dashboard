@@ -1,0 +1,42 @@
+{
+  "source_url": "https://github.com/anc95/writely",
+  "source_urls": [
+    "https://github.com/anc95/writely",
+    "https://chromewebstore.google.com/detail/writely/eocenplmfgoaibmmohkhhocnlkpaecgn"
+  ],
+  "name": "Writely",
+  "summary": "A browser extension that brings AI writing help to editors on any web page. It uses OpenAI's GPT models to draft text such as emails and articles, and it can also help with translation and reading. It is positioned as an alternative to Notion AI.",
+  "audience": "People who write emails, posts or replies in the browser and want AI drafting help outside of a dedicated writing app.",
+  "pros": [
+    "Works on editors across many web pages, not one site",
+    "Covers writing, translation and reading assistance",
+    "Also offered for Firefox and Edge"
+  ],
+  "cons": [
+    "Needs your own OpenAI API key, which you set up in the settings",
+    "Labelled as a beta",
+    "Relies on a third-party AI service"
+  ],
+  "pricing": "unknown",
+  "pricing_note": "",
+  "ai_related": true,
+  "store_url": "https://chromewebstore.google.com/detail/writely/eocenplmfgoaibmmohkhhocnlkpaecgn",
+  "extension_last_updated": "unknown",
+  "alternatives": [
+    "Notion AI"
+  ],
+  "section": "extensions",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 79,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "rules_only"
+  ],
+  "id": "writely-0d1d31"
+}

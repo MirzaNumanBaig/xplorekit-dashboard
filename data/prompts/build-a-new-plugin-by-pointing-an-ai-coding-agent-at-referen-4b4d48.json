@@ -1,0 +1,33 @@
+{
+  "source_url": "https://simonwillison.net/2026/Nov/15/datasette-maplibre/",
+  "source_urls": [
+    "https://simonwillison.net/2026/Nov/15/datasette-maplibre/"
+  ],
+  "title": "Build a new plugin by pointing an AI coding agent at reference code",
+  "prompt": "Look at these existing reference projects first: [REFERENCE PROJECT 1 PATH OR NAME] and [REFERENCE PROJECT 2 PATH OR NAME]. Then look at this demo or example file: [PATH TO DEMO FILE].\n\nAfter reading them, build a brand new [PLUGIN / MODULE / TOOL TYPE] called [NEW NAME] that uses [LIBRARY OR SERVICE] and does the following: [DESCRIBE THE BEHAVIOUR IN 2 TO 4 SENTENCES].\n\nFollow the conventions of the reference projects for file layout, configuration, naming and tests. Keep the scope to what I described; do not add extra features.\n\nWhen you finish:\n1. List the files you created and what each one does.\n2. Run the existing test setup if there is one, and tell me exactly what passed and what failed.\n3. Say which parts you could not verify (for example anything that needs a browser or a network service).\n4. Write a short README section with install and usage steps.",
+  "models": [
+    "claude"
+  ],
+  "use_case": "coding",
+  "example_output_summary": "A new project scaffold that mirrors the reference projects' structure, with a list of created files, a report of which tests ran, a list of unverified parts, and a short README section.",
+  "tags": [
+    "coding",
+    "agent",
+    "plugin",
+    "reference-code",
+    "scaffolding"
+  ],
+  "section": "prompts",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 79,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "rules_only"
+  ],
+  "id": "build-a-new-plugin-by-pointing-an-ai-coding-agent-at-referen-4b4d48"
+}

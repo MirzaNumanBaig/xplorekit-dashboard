@@ -1,0 +1,31 @@
+{
+  "source_url": "https://github.com/GoogleChrome/modern-web-guidance",
+  "source_urls": [
+    "https://github.com/GoogleChrome/modern-web-guidance",
+    "https://news.ycombinator.com/item?id=50443812"
+  ],
+  "name": "Modern Web Guidance",
+  "summary": "A set of skills that gives coding agents current web platform knowledge and browser compatibility data. It nudges agents away from older JavaScript-heavy patterns and toward native browser features. It is stewarded by the Chrome, Edge, Firefox and MDN teams together with the web community.",
+  "install_steps": [
+    "Run npx modern-web-guidance@latest install",
+    "Follow the interactive wizard to choose how to install it",
+    "Optionally try it first with npx modern-web-guidance@latest search followed by a topic",
+    "See the repository README for alternative installation methods"
+  ],
+  "repo_url": "https://github.com/GoogleChrome/modern-web-guidance",
+  "example_use_case": "Your coding agent keeps building a modal from a div plus custom JavaScript. With this skill installed, it can look up guidance on the native dialog approach and use that instead.",
+  "skill_type": "agent-skill",
+  "section": "skills",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 79,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "rules_only"
+  ],
+  "id": "modern-web-guidance-5175b6"
+}
