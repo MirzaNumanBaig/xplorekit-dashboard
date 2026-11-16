@@ -1,0 +1,41 @@
+{
+  "name": "YouTube Summary with ChatGPT & Claude",
+  "summary": "Summarises YouTube videos, web articles and PDFs and offers the video transcript when one exists, using several AI models including ChatGPT, Claude, Mistral and Gemini.",
+  "audience": "Learners and researchers who want the key points of long videos and articles quickly.",
+  "pros": [
+    "Covers YouTube videos, web articles and PDFs",
+    "Summaries can include timestamps that jump to that part of the video",
+    "Offers the transcript when one is available"
+  ],
+  "cons": [
+    "The listing says it offers in-app purchases, so some features may be paid",
+    "The listing's privacy section says it handles personally identifiable information and website content"
+  ],
+  "pricing": "freemium",
+  "pricing_note": "Described as a free extension; the listing also says it offers in-app purchases.",
+  "ai_related": true,
+  "store_url": "https://chromewebstore.google.com/detail/chatgpt-youtube-summary/nmmicjeknamkfloonkhhcjmomieiodli",
+  "extension_last_updated": "2026-10-17",
+  "alternatives": [
+    "YoutubeDigest: summarize and translate using ChatGPT"
+  ],
+  "source_url": "https://github.com/kazuki-sf/YouTube_Summary_with_ChatGPT",
+  "source_urls": [
+    "https://github.com/kazuki-sf/YouTube_Summary_with_ChatGPT",
+    "https://chromewebstore.google.com/detail/chatgpt-youtube-summary/nmmicjeknamkfloonkhhcjmomieiodli"
+  ],
+  "section": "extensions",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 88,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "youtube-summary-with-chatgpt-claude-db248f"
+}

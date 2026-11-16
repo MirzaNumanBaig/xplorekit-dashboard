@@ -1,0 +1,32 @@
+{
+  "title": "Draft a short client proposal with a role set up front",
+  "prompt": "You are an experienced freelance [YOUR SERVICE] who writes short, specific proposals. Use the job post in <job_post> and my notes in <my_background>.\nWrite a proposal under 200 words that:\n1. Opens with the client's main problem in their own words.\n2. Names one relevant example from my background.\n3. Suggests a first step and asks one clear question.\nDo not promise results and do not invent experience that is not in my notes.\n<job_post>[PASTE JOB POST]</job_post>\n<my_background>[PASTE YOUR NOTES]</my_background>",
+  "models": [
+    "claude",
+    "chatgpt"
+  ],
+  "use_case": "freelancing",
+  "example_output_summary": "A proposal under 200 words that restates the client's problem, cites one real example and ends with a first step and a question.",
+  "tags": [
+    "proposals",
+    "freelancing",
+    "role-prompting"
+  ],
+  "source_url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+  "source_urls": [
+    "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct"
+  ],
+  "section": "prompts",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 86,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "draft-a-short-client-proposal-with-a-role-set-up-front-23897b"
+}

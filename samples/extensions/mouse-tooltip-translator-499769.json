@@ -1,0 +1,41 @@
+{
+  "name": "Mouse Tooltip Translator",
+  "summary": "Translates text when you hover over it, including text in PDFs and images (OCR), and shows dual subtitles on YouTube and Netflix. Translation is done by Google Translate and Bing.",
+  "audience": "Language learners and readers of foreign-language sites, PDFs and subtitles.",
+  "pros": [
+    "Hover translation without leaving the page",
+    "Handles PDFs, text inside images (OCR) and read-aloud",
+    "Dual subtitles for YouTube and Netflix"
+  ],
+  "cons": [
+    "Translation comes from Google Translate and Bing, not from an AI chat model",
+    "The listing's privacy section lists user activity among the data it handles"
+  ],
+  "pricing": "unknown",
+  "pricing_note": "The store page states no price; the source code is public on GitHub.",
+  "ai_related": false,
+  "store_url": "https://chromewebstore.google.com/detail/mouse-tooltip-translator/hmigninkgibhdckiaphhmbgcghochdjc",
+  "extension_last_updated": "2026-11-15",
+  "alternatives": [
+    "Manga Translator - Comics Translator | Manga Tracker"
+  ],
+  "source_url": "https://github.com/ttop32/MouseTooltipTranslator",
+  "source_urls": [
+    "https://github.com/ttop32/MouseTooltipTranslator",
+    "https://chromewebstore.google.com/detail/mouse-tooltip-translator/hmigninkgibhdckiaphhmbgcghochdjc"
+  ],
+  "section": "extensions",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 86,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "mouse-tooltip-translator-499769"
+}

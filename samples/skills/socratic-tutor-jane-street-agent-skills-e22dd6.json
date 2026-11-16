@@ -1,0 +1,31 @@
+{
+  "name": "socratic-tutor (Jane Street agent skills)",
+  "summary": "A SKILL.md that turns an AI assistant into a strict tutor: it starts with a diagnostic, builds a skill map with levels 0 to 5, asks one question at a time, schedules spaced review and ends with a final assessment.",
+  "install_steps": [
+    "Download or clone the janestreet/agent_skills repository",
+    "Copy the socratic-tutor folder into your coding agent's skills folder",
+    "Ask the agent to use it, for example: teach me [TOPIC]",
+    "In a plain chatbot, paste the body of the skill's SKILL.md into the chat or a custom prompt, then say what you want to learn"
+  ],
+  "repo_url": "https://github.com/janestreet/agent_skills",
+  "example_use_case": "Learning a new subject such as basic statistics step by step, with the assistant testing you before it moves on.",
+  "skill_type": "agent-skill",
+  "source_url": "https://github.com/janestreet/agent_skills",
+  "source_urls": [
+    "https://github.com/janestreet/agent_skills",
+    "https://github.com/janestreet/agent_skills/blob/master/socratic-tutor/SKILL.md"
+  ],
+  "section": "skills",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 92,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "socratic-tutor-jane-street-agent-skills-e22dd6"
+}

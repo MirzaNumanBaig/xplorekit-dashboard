@@ -1,0 +1,46 @@
+{
+  "section": "prompts",
+  "generated_at": "2026-11-16",
+  "items": [
+    {
+      "id": "draft-a-short-client-proposal-with-a-role-set-up-front-23897b",
+      "title": "Draft a short client proposal with a role set up front",
+      "summary": "A proposal under 200 words that restates the client's problem, cites one real example and ends with a first step and a question.",
+      "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 86
+    },
+    {
+      "id": "label-customer-comments-with-three-examples-508508",
+      "title": "Label customer comments with three examples",
+      "summary": "A single word label for the new comment, matching the pattern shown in the examples.",
+      "url": "https://platform.openai.com/docs/guides/prompt-engineering",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 86
+    },
+    {
+      "id": "rewrite-a-vague-request-so-a-new-colleague-could-follow-it-23897b",
+      "title": "Rewrite a vague request so a new colleague could follow it",
+      "summary": "A list of gaps in the draft, up to five questions, then a clearer rewritten prompt once you have answered.",
+      "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 86
+    },
+    {
+      "id": "summarise-a-long-document-with-xml-tagged-sections-23897b",
+      "title": "Summarise a long document with XML-tagged sections",
+      "summary": "A short overview, five sourced bullet points and a list of gaps or contradictions found in the document.",
+      "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 86
+    }
+  ]
+}

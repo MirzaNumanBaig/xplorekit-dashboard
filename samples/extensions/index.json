@@ -1,0 +1,46 @@
+{
+  "section": "extensions",
+  "generated_at": "2026-11-16",
+  "items": [
+    {
+      "id": "glarity-ce574a",
+      "title": "Glarity",
+      "summary": "Adds AI summaries next to Google results and on YouTube videos, web pages and PDFs, with translation and questions about the page you are on. Its code is open source.",
+      "url": "https://github.com/sparticleinc/chatgpt-google-summary-extension",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 88
+    },
+    {
+      "id": "youtube-summary-with-chatgpt-claude-db248f",
+      "title": "YouTube Summary with ChatGPT & Claude",
+      "summary": "Summarises YouTube videos, web articles and PDFs and offers the video transcript when one exists, using several AI models including ChatGPT, Claude, Mistral and Gemini.",
+      "url": "https://github.com/kazuki-sf/YouTube_Summary_with_ChatGPT",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 88
+    },
+    {
+      "id": "mouse-tooltip-translator-499769",
+      "title": "Mouse Tooltip Translator",
+      "summary": "Translates text when you hover over it, including text in PDFs and images (OCR), and shows dual subtitles on YouTube and Netflix. Translation is done by Google Translate and Bing.",
+      "url": "https://github.com/ttop32/MouseTooltipTranslator",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 86
+    },
+    {
+      "id": "writely-0d1d31",
+      "title": "Writely",
+      "summary": "A writing helper that brings AI drafting, translation and reading support to editor pages across the web, in the spirit of Notion AI. It is marked as a beta.",
+      "url": "https://github.com/anc95/writely",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 84
+    }
+  ]
+}

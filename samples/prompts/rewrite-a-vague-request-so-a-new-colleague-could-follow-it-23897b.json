@@ -1,0 +1,32 @@
+{
+  "title": "Rewrite a vague request so a new colleague could follow it",
+  "prompt": "I will give you a draft prompt in <draft>. Act as a new colleague who knows nothing about my work.\n1. List every place where you would have to guess: missing context, audience, format, length or constraints.\n2. Ask me up to five short questions to fill those gaps, then wait for my answers.\n3. After I answer, rewrite the prompt with numbered steps, the exact output format and the constraints.\n<draft>[PASTE YOUR DRAFT PROMPT]</draft>",
+  "models": [
+    "claude",
+    "chatgpt"
+  ],
+  "use_case": "productivity",
+  "example_output_summary": "A list of gaps in the draft, up to five questions, then a clearer rewritten prompt once you have answered.",
+  "tags": [
+    "prompt-writing",
+    "clarity",
+    "productivity"
+  ],
+  "source_url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+  "source_urls": [
+    "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct"
+  ],
+  "section": "prompts",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 86,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "rewrite-a-vague-request-so-a-new-colleague-could-follow-it-23897b"
+}

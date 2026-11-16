@@ -1,0 +1,33 @@
+{
+  "title": "Label customer comments with three examples",
+  "prompt": "# Identity\nYou label short customer comments as Positive, Negative or Neutral.\n\n# Instructions\n* Answer with one word only: Positive, Negative or Neutral.\n* If a comment mixes praise and complaint, choose the label that fits its main point.\n\n# Examples\n<comment>[EXAMPLE OF A POSITIVE COMMENT]</comment>\n<label>Positive</label>\n\n<comment>[EXAMPLE OF A NEGATIVE COMMENT]</comment>\n<label>Negative</label>\n\n<comment>[EXAMPLE OF A NEUTRAL COMMENT]</comment>\n<label>Neutral</label>\n\n# Task\n<comment>[NEW COMMENT TO LABEL]</comment>",
+  "models": [
+    "chatgpt",
+    "claude"
+  ],
+  "use_case": "business",
+  "example_output_summary": "A single word label for the new comment, matching the pattern shown in the examples.",
+  "tags": [
+    "few-shot",
+    "classification",
+    "customer-feedback"
+  ],
+  "source_url": "https://platform.openai.com/docs/guides/prompt-engineering",
+  "source_urls": [
+    "https://platform.openai.com/docs/guides/prompt-engineering",
+    "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct"
+  ],
+  "section": "prompts",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 86,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "label-customer-comments-with-three-examples-508508"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "The Agency (agency-agents)",
+  "summary": "A large collection of specialist agent definitions written as markdown files, from frontend to community roles, each with its own process and deliverables, installable into Claude Code, Cursor, Codex, Gemini CLI and other tools. These are agent personas rather than SKILL.md skills.",
+  "install_steps": [
+    "Easiest: install the project's desktop app from its releases page, or on a Mac run brew install --cask msitarzewski/agency-agents/agency-agents",
+    "Or, from a clone of the repository, run ./scripts/install.sh --tool claude-code",
+    "Or copy only one division, for example cp engineering/*.md ~/.claude/agents/",
+    "Then activate an agent inside Claude Code"
+  ],
+  "repo_url": "https://github.com/msitarzewski/agency-agents",
+  "example_use_case": "Picking a code-review or frontend specialist for one task instead of writing a long role prompt from scratch.",
+  "skill_type": "collection",
+  "source_url": "https://github.com/msitarzewski/agency-agents",
+  "source_urls": [
+    "https://github.com/msitarzewski/agency-agents"
+  ],
+  "section": "skills",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 88,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "the-agency-agency-agents-ec643c"
+}

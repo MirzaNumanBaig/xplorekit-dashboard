@@ -1,0 +1,30 @@
+{
+  "name": "graphify",
+  "summary": "A /graphify skill for coding assistants that maps a codebase, its docs and configs into a queryable knowledge graph. Code is parsed locally, and each connection is marked as read directly or inferred.",
+  "install_steps": [
+    "Install the official package, spelled graphifyy with two y's, using uv tool install graphifyy (pipx also works); other graphify packages on PyPI are not affiliated",
+    "Run graphify install once; it detects your assistant and registers the skill",
+    "In your AI assistant, run /graphify . to build the graph for the current project",
+    "Open the generated graph.html in a browser, or read GRAPH_REPORT.md for the highlights"
+  ],
+  "repo_url": "https://github.com/Graphify-Labs/graphify",
+  "example_use_case": "Asking how two parts of a large project connect and getting a traced path through the code, docs and configs instead of searching files by hand.",
+  "skill_type": "agent-skill",
+  "source_url": "https://github.com/Graphify-Labs/graphify",
+  "source_urls": [
+    "https://github.com/Graphify-Labs/graphify"
+  ],
+  "section": "skills",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 90,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "graphify-dd6a9d"
+}

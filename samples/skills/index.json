@@ -1,0 +1,46 @@
+{
+  "section": "skills",
+  "generated_at": "2026-11-16",
+  "items": [
+    {
+      "id": "modern-web-guidance-5175b6",
+      "title": "Modern Web Guidance",
+      "summary": "A set of skills from the Chrome, Edge, Firefox and MDN teams and community that steers coding agents toward built-in web platform features instead of legacy JavaScript, with guides, browser-compatibility data and a legacy-code scanner.",
+      "url": "https://github.com/GoogleChrome/modern-web-guidance",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 92
+    },
+    {
+      "id": "socratic-tutor-jane-street-agent-skills-e22dd6",
+      "title": "socratic-tutor (Jane Street agent skills)",
+      "summary": "A SKILL.md that turns an AI assistant into a strict tutor: it starts with a diagnostic, builds a skill map with levels 0 to 5, asks one question at a time, schedules spaced review and ends with a final assessment.",
+      "url": "https://github.com/janestreet/agent_skills",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 92
+    },
+    {
+      "id": "graphify-dd6a9d",
+      "title": "graphify",
+      "summary": "A /graphify skill for coding assistants that maps a codebase, its docs and configs into a queryable knowledge graph. Code is parsed locally, and each connection is marked as read directly or inferred.",
+      "url": "https://github.com/Graphify-Labs/graphify",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 90
+    },
+    {
+      "id": "the-agency-agency-agents-ec643c",
+      "title": "The Agency (agency-agents)",
+      "summary": "A large collection of specialist agent definitions written as markdown files, from frontend to community roles, each with its own process and deliverables, installable into Claude Code, Cursor, Codex, Gemini CLI and other tools. These are agent personas rather than SKILL.md skills.",
+      "url": "https://github.com/msitarzewski/agency-agents",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-16",
+      "status": "active",
+      "quality_score": 88
+    }
+  ]
+}

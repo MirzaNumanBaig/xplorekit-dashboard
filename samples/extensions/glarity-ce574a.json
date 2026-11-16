@@ -1,0 +1,41 @@
+{
+  "name": "Glarity",
+  "summary": "Adds AI summaries next to Google results and on YouTube videos, web pages and PDFs, with translation and questions about the page you are on. Its code is open source.",
+  "audience": "People who research online and want quick summaries of videos, search results and long pages, including in other languages.",
+  "pros": [
+    "Works on YouTube, Google search results, ordinary web pages and local PDFs",
+    "Source code is public on GitHub",
+    "The developer says it shows no ads and does not sell user data"
+  ],
+  "cons": [
+    "Summaries come from a ChatGPT service, while the developer's privacy text says data stays in the browser: read the privacy details before using it on sensitive pages",
+    "Covers many tasks (YouTube, search, PDF, email help), so it is broader than a single-purpose tool"
+  ],
+  "pricing": "free",
+  "pricing_note": "The store listing describes it as free; no paid plan is mentioned there.",
+  "ai_related": true,
+  "store_url": "https://chromewebstore.google.com/detail/summary-for-google-with-c/cmnlolelipjlhfkhpohphpedmkfbobjc",
+  "extension_last_updated": "2026-07-12",
+  "alternatives": [
+    "Webpilot - Copilot for All, Free & Open"
+  ],
+  "source_url": "https://github.com/sparticleinc/chatgpt-google-summary-extension",
+  "source_urls": [
+    "https://github.com/sparticleinc/chatgpt-google-summary-extension",
+    "https://chromewebstore.google.com/detail/summary-for-google-with-c/cmnlolelipjlhfkhpohphpedmkfbobjc"
+  ],
+  "section": "extensions",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 88,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "glarity-ce574a"
+}

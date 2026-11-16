@@ -1,0 +1,32 @@
+{
+  "title": "Summarise a long document with XML-tagged sections",
+  "prompt": "<instructions>\nYou are a careful research assistant. Read the document in <document> and write a summary for [AUDIENCE].\n1. Give a three-sentence overview.\n2. List the five most important points as bullets, each with the section or page it comes from.\n3. List anything that is unclear, missing or contradicts itself.\nDo not add facts that are not in the document.\n</instructions>\n<context>The reader needs this to [PURPOSE] and has [TIME] minutes.</context>\n<document>\n[PASTE DOCUMENT HERE]\n</document>",
+  "models": [
+    "claude"
+  ],
+  "use_case": "research",
+  "example_output_summary": "A short overview, five sourced bullet points and a list of gaps or contradictions found in the document.",
+  "tags": [
+    "summarising",
+    "xml-tags",
+    "long-documents",
+    "research"
+  ],
+  "source_url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+  "source_urls": [
+    "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct"
+  ],
+  "section": "prompts",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 86,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:manual"
+  ],
+  "id": "summarise-a-long-document-with-xml-tagged-sections-23897b"
+}
