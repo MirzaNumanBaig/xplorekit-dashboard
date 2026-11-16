@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>Xplorekit Research Dashboard</title>
+<style>
+:root{--bg:#f6f7f9;--surface:#fff;--ink:#15202b;--muted:#5b6876;--line:#e1e5ea;--brand:#1d4ed8;--brand-ink:#fff;--ok:#0f7b45;--ok-bg:#e3f5ec;--warn:#8a5a00;--warn-bg:#fdf1d6;--bad:#b42318;--bad-bg:#fde8e6;--chip:#eef1f5;--shadow:0 1px 2px rgba(16,24,40,.06)}
+@media (prefers-color-scheme:dark){:root{--bg:#0e141b;--surface:#16202b;--ink:#e8edf2;--muted:#9aa8b6;--line:#26323f;--brand:#6c9bff;--brand-ink:#0b1220;--ok:#4cd08a;--ok-bg:#12301f;--warn:#f2c05b;--warn-bg:#3a2d0c;--bad:#ff8a80;--bad-bg:#3b1714;--chip:#202c39;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--brand)}
+header{background:var(--surface);border-bottom:1px solid var(--line)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.top{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 0}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-weight:800}
+h1{font-size:18px;margin:0}.sub{color:var(--muted);font-size:13px}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);background:var(--surface);font-size:13px}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+nav[role=tablist]{display:flex;gap:2px;overflow-x:auto}
+nav button{border:0;background:none;padding:10px 14px;font:inherit;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--brand);font-weight:600}
+nav button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+main.wrap{padding:22px 16px 40px}
+section[hidden]{display:none}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 4px;font-size:15px}
+.big{font-size:28px;font-weight:700;line-height:1.1}
+.muted{color:var(--muted)}.small{font-size:12.5px}
+.bar{height:8px;background:var(--chip);border-radius:6px;overflow:hidden;margin:8px 0 4px}
+.bar>i{display:block;height:100%;background:var(--brand)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{background:var(--chip);border-radius:999px;padding:2px 9px;font-size:12px;white-space:nowrap}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}.chip.warn{background:var(--warn-bg);color:var(--warn)}.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.health{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:8px}
+.health li{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);border-left-width:5px}
+.health .ok{border-left-color:var(--ok)}.health .warn{border-left-color:var(--warn)}.health .bad{border-left-color:var(--bad)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+select,input[type=search]{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
+input[type=search]{min-width:220px;flex:1}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.score{font-weight:700;border-radius:8px;padding:2px 8px;display:inline-block}
+.s-hi{background:var(--ok-bg);color:var(--ok)}.s-mid{background:var(--warn-bg);color:var(--warn)}.s-lo{background:var(--bad-bg);color:var(--bad)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+ol.steps{padding-left:20px}ol.steps li{margin:0 0 12px}
+code{background:var(--chip);padding:1px 6px;border-radius:5px;font-size:13px}
+h2{font-size:16px;margin:22px 0 10px}
+footer{color:var(--muted);font-size:12.5px;padding:8px 0 30px}
+td.nowrap{white-space:nowrap}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="top">
+    <div class="brand"><div class="logo" aria-hidden="true">X</div><div><h1>Xplorekit research dashboard</h1><div class="sub" id="stamp"></div></div></div>
+    <div class="links" id="links"></div>
+  </div>
+  <nav role="tablist" aria-label="Dashboard sections" id="tabs"></nav>
+</div></header>
+<main class="wrap" id="panels"></main>
+<div class="wrap"><footer>Built from this repository's own files by <code>python -m xplorekit.build_dashboard</code>. This page never contacts Claude or any server; the AI runs only inside the scheduled GitHub workflow.</footer></div>
+<script id="data" type="application/json">{"generated_at": "2026-11-16", "repo": "MirzaNumanBaig/xplorekit-dashboard", "site_repo": "MirzaNumanBaig/xplorekit", "site_url": "https://xplorekit.online", "sections": [{"key": "money", "name": "Make Money with AI", "entries": [], "stats": {"total": 0, "active": 0, "stale": 0, "today": 0, "week": 0, "avg_score": null, "rules_only": 0, "rejected_week": 0, "reasons_week": {}}, "caps": {"daily": 3, "weekly": 15}, "floor": 80, "stale_after": 120}, {"key": "prompts", "name": "Prompts", "entries": [], "stats": {"total": 0, "active": 0, "stale": 0, "today": 0, "week": 0, "avg_score": null, "rules_only": 0, "rejected_week": 0, "reasons_week": {}}, "caps": {"daily": 5, "weekly": 25}, "floor": 70, "stale_after": 180}, {"key": "extensions", "name": "Chrome Extensions", "entries": [], "stats": {"total": 0, "active": 0, "stale": 0, "today": 0, "week": 0, "avg_score": null, "rules_only": 0, "rejected_week": 0, "reasons_week": {}}, "caps": {"daily": 5, "weekly": 25}, "floor": 70, "stale_after": 90}, {"key": "skills", "name": "Claude Skills", "entries": [], "stats": {"total": 0, "active": 0, "stale": 0, "today": 0, "week": 0, "avg_score": null, "rules_only": 0, "rejected_week": 0, "reasons_week": {}}, "caps": {"daily": 5, "weekly": 25}, "floor": 70, "stale_after": 120}], "health": [{"level": "warn", "text": "No research run recorded yet. Run it once from the Actions tab (Research, with dry_run first)."}], "rejected": [], "runs": [], "sources": [{"section": "money", "id": "hn-money", "type": "hn", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "money", "id": "gh-money", "type": "github", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "money", "id": "reddit-sideproject", "type": "reddit", "enabled": true, "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET", "last_status": null, "last_count": null}, {"section": "money", "id": "reddit-sidehustle", "type": "reddit", "enabled": true, "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET", "last_status": null, "last_count": null}, {"section": "money", "id": "ph-feed", "type": "producthunt_rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "money", "id": "rundown", "type": "rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "money", "id": "bens-bites", "type": "rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "money", "id": "youtube-money", "type": "youtube", "enabled": true, "requires_key": "YOUTUBE_API_KEY", "last_status": null, "last_count": null}, {"section": "money", "id": "platform-rules", "type": "webpage", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "prompts", "id": "hn-prompts", "type": "hn", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "prompts", "id": "gh-prompts", "type": "github", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "prompts", "id": "reddit-prompts", "type": "reddit", "enabled": true, "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET", "last_status": null, "last_count": null}, {"section": "prompts", "id": "openai-news", "type": "rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "prompts", "id": "google-ai-blog", "type": "rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "prompts", "id": "anthropic-prompt-docs", "type": "webpage", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "prompts", "id": "simon-willison", "type": "rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "prompts", "id": "vendor-prompt-guides", "type": "webpage", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "extensions", "id": "hn-ext", "type": "hn", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "extensions", "id": "gh-ext", "type": "github", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "extensions", "id": "reddit-ext", "type": "reddit", "enabled": true, "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET", "last_status": null, "last_count": null}, {"section": "extensions", "id": "ph-feed", "type": "producthunt_rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "extensions", "id": "google-chrome-blog", "type": "rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "extensions", "id": "youtube-ext", "type": "youtube", "enabled": true, "requires_key": "YOUTUBE_API_KEY", "last_status": null, "last_count": null}, {"section": "skills", "id": "gh-skills", "type": "github", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "skills", "id": "gh-anthropic-skills", "type": "webpage", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "skills", "id": "hn-skills", "type": "hn", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "skills", "id": "reddit-skills", "type": "reddit", "enabled": true, "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET", "last_status": null, "last_count": null}, {"section": "skills", "id": "github-blog-ai", "type": "rss", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}, {"section": "skills", "id": "anthropic-skills-docs", "type": "webpage", "enabled": true, "requires_key": "", "last_status": null, "last_count": null}], "settings": {"caps": {"daily": {"money": 3, "prompts": 5, "extensions": 5, "skills": 5}, "weekly": {"money": 15, "prompts": 25, "extensions": 25, "skills": 25}}, "min_quality_score": {"money": 80, "prompts": 70, "extensions": 70, "skills": 70}, "stale_after_days": {"money": 120, "prompts": 180, "extensions": 90, "skills": 120}, "title_similarity_threshold": 0.85, "max_verbatim_overlap_chars": 120, "max_realistic_monthly_income": 10000}, "model": "claude-sonnet-5-5"}</script>
+<script>
+(function(){
+"use strict";
+var D=JSON.parse(document.getElementById("data").textContent);
+var $=function(s,r){return (r||document).querySelector(s)};
+function el(tag,attrs,kids){var n=document.createElement(tag);attrs=attrs||{};Object.keys(attrs).forEach(function(k){if(k==="class")n.className=attrs[k];else if(k==="text")n.textContent=attrs[k];else n.setAttribute(k,attrs[k])});(kids||[]).forEach(function(c){if(c==null)return;n.appendChild(typeof c==="string"?document.createTextNode(c):c)});return n}
+function safeUrl(u){return /^https?:\/\//i.test(u||"")?u:"#"}
+function link(text,href){return el("a",{href:safeUrl(href),rel:"noopener noreferrer",target:"_blank",text:text})}
+function gh(path){return "https://github.com/"+D.repo+path}
+function chip(text,cls){return el("span",{class:"chip"+(cls?" "+cls:""),text:text})}
+function scoreEl(n){return el("span",{class:"score "+(n>=85?"s-hi":n>=75?"s-mid":"s-lo"),text:String(n)})}
+function table(heads,rows,emptyText){
+  if(!rows.length)return el("div",{class:"card empty",text:emptyText});
+  var t=el("table",{},[el("thead",{},[el("tr",{},heads.map(function(h){return el("th",{scope:"col",text:h})}))]),el("tbody",{},rows)]);
+  return el("div",{class:"tablewrap"},[t]);
+}
+
+$("#stamp").textContent="Data as of "+D.generated_at+" · AI model: "+(D.model||"n/a");
+var L=$("#links");
+[["Run it now",gh("/actions/workflows/research.yml"),true],["Actions",gh("/actions"),false],["Site pull requests","https://github.com/"+D.site_repo+"/pulls",false],["Live site",D.site_url,false]].forEach(function(x){
+  var a=link(x[0],x[1]);a.className="btn"+(x[2]?" primary":"");L.appendChild(a)});
+
+var TABS=[["overview","Overview"],["entries","Entries"],["rejected","Rejected"],["sources","Sources"],["runs","Runs"],["setup","Setup"]];
+var tabs=$("#tabs"),panels=$("#panels"),P={};
+TABS.forEach(function(t){
+  var b=el("button",{role:"tab",id:"tab-"+t[0],"aria-controls":"p-"+t[0],"aria-selected":"false",text:t[1]});
+  b.addEventListener("click",function(){show(t[0])});tabs.appendChild(b);
+  P[t[0]]=el("section",{id:"p-"+t[0],role:"tabpanel","aria-labelledby":"tab-"+t[0],hidden:""});panels.appendChild(P[t[0]]);
+});
+function show(id){TABS.forEach(function(t){var on=t[0]===id;$("#tab-"+t[0]).setAttribute("aria-selected",on);if(on)P[t[0]].removeAttribute("hidden");else P[t[0]].setAttribute("hidden","")});try{history.replaceState(null,"","#"+id)}catch(e){}}
+
+/* Overview */
+(function(){
+  var p=P.overview;
+  var ul=el("ul",{class:"health","aria-label":"Status"});
+  D.health.forEach(function(h){ul.appendChild(el("li",{class:h.level},[el("strong",{text:{ok:"OK  ",warn:"Check  ",bad:"Problem  "}[h.level]}),h.text]))});
+  p.appendChild(ul);
+  var g=el("div",{class:"grid"});
+  D.sections.forEach(function(s){
+    var pct=Math.min(100,Math.round(100*s.stats.week/s.caps.weekly));
+    var c=el("div",{class:"card"},[
+      el("h3",{text:s.name}),
+      el("div",{class:"big",text:String(s.stats.total)}),el("div",{class:"muted small",text:"entries saved ("+s.stats.active+" active, "+s.stats.stale+" stale)"}),
+      el("div",{class:"bar",role:"img","aria-label":s.stats.week+" of "+s.caps.weekly+" this week"},[el("i",{style:"width:"+pct+"%"})]),
+      el("div",{class:"small muted",text:"New this week: "+s.stats.week+" of "+s.caps.weekly+" · today: "+s.stats.today+" of "+s.caps.daily}),
+      el("div",{class:"small muted",text:"Average score: "+(s.stats.avg_score==null?"–":s.stats.avg_score)+" · minimum to pass: "+s.floor})]);
+    var ch=el("div",{class:"chips"});
+    if(s.stats.rejected_week){ch.appendChild(chip(s.stats.rejected_week+" rejected this week","warn"));Object.keys(s.stats.reasons_week).forEach(function(k){ch.appendChild(chip(k+" × "+s.stats.reasons_week[k]))})}
+    else ch.appendChild(chip("nothing rejected this week"));
+    if(s.stats.rules_only)ch.appendChild(chip(s.stats.rules_only+" without fact-check","bad"));
+    c.appendChild(ch);g.appendChild(c);
+  });
+  p.appendChild(g);
+  var last=D.runs.filter(function(r){return r.type==="research"})[0];
+  p.appendChild(el("h2",{text:"Latest research run"}));
+  p.appendChild(last?el("div",{class:"card"},[el("div",{text:last.date+" · AI: "+(last.provider||"none")+(last.dry_run?" · dry run":"")+" · AI calls failed: "+(((last.llm||{}).failures||0))}),
+    el("div",{class:"chips"},Object.keys(last.sections||{}).map(function(k){var v=last.sections[k];return chip(k+": "+(v.status==="ok"?(v.accepted+" new, "+v.rejected+" rejected"):(v.status||"skipped").replace("_"," ")),v.status==="ok"?"ok":v.status==="cap_reached"?"":"bad")}))]):el("div",{class:"card empty",text:"No run recorded yet."}));
+})();
+
+/* Entries */
+(function(){
+  var p=P.entries,sec=el("select",{"aria-label":"Section"},[el("option",{value:"",text:"All sections"})]),st=el("select",{"aria-label":"Status"},[el("option",{value:"",text:"Any status"}),el("option",{value:"active",text:"Active"}),el("option",{value:"stale",text:"Stale"})]),q=el("input",{type:"search",placeholder:"Search titles and summaries","aria-label":"Search entries"});
+  D.sections.forEach(function(s){sec.appendChild(el("option",{value:s.key,text:s.name}))});
+  var out=el("div");p.appendChild(el("div",{class:"tools"},[sec,st,q]));p.appendChild(out);
+  var all=[];D.sections.forEach(function(s){s.entries.forEach(function(e){all.push({s:s,e:e})})});
+  function draw(){
+    var term=q.value.toLowerCase(),rows=all.filter(function(x){return(!sec.value||x.s.key===sec.value)&&(!st.value||x.e.status===st.value)&&(!term||(x.e.title+" "+x.e.summary).toLowerCase().indexOf(term)>-1)}).slice(0,300).map(function(x){
+      var e=x.e,checks=e.verified.filter(function(v){return v.indexOf("fact_check")===0||v==="rules_only"});
+      var title=el("td",{},[link(e.title,e.url),el("div",{class:"small muted",text:e.detail||""}),e.link2?el("div",{class:"small"},[link("second source",e.link2)]):null,el("div",{class:"small muted",text:e.summary.slice(0,160)+(e.summary.length>160?"…":"")})]);
+      var ck=el("td",{},[el("div",{class:"chips",style:"margin:0"},checks.map(function(c){return chip(c==="rules_only"?"no fact-check":c==="fact_check:manual"?"fact-checked by hand":c==="fact_check:llm"?"fact-checked by AI":c,c==="rules_only"?"bad":"ok")}).concat([el("span",{class:"chip",title:e.verified.join(", "),text:e.verified.length+" checks"})]))]);
+      return el("tr",{},[el("td",{text:x.s.name}),title,el("td",{},[scoreEl(e.score)]),ck,el("td",{class:"nowrap",text:e.first_seen+(e.status==="stale"?" (stale)":"")})]);
+    });
+    out.textContent="";out.appendChild(table(["Section","Entry","Score","Verification","First seen"],rows,"No entries match."));
+  }
+  [sec,st].forEach(function(n){n.addEventListener("change",draw)});q.addEventListener("input",draw);draw();
+})();
+
+/* Rejected */
+P.rejected.appendChild(table(["Date","Section","Title","Why","Detail"],D.rejected.map(function(r){
+  return el("tr",{},[el("td",{class:"nowrap",text:r.date||""}),el("td",{text:r.section}),el("td",{},[r.url?link(r.title||r.url,r.url):(r.title||"")]),el("td",{},[chip(r.reason,"warn")]),el("td",{class:"small muted",text:(r.detail||"").slice(0,240)})])}),"Nothing rejected yet. When the Verifier turns something away, the reason shows here."));
+
+/* Sources */
+(function(){
+  var p=P.sources;p.appendChild(el("p",{class:"muted",text:"Every source lives in xplorekit/config/sources.json. Edit it on GitHub to add, pause or remove one."}));
+  p.appendChild(link("Edit sources.json on GitHub",gh("/edit/main/xplorekit/config/sources.json")));
+  p.appendChild(table(["Section","Source","Type","State","Last run","Needs key"],D.sources.map(function(s){
+    var state=!s.enabled?chip("paused"):s.last_status===null?chip("not run yet"):/^ok/.test(s.last_status)?chip("ok","ok"):/^skipped/.test(s.last_status)?chip("skipped","warn"):chip("error","bad");
+    return el("tr",{},[el("td",{text:s.section}),el("td",{text:s.id}),el("td",{text:s.type}),el("td",{},[state]),el("td",{class:"small muted",text:s.last_status===null?"":(s.last_status+" · "+s.last_count+" found")}),el("td",{class:"small",text:s.requires_key||"–"})])}),"No sources configured."));
+})();
+
+/* Runs */
+P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
+  var res=r.type==="recheck"?el("td",{text:r.checked+" entries re-checked, "+r.stale+" stale"}):el("td",{},[el("div",{class:"chips",style:"margin:0"},Object.keys(r.sections||{}).map(function(k){var v=r.sections[k];return chip(k+": "+(v.status==="ok"?(v.accepted+" new / "+v.rejected+" rejected"):(v.status||"skipped").replace("_"," ")),v.status==="ok"?"ok":v.status==="cap_reached"?"":"bad")}))]);
+  return el("tr",{},[el("td",{text:(r.time||r.date).replace("T"," ").replace("+00:00"," UTC")}),el("td",{text:r.type+(r.dry_run?" (dry run)":"")}),el("td",{text:r.type==="recheck"?"–":(r.provider||"none")+((r.llm||{}).failures?" · "+r.llm.failures+" failed":"")}),res])}),"No runs recorded yet."));
+
+/* Setup */
+(function(){
+  var p=P.setup;
+  var steps=[
+    ["Add the Claude token",["Repository secret ",el("code",{text:"CLAUDE_CODE_OAUTH_TOKEN"}),". Optional fallbacks ",el("code",{text:"CLAUDE_CODE_OAUTH_TOKEN_2"})," and ",el("code",{text:"_3"})," are tried if the first one fails or runs out. ",link("Open secrets",gh("/settings/secrets/actions"))]],
+    ["Let the pipeline open pull requests on the site repo",["Secret ",el("code",{text:"SITE_REPO_TOKEN"}),": a fine-grained token for ",el("code",{text:D.site_repo})," only, with Contents and Pull requests set to read and write. Step-by-step: ",link("GUIDE.md",gh("/blob/main/GUIDE.md"))]],
+    ["Allow the workflow to write",["Settings, Actions, General, Workflow permissions: read and write. ",link("Open",gh("/settings/actions"))]],
+    ["Publish this dashboard",["Settings, Pages: deploy from branch ",el("code",{text:"main"}),", folder ",el("code",{text:"/docs"}),". ",link("Open Pages settings",gh("/settings/pages"))]],
+    ["Optional keys",["Reddit (",el("code",{text:"REDDIT_CLIENT_ID"}),", ",el("code",{text:"REDDIT_CLIENT_SECRET"}),") and YouTube (",el("code",{text:"YOUTUBE_API_KEY"}),"). A source without its key is skipped, not an error."]],
+    ["First run",["Actions, Research, Run workflow, with ",el("code",{text:"dry_run"})," set to true. Then check the Runs and Rejected tabs here."]]];
+  p.appendChild(el("h2",{text:"Setup checklist"}));
+  p.appendChild(el("ol",{class:"steps"},steps.map(function(s){return el("li",{},[el("strong",{text:s[0]+". "})].concat(s[1]))})));
+  p.appendChild(el("h2",{text:"Where every instruction lives (all in GitHub)"}));
+  p.appendChild(el("ul",{},[
+    el("li",{},[link("AGENTS.md",gh("/blob/main/AGENTS.md"))," : how the whole system works and how to operate it"]),
+    el("li",{},[link("xplorekit/prompts/",gh("/tree/main/xplorekit/prompts"))," : what each AI agent is told"]),
+    el("li",{},[link("settings.json",gh("/edit/main/xplorekit/config/settings.json"))," : caps, score floors, stale limits, income cap"]),
+    el("li",{},[link("sources.json",gh("/edit/main/xplorekit/config/sources.json"))," : where research comes from"]),
+    el("li",{},[link("schemas/",gh("/tree/main/xplorekit/schemas"))," : the exact fields of each section"])]));
+  p.appendChild(el("h2",{text:"Current limits"}));
+  var S=D.settings,rows=D.sections.map(function(s){return el("tr",{},[el("td",{text:s.name}),el("td",{text:s.caps.daily+" / day, "+s.caps.weekly+" / week"}),el("td",{text:String(s.floor)}),el("td",{text:s.stale_after+" days"})])});
+  p.appendChild(table(["Section","New entries allowed","Minimum score","Stale after"],rows,""));
+  p.appendChild(el("p",{class:"muted small",text:"Income figures are accepted only when the cited source contains them, and never above "+S.max_realistic_monthly_income+" per month. Text copied from a source is limited to "+S.max_verbatim_overlap_chars+" characters."}));
+})();
+
+var start=(location.hash||"#overview").slice(1);show(TABS.some(function(t){return t[0]===start})?start:"overview");
+})();
+</script>
+</body>
+</html>
