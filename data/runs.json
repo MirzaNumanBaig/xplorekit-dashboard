@@ -1,0 +1,215 @@
+[
+  {
+    "type": "research",
+    "date": "2026-11-16",
+    "time": "2026-11-16T19:31:13+00:00",
+    "provider": "claude_cli",
+    "dry_run": false,
+    "sections": {
+      "money": {
+        "sources": [
+          {
+            "id": "hn-money",
+            "status": "ok",
+            "count": 0
+          },
+          {
+            "id": "gh-money",
+            "status": "ok",
+            "count": 2
+          },
+          {
+            "id": "reddit-sideproject",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "reddit-sidehustle",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "ph-feed",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "rundown",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "bens-bites",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "youtube-money",
+            "status": "skipped, missing YOUTUBE_API_KEY",
+            "count": 0
+          },
+          {
+            "id": "platform-rules",
+            "status": "ok",
+            "count": 4
+          }
+        ],
+        "collected": 51,
+        "fresh": 8,
+        "drafts": 0,
+        "status": "ok",
+        "accepted": 0,
+        "rejected": 0,
+        "reasons": {}
+      },
+      "prompts": {
+        "sources": [
+          {
+            "id": "hn-prompts",
+            "status": "ok",
+            "count": 9
+          },
+          {
+            "id": "gh-prompts",
+            "status": "ok",
+            "count": 23
+          },
+          {
+            "id": "reddit-prompts",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "openai-news",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "google-ai-blog",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "anthropic-prompt-docs",
+            "status": "ok",
+            "count": 1
+          },
+          {
+            "id": "simon-willison",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "vendor-prompt-guides",
+            "status": "ok",
+            "count": 3
+          }
+        ],
+        "collected": 81,
+        "fresh": 52,
+        "drafts": 3,
+        "status": "ok",
+        "accepted": 3,
+        "rejected": 0,
+        "reasons": {}
+      },
+      "extensions": {
+        "sources": [
+          {
+            "id": "hn-ext",
+            "status": "ok",
+            "count": 0
+          },
+          {
+            "id": "gh-ext",
+            "status": "ok",
+            "count": 27
+          },
+          {
+            "id": "reddit-ext",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "ph-feed",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "google-chrome-blog",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "youtube-ext",
+            "status": "skipped, missing YOUTUBE_API_KEY",
+            "count": 0
+          }
+        ],
+        "collected": 57,
+        "fresh": 18,
+        "drafts": 3,
+        "status": "ok",
+        "accepted": 3,
+        "rejected": 0,
+        "reasons": {}
+      },
+      "skills": {
+        "sources": [
+          {
+            "id": "gh-skills",
+            "status": "ok",
+            "count": 30
+          },
+          {
+            "id": "gh-anthropic-skills",
+            "status": "ok",
+            "count": 1
+          },
+          {
+            "id": "hn-skills",
+            "status": "ok",
+            "count": 10
+          },
+          {
+            "id": "reddit-skills",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "github-blog-ai",
+            "status": "ok",
+            "count": 7
+          },
+          {
+            "id": "anthropic-skills-docs",
+            "status": "ok",
+            "count": 1
+          }
+        ],
+        "collected": 49,
+        "fresh": 28,
+        "drafts": 2,
+        "status": "ok",
+        "accepted": 2,
+        "rejected": 0,
+        "reasons": {}
+      }
+    },
+    "llm": {
+      "calls": 12,
+      "failures": 0,
+      "token_slots_used": [
+        1
+      ],
+      "tokens": {
+        "input": 30941,
+        "output": 12700,
+        "cache_read": 328520,
+        "cache_creation": 113893,
+        "turns": 12,
+        "cost_usd": 1.1242
+      }
+    }
+  }
+]

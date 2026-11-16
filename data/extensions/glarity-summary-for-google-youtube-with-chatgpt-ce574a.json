@@ -1,0 +1,39 @@
+{
+  "source_url": "https://github.com/sparticleinc/chatgpt-google-summary-extension",
+  "source_urls": [
+    "https://github.com/sparticleinc/chatgpt-google-summary-extension",
+    "https://chromewebstore.google.com/detail/summary-for-google-with-c/cmnlolelipjlhfkhpohphpedmkfbobjc"
+  ],
+  "name": "Glarity - Summary for Google/YouTube with ChatGPT",
+  "summary": "An open-source extension that shows AI-generated summaries next to Google search results and on YouTube videos. It can also summarise other web pages, PDFs and emails, and adds side-by-side translation and web content Q&A.",
+  "audience": "Readers and researchers who want quick summaries of search results, videos and long web pages.",
+  "pros": [
+    "Summaries on Google, YouTube, Bing, GitHub and many other sites",
+    "Also does side-by-side translation and email writing help",
+    "Open source, with a Firefox version as well"
+  ],
+  "cons": [
+    "Needs access to an AI service such as the OpenAI API or a ChatGPT Plus account",
+    "Page and video content is sent to a third-party AI service to produce summaries"
+  ],
+  "pricing": "unknown",
+  "pricing_note": "",
+  "ai_related": true,
+  "store_url": "https://chromewebstore.google.com/detail/summary-for-google-with-c/cmnlolelipjlhfkhpohphpedmkfbobjc",
+  "extension_last_updated": "unknown",
+  "alternatives": [],
+  "section": "extensions",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 79,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "rules_only"
+  ],
+  "id": "glarity-summary-for-google-youtube-with-chatgpt-ce574a"
+}

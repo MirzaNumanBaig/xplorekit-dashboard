@@ -1,0 +1,35 @@
+{
+  "source_url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+  "source_urls": [
+    "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview"
+  ],
+  "title": "Define success criteria and test cases before improving a prompt",
+  "prompt": "Act as a prompt-evaluation planner. Before I spend time improving a prompt, help me set up a way to judge it.\n\nMy use case: [DESCRIBE WHAT THE PROMPT IS FOR]\nMy current first draft prompt: [PASTE DRAFT, OR WRITE 'NONE YET']\nThings that matter most to me: [E.g. ACCURACY, TONE, FORMAT, SPEED, COST]\n\nPlease produce:\n1. Success criteria: 3 to 6 criteria that are specific and checkable (not vague words like 'good' or 'helpful'). For each one, say how I would check it.\n2. A test set: 8 to 10 realistic test inputs for my use case, including at least 2 edge cases and 1 input the prompt should refuse or flag. For each input, write what a passing answer must contain.\n3. A scoring sheet: a simple table with the test inputs as rows and the criteria as columns, so I can mark pass or fail by hand.\n4. A note on which failures are likely to be fixed by changing the prompt, and which might be better solved another way (for example a different model, or changing the surrounding workflow).\n\nIf no draft prompt exists, also write a first draft that I can run against the test set. Do not claim any result: you have not run these tests, so only plan them.",
+  "models": [
+    "claude",
+    "chatgpt",
+    "gemini"
+  ],
+  "use_case": "productivity",
+  "example_output_summary": "A list of checkable success criteria, a set of test inputs with expected pass conditions, a blank scoring table, and a short note on which problems prompt changes can and cannot fix.",
+  "tags": [
+    "prompt-engineering",
+    "evaluation",
+    "success-criteria",
+    "testing",
+    "planning"
+  ],
+  "section": "prompts",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 79,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "rules_only"
+  ],
+  "id": "define-success-criteria-and-test-cases-before-improving-a-pr-52857b"
+}
