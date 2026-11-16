@@ -1,0 +1,66 @@
+{
+  "sections": [
+    "money",
+    "prompts",
+    "extensions",
+    "skills"
+  ],
+  "caps": {
+    "daily": {
+      "money": 3,
+      "prompts": 5,
+      "extensions": 5,
+      "skills": 5
+    },
+    "weekly": {
+      "money": 15,
+      "prompts": 25,
+      "extensions": 25,
+      "skills": 25
+    }
+  },
+  "min_quality_score": {
+    "money": 80,
+    "prompts": 70,
+    "extensions": 70,
+    "skills": 70
+  },
+  "stale_after_days": {
+    "money": 120,
+    "prompts": 180,
+    "extensions": 90,
+    "skills": 120
+  },
+  "title_similarity_threshold": 0.85,
+  "max_verbatim_overlap_chars": 120,
+  "llm": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "max_tokens": 4000
+  },
+  "http": {
+    "user_agent": "ContentResearchBot/1.0",
+    "delay_seconds": 1.0,
+    "timeout_seconds": 20
+  },
+  "data_dir": "data",
+  "max_realistic_monthly_income": 10000,
+  "trusted_hosts": [
+    "github.com",
+    "raw.githubusercontent.com",
+    "news.ycombinator.com",
+    "reddit.com",
+    "producthunt.com",
+    "openai.com",
+    "anthropic.com",
+    "docs.anthropic.com",
+    "google.com",
+    "blog.google",
+    "developers.googleblog.com",
+    "developers.google.com",
+    "chromewebstore.google.com",
+    "youtube.com",
+    "simonwillison.net",
+    "github.blog"
+  ]
+}

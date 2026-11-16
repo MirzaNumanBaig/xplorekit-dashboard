@@ -1,0 +1,261 @@
+{
+  "_readme": "All sources live here. Types: hn, github, rss, reddit, producthunt_rss, youtube, webpage. Set enabled=false to switch one off. Sources with requires_key are skipped when the env var is missing. To add a source: add an object to the right section. A new TYPE needs a collector in xplorekit/collectors/.",
+  "money": [
+    {
+      "id": "hn-money",
+      "type": "hn",
+      "enabled": true,
+      "queries": [
+        "make money with ChatGPT",
+        "make money with Claude",
+        "AI freelancing income",
+        "AI side project revenue",
+        "built with AI first customers"
+      ],
+      "min_points": 30
+    },
+    {
+      "id": "gh-money",
+      "type": "github",
+      "enabled": true,
+      "queries": [
+        "ai freelancing guide in:readme stars:>200",
+        "monetize chatgpt in:description stars:>100"
+      ]
+    },
+    {
+      "id": "reddit-sideproject",
+      "type": "reddit",
+      "enabled": true,
+      "subreddits": [
+        "ChatGPT",
+        "ClaudeAI",
+        "SideProject",
+        "Entrepreneur"
+      ],
+      "window": "week",
+      "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET"
+    },
+    {
+      "id": "reddit-sidehustle",
+      "type": "reddit",
+      "enabled": true,
+      "subreddits": [
+        "sidehustle",
+        "freelance"
+      ],
+      "window": "week",
+      "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET"
+    },
+    {
+      "id": "ph-feed",
+      "type": "producthunt_rss",
+      "enabled": true,
+      "url": "https://www.producthunt.com/feed"
+    },
+    {
+      "id": "simon-willison",
+      "type": "rss",
+      "enabled": true,
+      "url": "https://simonwillison.net/atom/everything/"
+    },
+    {
+      "id": "rundown",
+      "type": "rss",
+      "enabled": true,
+      "url": "https://www.therundown.ai/feed"
+    },
+    {
+      "id": "bens-bites",
+      "type": "rss",
+      "enabled": true,
+      "url": "https://www.bensbites.com/feed"
+    },
+    {
+      "id": "youtube-money",
+      "type": "youtube",
+      "enabled": true,
+      "requires_key": "YOUTUBE_API_KEY",
+      "queries": [
+        "make money with ChatGPT case study",
+        "AI freelancing real income"
+      ]
+    }
+  ],
+  "prompts": [
+    {
+      "id": "hn-prompts",
+      "type": "hn",
+      "enabled": true,
+      "queries": [
+        "prompt engineering",
+        "system prompt ChatGPT",
+        "Claude prompt",
+        "Gemini prompt"
+      ],
+      "min_points": 40
+    },
+    {
+      "id": "gh-prompts",
+      "type": "github",
+      "enabled": true,
+      "queries": [
+        "awesome chatgpt prompts stars:>500",
+        "claude prompt library in:description stars:>100",
+        "gemini prompts in:description stars:>100"
+      ]
+    },
+    {
+      "id": "reddit-prompts",
+      "type": "reddit",
+      "enabled": true,
+      "subreddits": [
+        "ChatGPTPromptGenius",
+        "ClaudeAI",
+        "Bard",
+        "PromptEngineering"
+      ],
+      "window": "week",
+      "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET"
+    },
+    {
+      "id": "openai-news",
+      "type": "rss",
+      "enabled": true,
+      "url": "https://openai.com/news/rss.xml"
+    },
+    {
+      "id": "google-ai-blog",
+      "type": "rss",
+      "enabled": true,
+      "url": "https://blog.google/technology/ai/rss/"
+    },
+    {
+      "id": "anthropic-prompt-docs",
+      "type": "webpage",
+      "enabled": true,
+      "urls": [
+        "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview"
+      ]
+    },
+    {
+      "id": "simon-willison",
+      "type": "rss",
+      "enabled": true,
+      "url": "https://simonwillison.net/atom/everything/"
+    }
+  ],
+  "extensions": [
+    {
+      "id": "hn-ext",
+      "type": "hn",
+      "enabled": true,
+      "queries": [
+        "Chrome extension AI",
+        "Show HN Chrome extension",
+        "ChatGPT Chrome extension",
+        "Claude Chrome extension"
+      ],
+      "min_points": 15
+    },
+    {
+      "id": "gh-ext",
+      "type": "github",
+      "enabled": true,
+      "queries": [
+        "chrome extension ai in:description stars:>200",
+        "chrome extension chatgpt in:description stars:>100",
+        "awesome chrome extensions ai in:name,description"
+      ]
+    },
+    {
+      "id": "reddit-ext",
+      "type": "reddit",
+      "enabled": true,
+      "subreddits": [
+        "chrome_extensions",
+        "ChatGPT",
+        "chrome"
+      ],
+      "window": "month",
+      "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET"
+    },
+    {
+      "id": "ph-feed",
+      "type": "producthunt_rss",
+      "enabled": true,
+      "url": "https://www.producthunt.com/feed"
+    },
+    {
+      "id": "google-chrome-blog",
+      "type": "rss",
+      "enabled": true,
+      "url": "https://blog.google/products/chrome/rss/"
+    },
+    {
+      "id": "youtube-ext",
+      "type": "youtube",
+      "enabled": true,
+      "requires_key": "YOUTUBE_API_KEY",
+      "queries": [
+        "best AI Chrome extensions"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "gh-skills",
+      "type": "github",
+      "enabled": true,
+      "queries": [
+        "SKILL.md claude skill in:readme stars:>20",
+        "claude agent skills in:description stars:>20",
+        "topic:claude-skills"
+      ]
+    },
+    {
+      "id": "gh-anthropic-skills",
+      "type": "webpage",
+      "enabled": true,
+      "urls": [
+        "https://raw.githubusercontent.com/anthropics/skills/main/README.md"
+      ]
+    },
+    {
+      "id": "hn-skills",
+      "type": "hn",
+      "enabled": true,
+      "queries": [
+        "Claude skills",
+        "agent skills SKILL.md",
+        "Claude Code skills"
+      ],
+      "min_points": 20
+    },
+    {
+      "id": "reddit-skills",
+      "type": "reddit",
+      "enabled": true,
+      "subreddits": [
+        "ClaudeAI",
+        "ClaudeCode"
+      ],
+      "window": "month",
+      "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET"
+    },
+    {
+      "id": "github-blog-ai",
+      "type": "rss",
+      "enabled": true,
+      "url": "https://github.blog/ai-and-ml/feed/"
+    },
+    {
+      "id": "anthropic-skills-docs",
+      "type": "webpage",
+      "enabled": true,
+      "urls": [
+        "https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/overview"
+      ]
+    }
+  ]
+}
