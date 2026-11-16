@@ -1,0 +1,40 @@
+{
+  "name": "Mouse Tooltip Translator",
+  "summary": "Translates text in a tooltip when you hover over it or select it on a web page. It also handles PDF files, YouTube dual subtitles, text in images through OCR, and spoken pronunciation.",
+  "audience": "Readers of foreign-language web pages, PDFs and videos who want translations without leaving the page.",
+  "pros": [
+    "Translates on hover or on text selection",
+    "Works on PDFs, YouTube dual subtitles and images through OCR",
+    "Can read the translated text aloud",
+    "Also published for Edge and Firefox"
+  ],
+  "cons": [
+    "Translation relies on third-party services (Google and Bing translators)",
+    "AI is not a core feature of the extension"
+  ],
+  "pricing": "unknown",
+  "pricing_note": "",
+  "ai_related": false,
+  "store_url": "https://chromewebstore.google.com/detail/mouse-tooltip-translator/hmigninkgibhdckiaphhmbgcghochdjc",
+  "extension_last_updated": "unknown",
+  "alternatives": [],
+  "source_url": "https://github.com/ttop32/MouseTooltipTranslator",
+  "source_urls": [
+    "https://github.com/ttop32/MouseTooltipTranslator",
+    "https://chromewebstore.google.com/detail/mouse-tooltip-translator/hmigninkgibhdckiaphhmbgcghochdjc"
+  ],
+  "section": "extensions",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 79,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "rules_only"
+  ],
+  "id": "mouse-tooltip-translator-499769"
+}

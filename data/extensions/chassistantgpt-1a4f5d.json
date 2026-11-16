@@ -1,0 +1,39 @@
+{
+  "name": "ChassistantGPT",
+  "summary": "Runs ChatGPT as a hands-free voice assistant in the background of the browser. You start it with a spoken trigger phrase or a keyboard shortcut, and it supports more than 60 languages and dialects.",
+  "audience": "People who want to talk to ChatGPT by voice without opening the chat page.",
+  "pros": [
+    "Custom trigger phrase in many languages",
+    "Keyboard shortcut and push-to-talk as alternatives to the voice trigger",
+    "Can show a chat view with the session history"
+  ],
+  "cons": [
+    "Speech features only work in Chrome, not in other Chromium-based browsers",
+    "Relies on a third-party AI service (ChatGPT)"
+  ],
+  "pricing": "free",
+  "pricing_note": "",
+  "ai_related": true,
+  "store_url": "https://chromewebstore.google.com/detail/chassistantgpt/kepjfakbnekbifkjnfhmoilbbnncnfjc",
+  "extension_last_updated": "unknown",
+  "alternatives": [],
+  "source_url": "https://github.com/idosal/assistant-chat-gpt",
+  "source_urls": [
+    "https://github.com/idosal/assistant-chat-gpt",
+    "https://chromewebstore.google.com/detail/chassistantgpt/kepjfakbnekbifkjnfhmoilbbnncnfjc"
+  ],
+  "section": "extensions",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 79,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "rules_only"
+  ],
+  "id": "chassistantgpt-1a4f5d"
+}
