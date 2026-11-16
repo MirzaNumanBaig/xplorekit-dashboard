@@ -20,7 +20,23 @@ class LLMError(RuntimeError):
 
 
 TOKEN_VARS = ("CLAUDE_CODE_OAUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN_2", "CLAUDE_CODE_OAUTH_TOKEN_3")
-STATS = {"calls": 0, "failures": 0, "token_slots_used": []}  # no secrets, only slot numbers; recorded in data/runs.json for the dashboard
+STATS = {"calls": 0, "failures": 0, "token_slots_used": [], "tokens": {}}  # no secrets, only slot numbers and counts; recorded in data/runs.json for the dashboard
+
+
+def reset_stats():
+    STATS.update({"calls": 0, "failures": 0, "token_slots_used": [], "tokens": {}})
+
+
+def record_usage(usage, turns=1, cost=None):
+    """Add one model reply's token counts to the run totals. Tokens are exact; cost is what the same work would cost on the API (a plan is not billed per token)."""
+    usage = usage if isinstance(usage, dict) else {}
+    t = STATS.setdefault("tokens", {})
+    for key, src in (("input", "input_tokens"), ("output", "output_tokens"), ("cache_read", "cache_read_input_tokens"), ("cache_creation", "cache_creation_input_tokens")):
+        v = usage.get(src)
+        t[key] = t.get(key, 0) + (v if isinstance(v, int) else 0)
+    t["turns"] = t.get("turns", 0) + (turns if isinstance(turns, int) else 1)
+    if isinstance(cost, (int, float)):
+        t["cost_usd"] = round(t.get("cost_usd", 0) + cost, 4)
 
 
 def token_slots():
@@ -56,6 +72,7 @@ def complete(prompt, system=""):
                 data = json.loads(r.read())
         except Exception as e:
             raise LLMError(f"Anthropic API call failed: {e}") from e
+        record_usage(data.get("usage"))
         return "".join(b.get("text", "") for b in data.get("content", []))
     if p == "claude_cli":
         cmd = ["claude", "-p", "--output-format", "json", "--model", model, "--max-turns", "1"]
@@ -77,9 +94,13 @@ def complete(prompt, system=""):
             if slot not in STATS["token_slots_used"]:
                 STATS["token_slots_used"].append(slot)
             try:
-                return json.loads(r.stdout).get("result", "")
+                data = json.loads(r.stdout)
             except ValueError:
                 return r.stdout
+            if isinstance(data, dict):
+                record_usage(data.get("usage"), data.get("num_turns", 1), data.get("total_cost_usd"))
+                return data.get("result", "")
+            return r.stdout
         raise LLMError("claude CLI failed on every token: " + "; ".join(errors or ["no token set"]))
     raise LLMError("no language model configured (set CLAUDE_CODE_OAUTH_TOKEN with the claude CLI, or ANTHROPIC_API_KEY)")
 

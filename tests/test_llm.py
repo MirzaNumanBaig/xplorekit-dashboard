@@ -49,3 +49,15 @@ class TokenFallbackTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UsageTests(unittest.TestCase):
+    def test_cli_usage_is_summed(self):
+        llm.reset_stats()
+        with mock.patch.dict(os.environ, {"XK_LLM": "claude_cli", "CLAUDE_CODE_OAUTH_TOKEN": "t"}, clear=True):
+            out = json.dumps({"result": "x", "num_turns": 1, "total_cost_usd": 0.01, "usage": {"input_tokens": 10, "output_tokens": 5, "cache_read_input_tokens": 100}})
+            with mock.patch.object(llm.subprocess, "run", lambda *a, **k: proc(0, out)):
+                llm.complete("a")
+                llm.complete("b")
+        t = llm.STATS["tokens"]
+        self.assertEqual((t["input"], t["output"], t["cache_read"], t["turns"], t["cost_usd"]), (20, 10, 200, 2, 0.02))

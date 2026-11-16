@@ -83,6 +83,29 @@ def health(runs, secs, day):
     return sorted(out, key=lambda x: order[x["level"]])
 
 
+def usage(runs, day):
+    """Claude token totals for today / 7 days / 30 days from the runs recorded in runs.json (real runs only)."""
+    from datetime import date, timedelta
+    d0 = date.fromisoformat(day)
+    out = {k: {"input": 0, "output": 0, "cache_read": 0, "cache_creation": 0, "turns": 0, "cost_usd": 0.0, "runs": 0} for k in ("today", "7d", "30d")}
+    for r in runs:
+        t = (r.get("llm") or {}).get("tokens") or {}
+        if r.get("dry_run") or not t:
+            continue
+        try:
+            age = (d0 - date.fromisoformat(r["date"])).days
+        except (KeyError, ValueError):
+            continue
+        for k, lim in (("today", 0), ("7d", 6), ("30d", 29)):
+            if 0 <= age <= lim:
+                o = out[k]
+                o["runs"] += 1
+                for f in ("input", "output", "cache_read", "cache_creation", "turns"):
+                    o[f] += t.get(f, 0)
+                o["cost_usd"] = round(o["cost_usd"] + t.get("cost_usd", 0), 4)
+    return out
+
+
 def build_dataset(data_dir):
     root, cfg, day = Path(data_dir), settings(), today()
     secs, rejected = [], []
@@ -104,7 +127,7 @@ def build_dataset(data_dir):
             seen = last_src.get(s, {}).get(it["id"])
             src.append({"section": s, "id": it["id"], "type": it["type"], "enabled": it.get("enabled", True), "requires_key": it.get("requires_key", ""),
                         "last_status": seen["status"] if seen else None, "last_count": seen["count"] if seen else None})
-    return {"generated_at": day, "repo": cfg["repo"], "site_repo": cfg["site_repo"], "site_url": cfg["site_url"], "sections": secs, "health": health(runs, secs, day),
+    return {"generated_at": day, "repo": cfg["repo"], "site_repo": cfg["site_repo"], "site_url": cfg["site_url"], "sections": secs, "health": health(runs, secs, day), "usage": usage(runs, day),
             "rejected": sorted(rejected, key=lambda r: r.get("date", ""), reverse=True)[:200], "runs": runs[-30:][::-1], "sources": src,
             "settings": {k: cfg[k] for k in ("caps", "min_quality_score", "stale_after_days", "title_similarity_threshold", "max_verbatim_overlap_chars", "max_realistic_monthly_income")},
             "model": cfg.get("llm", {}).get("model")}

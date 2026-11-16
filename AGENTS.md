@@ -25,7 +25,7 @@ collectors -> prefilter (already on the site / already rejected / relevant) -> e
 | Verifier rules (links, dedupe, income, hype, copy, schema) | `xplorekit/verify/`, `xplorekit/agents/editor_verifier.py` |
 | Entry point | `xplorekit/run.py` |
 | Hand-off to the site repo | `xplorekit/sync_site.py`, `scripts/open_site_pr.sh` |
-| Dashboard (built to `docs/index.html`, served by GitHub Pages) | `xplorekit/build_dashboard.py`, `xplorekit/dashboard_template.html` |
+| Dashboard (Overview, Entries, Rejected, Sources, Runs, Usage = Claude tokens per run; built to `docs/index.html`, GitHub Pages) | `xplorekit/build_dashboard.py`, `xplorekit/dashboard_template.html` |
 | Workflows | `.github/workflows/`: `research` (daily), `recheck` (weekly), `dashboard`, `tests` |
 | Setup, how to add a source or a section | `GUIDE.md` |
 | First dry run and its findings | `samples/REPORT.md` |

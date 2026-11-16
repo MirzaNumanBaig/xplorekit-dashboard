@@ -124,3 +124,11 @@ class PauseTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as d:
                 self.assertEqual(run.main(["--section", "skills", "--out", d]), 0)
                 self.assertFalse((Path(d) / "runs.json").exists())  # nothing ran, nothing recorded
+
+
+class UsageTotalsTests(unittest.TestCase):
+    def test_periods_and_dry_runs(self):
+        day = "2026-11-16"
+        run = lambda d, n, dry=False: {"type": "research", "date": d, "dry_run": dry, "llm": {"tokens": {"input": n, "output": 1, "turns": 1, "cost_usd": 0.5}}}
+        u = bd.usage([run(day, 10), run("2026-11-12", 20), run("2026-10-20", 40), run(day, 999, True)], day)
+        self.assertEqual((u["today"]["input"], u["7d"]["input"], u["30d"]["input"], u["30d"]["runs"]), (10, 30, 70, 3))

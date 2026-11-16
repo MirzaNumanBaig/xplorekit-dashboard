@@ -92,7 +92,7 @@ var L=$("#links");
 [["Run it now",gh("/actions/workflows/research.yml"),true],["Actions",gh("/actions"),false],["Site pull requests","https://github.com/"+D.site_repo+"/pulls",false],["Live site",D.site_url,false]].forEach(function(x){
   var a=link(x[0],x[1]);a.className="btn"+(x[2]?" primary":"");L.appendChild(a)});
 
-var TABS=[["overview","Overview"],["entries","Entries"],["rejected","Rejected"],["sources","Sources"],["runs","Runs"],["setup","Setup"]];
+var TABS=[["overview","Overview"],["entries","Entries"],["rejected","Rejected"],["sources","Sources"],["runs","Runs"],["usage","Usage"],["setup","Setup"]];
 var tabs=$("#tabs"),panels=$("#panels"),P={};
 TABS.forEach(function(t){
   var b=el("button",{role:"tab",id:"tab-"+t[0],"aria-controls":"p-"+t[0],"aria-selected":"false",text:t[1]});
@@ -164,6 +164,17 @@ P.rejected.appendChild(table(["Date","Section","Title","Why","Detail"],D.rejecte
 P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
   var res=r.type==="recheck"?el("td",{text:r.checked+" entries re-checked, "+r.stale+" stale"}):el("td",{},[el("div",{class:"chips",style:"margin:0"},Object.keys(r.sections||{}).map(function(k){var v=r.sections[k];return chip(k+": "+(v.status==="ok"?(v.accepted+" new / "+v.rejected+" rejected"):(v.status||"skipped").replace("_"," ")),v.status==="ok"?"ok":v.status==="cap_reached"?"":"bad")}))]);
   return el("tr",{},[el("td",{text:(r.time||r.date).replace("T"," ").replace("+00:00"," UTC")}),el("td",{text:r.type+(r.dry_run?" (dry run)":"")}),el("td",{text:r.type==="recheck"?"–":(r.provider||"none")+((r.llm||{}).failures?" · "+r.llm.failures+" failed":"")}),res])}),"No runs recorded yet."));
+
+/* Usage: Claude tokens per period and per run (exact counts; the dollar figure is only what the same work would cost on the API) */
+(function(){
+  var p=P.usage,U=D.usage,n=function(x){return (x||0).toLocaleString("en-US")};
+  p.appendChild(el("p",{class:"muted",text:"Tokens are exact counts reported by Claude for real runs (dry runs are not counted). A Claude plan is not billed per token, so the dollar figure is only what the same work would cost on the API."}));
+  p.appendChild(table(["Period","Runs","Input","Output","Cached (read)","Turns","API-equivalent cost"],[["today","Today"],["7d","Last 7 days"],["30d","Last 30 days"]].map(function(k){
+    var u=U[k[0]];return el("tr",{},[el("td",{text:k[1]}),el("td",{text:n(u.runs)}),el("td",{text:n(u.input)}),el("td",{text:n(u.output)}),el("td",{text:n(u.cache_read)}),el("td",{text:n(u.turns)}),el("td",{text:"$"+u.cost_usd.toFixed(2)})])}),"No usage."));
+  p.appendChild(el("h3",{text:"Latest runs"}));
+  p.appendChild(table(["When","Token slot","Calls","Input","Output","Turns"],D.runs.filter(function(r){return r.type==="research"&&!r.dry_run&&(r.llm||{}).tokens}).map(function(r){
+    var t=r.llm.tokens;return el("tr",{},[el("td",{text:(r.time||r.date).replace("T"," ").replace("+00:00"," UTC")}),el("td",{text:(r.llm.token_slots_used||[]).join(", ")||"–"}),el("td",{text:n(r.llm.calls)}),el("td",{text:n(t.input)}),el("td",{text:n(t.output)}),el("td",{text:n(t.turns)})])}),"No Claude usage recorded yet. It appears after the first real research run."));
+})();
 
 /* Setup */
 (function(){

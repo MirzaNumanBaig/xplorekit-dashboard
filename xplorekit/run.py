@@ -222,7 +222,7 @@ def main(argv=None):
         a, r = process_section(s, args, rep=report["sections"][s])
         total_a += a
         total_r += r
-    report["llm"] = {"calls": llm.STATS["calls"], "failures": llm.STATS["failures"], "token_slots_used": llm.STATS["token_slots_used"]}
+    report["llm"] = {"calls": llm.STATS["calls"], "failures": llm.STATS["failures"], "token_slots_used": llm.STATS["token_slots_used"], "tokens": llm.STATS.get("tokens", {})}
     if not args.collect_only and not args.drafts_file:
         append_run(data_root(args.out), report)
     print(f"done: {total_a} accepted, {total_r} rejected" + (f" (written to {args.out}/)" if args.out else ""))
