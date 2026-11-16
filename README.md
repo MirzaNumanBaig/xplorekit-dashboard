@@ -33,11 +33,20 @@ robots.txt is checked before every page fetch (and Reddit is used through its of
 nothing is copied; the source URL is always stored · no star, user, download or rating counts are ever stored (the site's own rule) ·
 daily and weekly caps per section (`xplorekit/config/settings.json`).
 
+## Dashboard
+`docs/index.html` is rebuilt after every run and served by GitHub Pages (Settings -> Pages -> branch `main`, folder `/docs`). It shows health warnings,
+per-section progress against the caps, every entry with its checks, every rejection with its reason, source status, run history and a setup checklist.
+Build it locally with `python -m xplorekit.build_dashboard`.
+
+## Everything lives in GitHub
+[AGENTS.md](AGENTS.md) is the single source of truth: how it works, how to operate it, the content rules and how we work. No chat memory, no personal
+Claude account: Claude runs only inside the workflows, through the `CLAUDE_CODE_OAUTH_TOKEN` secrets.
+
 ## Use it
-See **[docs/GUIDE.md](docs/GUIDE.md)**: setup, how to run, how to add a source, how to add a section.
+See **[GUIDE.md](GUIDE.md)**: setup, how to run, how to add a source, how to add a section.
 
 ```bash
-python -m unittest discover -s tests          # 56 offline tests
+python -m unittest discover -s tests          # 73 offline tests
 python -m xplorekit.run --section money --dry-run --site-dir ../xplorekit
 ```
 

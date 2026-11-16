@@ -6,7 +6,7 @@
 
 | Name | Kind | What it is |
 |---|---|---|
-| `CLAUDE_CODE_OAUTH_TOKEN` | secret | the same Claude Code token the celebrity repo used (secrets do not carry over between repos; add it again) |
+| `CLAUDE_CODE_OAUTH_TOKEN` | secret | your Claude Code token (secrets do not carry over between repos; add it here). Optional `CLAUDE_CODE_OAUTH_TOKEN_2` and `_3` are tried in order when one fails or runs out of usage |
 | `SITE_REPO_TOKEN` | secret | fine-grained token for the private site repo, see below |
 | `ANTHROPIC_API_KEY` | secret, optional | alternative to the OAuth token; wins if both are set |
 | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `YOUTUBE_API_KEY` | secrets, optional | each source is skipped when its key is missing |
@@ -19,6 +19,9 @@
 4. Set an expiry you will remember (for example 90 days), generate, copy the token, and paste it as the `SITE_REPO_TOKEN` secret here.
 
 **Allow the workflow to push**: this repo → Settings → Actions → General → Workflow permissions → *Read and write*.
+
+**Publish the dashboard**: Settings → Pages → Build and deployment → Source *Deploy from a branch* → branch `main`, folder `/docs`. The page is
+`https://<your-github-name>.github.io/xplorekit-dashboard/`. It is rebuilt by every research run and by the `Dashboard` workflow when data or settings change.
 
 ## 2. Run it
 - **Automatically:** `research.yml` runs daily; `recheck.yml` runs weekly (re-checks links, flags stale entries).
