@@ -2,7 +2,7 @@
 # Put the synced files on ONE rolling branch of the private site repo and open (or update) a single pull request.
 # usage: open_site_pr.sh <site-checkout> <pr-body-file>      env: GH_TOKEN (token with access to the site repo), SITE_REPO
 set -euo pipefail
-site="$1"; body="$2"; branch="feed/xplorekit-research"
+site="$1"; body="$(realpath "$2")"; branch="feed/xplorekit-research"
 cd "$site"
 git config user.name "xplorekit-research-bot"
 git config user.email "xplorekit-research-bot@users.noreply.github.com"
