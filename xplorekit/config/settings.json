@@ -129,5 +129,9 @@
       "mcp",
       "subagent"
     ]
-  }
+  },
+  "repo": "MirzaNumanBaig/xplorekit-dashboard",
+  "site_repo": "MirzaNumanBaig/xplorekit",
+  "site_url": "https://xplorekit.online",
+  "paused": false
 }

@@ -10,7 +10,8 @@ Options: --limit N (max new entries per section), --site-dir PATH (checkout of t
 import argparse
 import json
 import sys
-from datetime import date, timedelta
+from collections import Counter
+from datetime import date, datetime, timedelta, timezone
 
 from xplorekit import agents, enrich, llm, site_known
 from xplorekit.agents import editor_verifier as editor
@@ -95,7 +96,8 @@ def make_fact_checker(verdicts_file):
     return editor.llm_fact_check, "llm"
 
 
-def process_section(section, args, log=print):
+def process_section(section, args, log=print, rep=None):
+    rep = rep if rep is not None else {}
     root = data_root(args.out)
     existing = load_entries(root, section)
     rejected_log = load_json(root / "rejected" / f"{section}.json", [])
@@ -112,12 +114,15 @@ def process_section(section, args, log=print):
         room = cap_room(section, existing, args.limit)
         if room == 0:
             log(f"[{section}] cap reached for today/this week: nothing to do")
+            rep.update(status="cap_reached", accepted=0, rejected=0)
             return 0, 0
         if args.use_cache and (CACHE / f"{section}.json").exists():
             cands = load_json(CACHE / f"{section}.json")
         else:
-            cands, _ = collect_section(section, log)
+            cands, srep = collect_section(section, log)
+            rep["sources"] = [{"id": i, "status": st, "count": n} for i, st, n in srep]
             save_json(CACHE / f"{section}.json", cands)
+        rep["collected"] = len(cands)
         if args.collect_only:
             log(f"[{section}] collected {len(cands)} candidates (cached)")
             return 0, 0
@@ -126,10 +131,18 @@ def process_section(section, args, log=print):
         save_json(CACHE / f"{section}.enriched.json", cands)  # lets a later --drafts-file run verify against the same text
         snippets = {normalize_url(c["url"]): (c.get("snippet", "") + " " + c.get("details", "")).strip() for c in cands}
         log(f"[{section}] {len(cands)} relevant fresh candidates, room for {room} new entries")
+        rep["fresh"] = len(cands)
         if not llm.available():
             log(f"[{section}] no language model configured (set CLAUDE_CODE_OAUTH_TOKEN or ANTHROPIC_API_KEY): agent skipped")
+            rep.update(status="no_model", accepted=0, rejected=0)
             return 0, 0
-        drafts = agents.AGENTS[section].run(cands, room)
+        try:
+            drafts = agents.AGENTS[section].run(cands, room)
+        except llm.LLMError as e:  # a model outage must not fail the whole run or hide the other sections
+            log(f"[{section}] agent failed: {e}")
+            rep.update(status="agent_failed", error=str(e)[:200], accepted=0, rejected=0)
+            return 0, 0
+        rep["drafts"] = len(drafts)
         log(f"[{section}] {agents.AGENTS[section].NAME} wrote {len(drafts)} draft(s)")
 
     fact, fact_name = make_fact_checker(args.verdicts_file)
@@ -144,12 +157,19 @@ def process_section(section, args, log=print):
         log(f"  + {e['quality_score']:>3}  {(e.get('title') or e.get('name'))[:70]}  [{', '.join(e['verified'])}]")
     for r in rejected:
         log(f"  - REJECTED ({r['reason']}): {r['title'][:50]}  {r['detail'][:110]}")
+    rep.update(status="ok", accepted=len(accepted), rejected=len(rejected), reasons=dict(Counter(r["reason"] for r in rejected)))
     return len(accepted), len(rejected)
+
+
+def append_run(root, report, keep=60):
+    runs = load_json(root / "runs.json", [])
+    save_json(root / "runs.json", (runs + [report])[-keep:])
 
 
 def recheck(args, log=print):
     """Re-check every saved entry: refresh last_checked when its source still answers, mark it stale when dead or too old."""
     root = data_root(args.out)
+    checked = stale = 0
     for section in settings()["sections"]:
         changed = False
         for e in load_entries(root, section):
@@ -160,10 +180,13 @@ def recheck(args, log=print):
             else:
                 e["status"] = "stale"
             save_json(root / section / f"{e['id']}.json", e)
+            checked += 1
+            stale += e["status"] == "stale"
             changed = True
             log(f"  [{section}] {e['id']}: {st} -> {e['status']}")
         if changed:
             save(root, section, [], [])
+    append_run(root, {"type": "recheck", "date": today(), "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "checked": checked, "stale": stale})
 
 
 def main(argv=None):
@@ -181,18 +204,27 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.dry_run and not args.out:
         args.out = ".dryrun"
+    if settings().get("paused") and not (args.dry_run or args.drafts_file or args.collect_only):
+        print("paused: settings.json has \"paused\": true, so nothing was collected or written")
+        return 0
     if args.recheck:
         recheck(args)
         return 0
     sections = settings()["sections"] if args.section == "all" else [args.section]
     total_a = total_r = 0
+    report = {"type": "research", "date": today(), "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "provider": llm.provider(),
+              "dry_run": bool(args.dry_run), "sections": {}}
     for s in sections:
         if s not in agents.AGENTS:
             print(f"unknown section '{s}'", file=sys.stderr)
             return 2
-        a, r = process_section(s, args)
+        report["sections"][s] = {}
+        a, r = process_section(s, args, rep=report["sections"][s])
         total_a += a
         total_r += r
+    report["llm"] = {"calls": llm.STATS["calls"], "failures": llm.STATS["failures"], "token_slots_used": llm.STATS["token_slots_used"]}
+    if not args.collect_only and not args.drafts_file:
+        append_run(data_root(args.out), report)
     print(f"done: {total_a} accepted, {total_r} rejected" + (f" (written to {args.out}/)" if args.out else ""))
     return 0
 

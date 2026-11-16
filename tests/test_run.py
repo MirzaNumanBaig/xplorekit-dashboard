@@ -82,3 +82,36 @@ class RunTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RunLogTests(unittest.TestCase):
+    def test_a_model_outage_is_reported_not_fatal(self):
+        from xplorekit import llm
+        cands = [{"title": "x", "url": "https://x.com/a", "snippet": "skill claude", "source_id": "s"}]
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(run, "CACHE", Path(d) / "cache"), mock.patch("xplorekit.llm.available", lambda: True), \
+                mock.patch.object(run, "collect_section", lambda s, log: (cands, [("s", "ok", 1)])), mock.patch.object(run.enrich, "enrich", lambda c, s: c), \
+                mock.patch.object(run.agents.AGENTS["skills"], "run", side_effect=llm.LLMError("claude CLI failed on every token: slot 1: exit 1")):
+            args = run.argparse.Namespace(out=d, site_dir=None, drafts_file=None, verdicts_file=None, limit=None, use_cache=False, collect_only=False)
+            rep = {}
+            self.assertEqual(run.process_section("skills", args, log=lambda *_: None, rep=rep), (0, 0))
+        self.assertEqual(rep["status"], "agent_failed")
+        self.assertEqual(rep["sources"], [{"id": "s", "status": "ok", "count": 1}])
+
+    def test_runs_are_appended_and_trimmed(self):
+        with tempfile.TemporaryDirectory() as d:
+            for i in range(5):
+                run.append_run(Path(d), {"n": i}, keep=3)
+            self.assertEqual([r["n"] for r in json.loads((Path(d) / "runs.json").read_text())], [2, 3, 4])
+
+    def test_collected_count_is_reported(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "d.json"
+            f.write_text(json.dumps([h.DRAFTS["skills"]]))
+            with mock.patch.object(run, "CACHE", Path(d) / "c"), mock.patch.object(editor, "default_fetch_text", lambda u: h.SOURCE_TEXT["skills"]), \
+                    mock.patch("xplorekit.verify.links.check", lambda u: ("ok", 200)), mock.patch.object(run, "settings", run.settings):
+                args = run.argparse.Namespace(out=d, site_dir=None, drafts_file=None, verdicts_file=None, limit=None, use_cache=True, collect_only=False)
+                (Path(d) / "c").mkdir()
+                (Path(d) / "c" / "skills.json").write_text("[]")
+                rep = {}
+                run.process_section("skills", args, log=lambda *_: None, rep=rep)
+                self.assertEqual(rep["collected"], 0)

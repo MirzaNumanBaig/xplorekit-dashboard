@@ -1,5 +1,6 @@
 """One small interface for the language model, three back ends:
-  claude_cli  - the `claude` CLI (Claude Code) authenticated by CLAUDE_CODE_OAUTH_TOKEN; what GitHub Actions uses with the owner's token
+  claude_cli  - the `claude` CLI (Claude Code) authenticated by CLAUDE_CODE_OAUTH_TOKEN (then _2, _3 as fallbacks when one fails or is
+                out of usage); what GitHub Actions uses. The pipeline needs no Claude account beyond these tokens.
   anthropic   - the Messages API with ANTHROPIC_API_KEY
   none        - no model: agents are skipped; the Verifier still runs on drafts supplied with --drafts-file
 Pick one with XK_LLM=claude_cli|anthropic|none, or leave it unset to auto-detect.
@@ -18,13 +19,21 @@ class LLMError(RuntimeError):
     pass
 
 
+TOKEN_VARS = ("CLAUDE_CODE_OAUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN_2", "CLAUDE_CODE_OAUTH_TOKEN_3")
+STATS = {"calls": 0, "failures": 0, "token_slots_used": []}  # no secrets, only slot numbers; recorded in data/runs.json for the dashboard
+
+
+def token_slots():
+    return [(i + 1, os.environ[v]) for i, v in enumerate(TOKEN_VARS) if os.environ.get(v)]
+
+
 def provider():
     forced = os.environ.get("XK_LLM", "").strip().lower()
     if forced:
         return forced
     if os.environ.get("ANTHROPIC_API_KEY"):
         return "anthropic"
-    if os.environ.get("CLAUDE_CODE_OAUTH_TOKEN") and shutil.which("claude"):
+    if token_slots() and shutil.which("claude"):
         return "claude_cli"
     return "none"
 
@@ -52,16 +61,26 @@ def complete(prompt, system=""):
         cmd = ["claude", "-p", "--output-format", "json", "--model", model, "--max-turns", "1"]
         if system:
             cmd += ["--append-system-prompt", system]
-        try:
-            r = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=600)
-        except (OSError, subprocess.TimeoutExpired) as e:
-            raise LLMError(f"claude CLI failed: {e}") from e
-        if r.returncode != 0:
-            raise LLMError(f"claude CLI exit {r.returncode}: {r.stderr[:300]}")
-        try:
-            return json.loads(r.stdout).get("result", "")
-        except ValueError:
-            return r.stdout
+        errors = []
+        for slot, token in token_slots():  # first token that works wins; a failing one (limit, expiry) hands over to the next
+            STATS["calls"] += 1
+            try:
+                r = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=600, env={**os.environ, "CLAUDE_CODE_OAUTH_TOKEN": token})
+            except (OSError, subprocess.TimeoutExpired) as e:
+                STATS["failures"] += 1
+                errors.append(f"slot {slot}: {type(e).__name__}")
+                continue
+            if r.returncode != 0:
+                STATS["failures"] += 1
+                errors.append(f"slot {slot}: exit {r.returncode}")
+                continue
+            if slot not in STATS["token_slots_used"]:
+                STATS["token_slots_used"].append(slot)
+            try:
+                return json.loads(r.stdout).get("result", "")
+            except ValueError:
+                return r.stdout
+        raise LLMError("claude CLI failed on every token: " + "; ".join(errors or ["no token set"]))
     raise LLMError("no language model configured (set CLAUDE_CODE_OAUTH_TOKEN with the claude CLI, or ANTHROPIC_API_KEY)")
 
 
