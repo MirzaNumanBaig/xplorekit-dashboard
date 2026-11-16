@@ -12,7 +12,7 @@ import json
 import sys
 from datetime import date, timedelta
 
-from xplorekit import agents, llm, site_known
+from xplorekit import agents, enrich, llm, site_known
 from xplorekit.agents import editor_verifier as editor
 from xplorekit.collectors import collect_section
 from xplorekit.common import ROOT, load_json, normalize_url, save_json, settings, today
@@ -56,7 +56,9 @@ def diversify(cands):
 
 
 def prefilter(cands, section, existing, known, rejected):
-    seen = {normalize_url(u) for e in existing for u in dedupe.entry_urls(e)} | {u for k in known for u in k["urls"]}
+    seen = set()
+    if section in settings().get("url_dedupe_sections", []):  # prompts may legitimately share one source page
+        seen = {normalize_url(u) for e in existing for u in dedupe.entry_urls(e)} | {u for k in known for u in k["urls"]}
     seen |= {normalize_url(r["url"]) for r in rejected if r.get("url") and r.get("date", "") >= (date.fromisoformat(today()) - timedelta(days=30)).isoformat()}
     out, got = [], set()
     for c in cands:
@@ -102,8 +104,10 @@ def process_section(section, args, log=print):
 
     if args.drafts_file:
         drafts = [d for d in load_json(args.drafts_file, []) if d.get("section", section) == section or "section" not in d]
-        cached = load_json(CACHE / f"{section}.json", [])
-        snippets = {normalize_url(c["url"]): c.get("snippet", "") for c in cached}
+        cached = load_json(CACHE / f"{section}.json", []) + load_json(CACHE / f"{section}.enriched.json", [])
+        for c in cached:  # later (enriched) rows add their README text to the earlier snippet
+            n = normalize_url(c["url"])
+            snippets[n] = (snippets.get(n, "") + " " + c.get("snippet", "") + " " + c.get("details", "")).strip()
     else:
         room = cap_room(section, existing, args.limit)
         if room == 0:
@@ -117,9 +121,11 @@ def process_section(section, args, log=print):
         if args.collect_only:
             log(f"[{section}] collected {len(cands)} candidates (cached)")
             return 0, 0
-        snippets = {normalize_url(c["url"]): c.get("snippet", "") for c in cands}
-        cands = diversify(prefilter(cands, section, existing, known, rejected_log))
-        log(f"[{section}] {len(cands)} fresh candidates, room for {room} new entries")
+        cands = diversify([c for c in prefilter(cands, section, existing, known, rejected_log) if enrich.relevant(c, section)])
+        cands = enrich.enrich(cands, section)
+        save_json(CACHE / f"{section}.enriched.json", cands)  # lets a later --drafts-file run verify against the same text
+        snippets = {normalize_url(c["url"]): (c.get("snippet", "") + " " + c.get("details", "")).strip() for c in cands}
+        log(f"[{section}] {len(cands)} relevant fresh candidates, room for {room} new entries")
         if not llm.available():
             log(f"[{section}] no language model configured (set CLAUDE_CODE_OAUTH_TOKEN or ANTHROPIC_API_KEY): agent skipped")
             return 0, 0

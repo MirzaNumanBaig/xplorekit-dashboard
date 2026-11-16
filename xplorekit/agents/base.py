@@ -19,7 +19,8 @@ def candidate_block(cands, max_items=16):
     rows = []
     for i, c in enumerate(cands[:max_items], 1):
         rows.append({"n": i, "title": c["title"], "url": c["url"], "discussion_url": c.get("discussion_url"),
-                     "snippet": c.get("snippet", ""), "published": c.get("date", ""), "found_via": c.get("source_id", "")})
+                     "snippet": c.get("snippet", ""), "details": (c.get("details") or "")[:2000] or None,
+                     "chrome_web_store_links_found": c.get("store_urls") or None, "published": c.get("date", ""), "found_via": c.get("source_id", "")})
     return json.dumps(rows, indent=1, ensure_ascii=False)
 
 

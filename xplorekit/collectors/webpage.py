@@ -1,7 +1,7 @@
 """Single public pages (docs, README files). One polite GET each, robots.txt respected. Only a short snippet is kept."""
 import re
 
-from xplorekit.common import http_get, strip_html
+from xplorekit.common import http_get, readable_text, strip_html
 
 
 def collect(src):
@@ -12,6 +12,6 @@ def collect(src):
             continue
         m = re.search(r"(?is)<title[^>]*>(.*?)</title>", body)
         title = strip_html(m.group(1)) if m else url.rsplit("/", 1)[-1]
-        text = body if url.endswith((".md", ".txt")) else strip_html(body)
+        text = body if url.endswith((".md", ".txt")) else readable_text(body)
         out.append({"title": title, "url": url, "snippet": re.sub(r"\s+", " ", text)[:1500], "date": "", "score": 0, "extra": {}})
     return out

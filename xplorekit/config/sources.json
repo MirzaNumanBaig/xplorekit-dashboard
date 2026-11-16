@@ -6,21 +6,21 @@
       "type": "hn",
       "enabled": true,
       "queries": [
-        "make money with ChatGPT",
-        "make money with Claude",
-        "AI freelancing income",
+        "I made money with ChatGPT",
+        "I earn freelancing with Claude",
         "AI side project revenue",
-        "built with AI first customers"
+        "how I make money with AI",
+        "AI freelance clients income"
       ],
-      "min_points": 30
+      "min_points": 25
     },
     {
       "id": "gh-money",
       "type": "github",
       "enabled": true,
       "queries": [
-        "ai freelancing guide in:readme stars:>200",
-        "monetize chatgpt in:description stars:>100"
+        "ai side hustle guide in:description stars:>50",
+        "freelancing with chatgpt in:description stars:>30"
       ]
     },
     {
@@ -54,12 +54,6 @@
       "url": "https://www.producthunt.com/feed"
     },
     {
-      "id": "simon-willison",
-      "type": "rss",
-      "enabled": true,
-      "url": "https://simonwillison.net/atom/everything/"
-    },
-    {
       "id": "rundown",
       "type": "rss",
       "enabled": true,
@@ -79,6 +73,17 @@
       "queries": [
         "make money with ChatGPT case study",
         "AI freelancing real income"
+      ]
+    },
+    {
+      "id": "platform-rules",
+      "type": "webpage",
+      "enabled": true,
+      "urls": [
+        "https://kdp.amazon.com/en_US/help/topic/G200672390",
+        "https://help.etsy.com/hc/en-us/articles/115015628347",
+        "https://support.google.com/youtube/answer/14328491",
+        "https://www.dataannotation.tech/"
       ]
     }
   ],
@@ -143,6 +148,16 @@
       "type": "rss",
       "enabled": true,
       "url": "https://simonwillison.net/atom/everything/"
+    },
+    {
+      "id": "vendor-prompt-guides",
+      "type": "webpage",
+      "enabled": true,
+      "urls": [
+        "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+        "https://platform.openai.com/docs/guides/prompt-engineering",
+        "https://ai.google.dev/gemini-api/docs/prompting-strategies"
+      ]
     }
   ],
   "extensions": [

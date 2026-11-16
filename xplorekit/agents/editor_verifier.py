@@ -8,7 +8,8 @@ import hashlib
 import re
 
 from xplorekit import llm
-from xplorekit.common import (ROOT, host_of, http_get, normalize_url, settings, slugify, strip_html, today)
+from xplorekit.enrich import github_repo, readme_plain
+from xplorekit.common import (ROOT, host_of, http_get, normalize_url, readable_text, settings, slugify, today)
 from xplorekit.verify import dedupe, links, rules
 from xplorekit.verify.schema import load_schema, validate
 
@@ -32,11 +33,14 @@ class Context:
 
 
 def default_fetch_text(url):
+    gh = github_repo(url)
+    if gh:
+        return readme_plain(*gh)
     try:
-        code, body = http_get(url, max_bytes=400_000)
+        code, body = http_get(url, max_bytes=1_500_000)  # Chrome Web Store pages are large; the "Updated" date sits late in the HTML
     except Exception:
         return ""
-    return strip_html(body)[:20000] if code == 200 else ""
+    return readable_text(body)[:20000] if code == 200 else ""
 
 
 def llm_fact_check(section, entry, source_text):
@@ -71,15 +75,14 @@ def finalize(section, draft):
 
 
 def source_text(entry, ctx):
+    """Text the claims are checked against: the collector's snippet (README, teaser) PLUS the fetched full page, for every source URL.
+    A collector snippet is only a teaser, so the page itself is always read too; GitHub URLs read the README (see default_fetch_text)."""
     texts = []
     for u in dict.fromkeys(entry["source_urls"] + [entry.get(f) for f in ("store_url", "repo_url") if entry.get(f)]):
         n = normalize_url(u)
-        if n in ctx.snippets:
-            texts.append(ctx.snippets[n])
-        else:
-            if n not in ctx.text_cache:
-                ctx.text_cache[n] = ctx.fetch_text(u)
-            texts.append(ctx.text_cache[n])
+        if n not in ctx.text_cache:
+            ctx.text_cache[n] = ctx.fetch_text(u)
+        texts += [ctx.snippets.get(n, ""), ctx.text_cache[n]]
     return "\n".join(t for t in texts if t)
 
 
@@ -112,7 +115,8 @@ def review_one(section, draft, ctx, batch_known):
         return rej("schema", "; ".join(errs[:4]))
     verified = ["schema"]
 
-    dup = dedupe.find_duplicate(entry, dedupe.known_from_entries(ctx.existing, "accepted entry") + ctx.site_known + batch_known)
+    dup = dedupe.find_duplicate(entry, dedupe.known_from_entries(ctx.existing, "accepted entry") + ctx.site_known + batch_known,
+                                by_url=section in cfg.get("url_dedupe_sections", []))
     if dup:
         return rej("duplicate", dup)
     verified.append("not_duplicate")

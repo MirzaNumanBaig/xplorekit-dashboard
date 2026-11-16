@@ -65,7 +65,7 @@ class RunTests(unittest.TestCase):
             v = Path(d) / "verdicts.json"
             v.write_text(json.dumps({"https://github.com/example/example-skill": {"supported": True, "score": 88, "issues": []}}))
             args = run.argparse.Namespace(out=d, site_dir=None, drafts_file=str(f), verdicts_file=str(v), limit=None, use_cache=False, collect_only=False)
-            with mock.patch.object(editor, "default_fetch_text", lambda u: h.SOURCE_TEXT["skills"]), mock.patch("xplorekit.verify.links.check", lambda u: ("ok", 200)):
+            with mock.patch.object(run, "CACHE", Path(d) / "cache"), mock.patch.object(editor, "default_fetch_text", lambda u: h.SOURCE_TEXT["skills"]), mock.patch("xplorekit.verify.links.check", lambda u: ("ok", 200)):
                 a, r = run.process_section("skills", args, log=lambda *_: None)
             self.assertEqual((a, r), (1, 0))
             saved = run.load_entries(Path(d), "skills")[0]
@@ -73,7 +73,7 @@ class RunTests(unittest.TestCase):
             self.assertLessEqual(saved["quality_score"], 88, "a reviewer can only lower the rule score, never raise it")
 
     def test_agent_is_skipped_cleanly_without_a_model(self):
-        with tempfile.TemporaryDirectory() as d, mock.patch("xplorekit.llm.available", lambda: False), mock.patch.object(run, "collect_section", lambda s, log: ([{"title": "x", "url": "https://x.com/a", "snippet": "", "source_id": "s"}], [])):
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(run, "CACHE", Path(d) / "cache"), mock.patch("xplorekit.llm.available", lambda: False), mock.patch.object(run, "collect_section", lambda s, log: ([{"title": "x", "url": "https://x.com/a", "snippet": "", "source_id": "s"}], [])):
             args = run.argparse.Namespace(out=d, site_dir=None, drafts_file=None, verdicts_file=None, limit=None, use_cache=False, collect_only=False)
             logs = []
             self.assertEqual(run.process_section("skills", args, log=logs.append), (0, 0))

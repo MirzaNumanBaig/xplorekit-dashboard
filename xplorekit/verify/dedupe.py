@@ -16,13 +16,13 @@ def entry_title(entry):
     return entry.get("title") or entry.get("name") or ""
 
 
-def find_duplicate(entry, known):
+def find_duplicate(entry, known, by_url=True):
     """known: list of dicts {title, urls:set, where}. Returns a reason string or None."""
     threshold = settings().get("title_similarity_threshold", 0.85)
     urls = entry_urls(entry)
     title = entry_title(entry)
     for k in known:
-        if urls & k["urls"]:
+        if by_url and urls & k["urls"]:
             return f"same URL as {k['where']}"
         if title and k["title"] and title_similarity(title, k["title"]) >= threshold:
             return f"title too similar to {k['where']} ('{k['title'][:50]}')"

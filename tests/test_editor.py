@@ -96,3 +96,26 @@ class EditorTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SourceTextTests(unittest.TestCase):
+    def test_text_is_snippet_plus_the_fetched_page_and_each_page_is_fetched_once(self):
+        from xplorekit.common import normalize_url
+        e = editor.finalize("skills", h.DRAFTS["skills"])
+        url = normalize_url(e["source_url"])
+        calls = []
+        def fetch(u):
+            calls.append(u)
+            return "FULL PAGE TEXT"
+        ctx = editor.Context(snippets={url: "teaser from the collector"}, fetch_text=fetch)
+        text = editor.source_text(e, ctx)
+        self.assertIn("teaser from the collector", text)
+        self.assertIn("FULL PAGE TEXT", text)
+        editor.source_text(e, ctx)
+        self.assertEqual(len(calls), 1)
+
+    def test_a_failed_fetch_still_leaves_the_snippet(self):
+        from xplorekit.common import normalize_url
+        e = editor.finalize("skills", h.DRAFTS["skills"])
+        ctx = editor.Context(snippets={normalize_url(e["source_url"]): "only the teaser"}, fetch_text=lambda u: "")
+        self.assertEqual(editor.source_text(e, ctx), "only the teaser")

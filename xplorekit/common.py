@@ -151,3 +151,12 @@ def strip_html(text):
     text = re.sub(r"(?s)<[^>]+>", " ", text)
     import html
     return re.sub(r"\s+", " ", html.unescape(text)).strip()
+
+
+def readable_text(html_text):
+    """Page text without site chrome: the <main> or <article> element when there is one, else the whole page."""
+    for tag in ("main", "article"):
+        m = re.search(rf"(?is)<{tag}\b[^>]*>(.*)</{tag}>", html_text)
+        if m and len(m.group(1)) > 400:
+            return strip_html(m.group(1))
+    return strip_html(html_text)
