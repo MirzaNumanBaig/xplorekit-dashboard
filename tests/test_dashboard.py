@@ -144,3 +144,60 @@ class SiteDeliveryHealthTests(unittest.TestCase):
         self.assertEqual(bad[0]["level"], "bad")
         merged = bd.health([research_run()], [], today(), {"state": "merged", "pr": 81})
         self.assertEqual([x["level"] for x in merged], ["ok"])
+
+
+class PostsTests(unittest.TestCase):
+    def posts(self, d):
+        return {p["id"]: p for p in bd.build_dataset(d)["posts"]}
+
+    def test_each_entry_gets_one_of_the_five_states(self):
+        with tempfile.TemporaryDirectory() as d:
+            pub = write_entry(d, "skills", name="Published one")
+            pend = write_entry(d, "extensions", name="Waiting one")
+            draft = write_entry(d, "prompts", title="Unchecked one", verified=["schema", "rules_only"])
+            stale = write_entry(d, "money", title="Withdrawn one", status="stale")
+            Path(d, "published.json").write_text(json.dumps({pub["id"]: {"section": "skills", "published_at": "2026-11-17", "pr": 80, "withdrawn_at": None}}))
+            Path(d, "rejected").mkdir()
+            Path(d, "rejected", "money.json").write_text(json.dumps([{"title": "Hype idea", "url": "https://x.com/h", "reason": "money_gate", "detail": "hype wording", "date": "2026-11-17"}]))
+            ds = bd.build_dataset(d)
+            by = {p["id"]: p for p in ds["posts"]}
+            self.assertEqual([by[pub["id"]]["state"], by[pend["id"]]["state"], by[draft["id"]]["state"], by[stale["id"]]["state"]], ["published", "pending", "draft", "stale"])
+            self.assertEqual(ds["post_counts"], {"published": 1, "pending": 1, "draft": 1, "stale": 1, "rejected": 1})
+            rej = [p for p in ds["posts"] if p["state"] == "rejected"][0]
+            self.assertEqual((rej["title"], rej["fields"]["why it was rejected"]), ("Hype idea", "money_gate"))
+
+    def test_only_published_posts_link_to_the_live_site_and_carry_date_and_pr(self):
+        with tempfile.TemporaryDirectory() as d:
+            pub = write_entry(d, "skills", name="Live one")
+            pend = write_entry(d, "extensions", name="Not live one")
+            Path(d, "published.json").write_text(json.dumps({pub["id"]: {"section": "skills", "published_at": "2026-11-17", "pr": 80, "withdrawn_at": None}}))
+            by = self.posts(d)
+            live = by[pub["id"]]
+            self.assertEqual(live["live_url"], f"https://xplorekit.online/skills-directory/#feed-{pub['id']}")
+            self.assertEqual((live["published_at"], live["pr"]), ("2026-11-17", 80))
+            self.assertIsNone(by[pend["id"]]["live_url"])
+
+    def test_a_withdrawn_entry_that_is_still_fact_checked_goes_back_to_pending_not_published(self):
+        with tempfile.TemporaryDirectory() as d:
+            e = write_entry(d, "skills", name="Came back")
+            Path(d, "published.json").write_text(json.dumps({e["id"]: {"section": "skills", "published_at": "2026-11-10", "pr": 70, "withdrawn_at": "2026-11-12"}}))
+            self.assertEqual(self.posts(d)[e["id"]]["state"], "pending")
+
+    def test_details_carry_the_content_but_not_internal_bookkeeping(self):
+        with tempfile.TemporaryDirectory() as d:
+            e = write_entry(d, "money")
+            f = self.posts(d)[e["id"]]["fields"]
+            self.assertIn("workflow_steps", f)
+            self.assertIn("income", f)
+            for hidden in ("id", "verified", "quality_score", "source_urls", "first_seen"):
+                self.assertNotIn(hidden, f)
+
+    def test_the_newest_published_come_first_and_counts_appear_on_the_section_cards(self):
+        with tempfile.TemporaryDirectory() as d:
+            old = write_entry(d, "skills", name="Older live", first_seen="2026-11-01")
+            new = write_entry(d, "extensions", name="Newer live", first_seen="2026-11-10")
+            Path(d, "published.json").write_text(json.dumps({old["id"]: {"section": "skills", "published_at": "2026-11-02", "pr": 1, "withdrawn_at": None},
+                                                              new["id"]: {"section": "extensions", "published_at": "2026-11-11", "pr": 2, "withdrawn_at": None}}))
+            ds = bd.build_dataset(d)
+            self.assertEqual([p["id"] for p in ds["posts"][:2]], [new["id"], old["id"]])
+            self.assertEqual({s["key"]: s["stats"]["published"] for s in ds["sections"]}["extensions"], 1)

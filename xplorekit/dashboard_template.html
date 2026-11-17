@@ -52,6 +52,13 @@ tr:last-child td{border-bottom:0}
 .score{font-weight:700;border-radius:8px;padding:2px 8px;display:inline-block}
 .s-hi{background:var(--ok-bg);color:var(--ok)}.s-mid{background:var(--warn-bg);color:var(--warn)}.s-lo{background:var(--bad-bg);color:var(--bad)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
+.btn-small{padding:4px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+.btn-small:hover{border-color:var(--brand)}.btn-small:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+tr.detail-row>td{background:var(--bg);padding:14px 18px}
+.detail{display:grid;gap:10px;max-width:880px;min-width:0;overflow-wrap:anywhere}.frow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px}.frow>*{min-width:0}
+.flabel{text-transform:none}.fl{margin:0;padding-left:18px}.fl li{margin:2px 0}
+.pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (max-width:640px){.frow{grid-template-columns:minmax(0,1fr);gap:2px}.hide-sm{display:none}table.posts{min-width:0}tr.detail-row>td{padding:12px}}
 ol.steps{padding-left:20px}ol.steps li{margin:0 0 12px}
 code{background:var(--chip);padding:1px 6px;border-radius:5px;font-size:13px}
 h2{font-size:16px;margin:22px 0 10px}
@@ -92,7 +99,7 @@ var L=$("#links");
 [["Run it now",gh("/actions/workflows/research.yml"),true],["Actions",gh("/actions"),false],["Site pull requests","https://github.com/"+D.site_repo+"/pulls",false],["Live site",D.site_url,false]].forEach(function(x){
   var a=link(x[0],x[1]);a.className="btn"+(x[2]?" primary":"");L.appendChild(a)});
 
-var TABS=[["overview","Overview"],["entries","Entries"],["rejected","Rejected"],["sources","Sources"],["runs","Runs"],["usage","Usage"],["setup","Setup"]];
+var TABS=[["overview","Overview"],["posts","Posts"],["rejected","Rejected"],["sources","Sources"],["runs","Runs"],["usage","Usage"],["setup","Setup"]];
 var tabs=$("#tabs"),panels=$("#panels"),P={};
 TABS.forEach(function(t){
   var b=el("button",{role:"tab",id:"tab-"+t[0],"aria-controls":"p-"+t[0],"aria-selected":"false",text:t[1]});
@@ -114,7 +121,7 @@ function show(id){TABS.forEach(function(t){var on=t[0]===id;$("#tab-"+t[0]).setA
       el("h3",{text:s.name}),
       el("div",{class:"big",text:String(s.stats.total)}),el("div",{class:"muted small",text:"entries saved ("+s.stats.active+" active, "+s.stats.stale+" stale)"}),
       el("div",{class:"bar",role:"img","aria-label":s.stats.week+" of "+s.caps.weekly+" this week"},[el("i",{style:"width:"+pct+"%"})]),
-      el("div",{class:"small muted",text:"New this week: "+s.stats.week+" of "+s.caps.weekly+" · today: "+s.stats.today+" of "+s.caps.daily}),
+      el("div",{class:"small",text:"Live on the site: "+(s.stats.published||0)+" · waiting to go live: "+(s.stats.pending||0)}),el("div",{class:"small muted",text:"New this week: "+s.stats.week+" of "+s.caps.weekly+" · today: "+s.stats.today+" of "+s.caps.daily}),
       el("div",{class:"small muted",text:"Average score: "+(s.stats.avg_score==null?"–":s.stats.avg_score)+" · minimum to pass: "+s.floor})]);
     var ch=el("div",{class:"chips"});
     if(s.stats.rejected_week){ch.appendChild(chip(s.stats.rejected_week+" rejected this week","warn"));Object.keys(s.stats.reasons_week).forEach(function(k){ch.appendChild(chip(k+" × "+s.stats.reasons_week[k]))})}
@@ -129,22 +136,67 @@ function show(id){TABS.forEach(function(t){var on=t[0]===id;$("#tab-"+t[0]).setA
     el("div",{class:"chips"},Object.keys(last.sections||{}).map(function(k){var v=last.sections[k];return chip(k+": "+(v.status==="ok"?(v.accepted+" new, "+v.rejected+" rejected"):(v.status||"skipped").replace("_"," ")),v.status==="ok"?"ok":v.status==="cap_reached"?"":"bad")}))]):el("div",{class:"card empty",text:"No run recorded yet."}));
 })();
 
-/* Entries */
+/* Posts: everything this pipeline has saved, published or turned away. The Status dropdown picks what to show. */
 (function(){
-  var p=P.entries,sec=el("select",{"aria-label":"Section"},[el("option",{value:"",text:"All sections"})]),st=el("select",{"aria-label":"Status"},[el("option",{value:"",text:"Any status"}),el("option",{value:"active",text:"Active"}),el("option",{value:"stale",text:"Stale"})]),q=el("input",{type:"search",placeholder:"Search titles and summaries","aria-label":"Search entries"});
+  var p=P.posts,C=D.post_counts||{};
+  var STATES=[["","All posts"],["published","Published (live on the site)"],["pending","Pending (fact-checked, not live yet)"],["draft","Draft (saved, not fact-checked)"],["stale","Stale (withdrawn)"],["rejected","Rejected (turned away)"]];
+  var NOTE={published:"Delivered to the site and merged. It stays on the page while it is among the newest 24 of its section.",pending:"Fact-checked and waiting for the next delivery (every 3 hours), or held back by a safety check.",draft:"Saved but never fact-checked, so it is never delivered to the site. The next run re-checks it or removes it.",stale:"Withdrawn: its source went away or it is too old.",rejected:"The Verifier turned it away. The reason is in the details."};
+  var CHIP={published:"ok",pending:"warn",draft:"",stale:"",rejected:"bad"};
+  var st=el("select",{"aria-label":"Status"},STATES.map(function(s){return el("option",{value:s[0],text:s[1]+(s[0]?" ("+(C[s[0]]||0)+")":"")})}));
+  var sec=el("select",{"aria-label":"Section"},[el("option",{value:"",text:"All sections"})]);
   D.sections.forEach(function(s){sec.appendChild(el("option",{value:s.key,text:s.name}))});
-  var out=el("div");p.appendChild(el("div",{class:"tools"},[sec,st,q]));p.appendChild(out);
-  var all=[];D.sections.forEach(function(s){s.entries.forEach(function(e){all.push({s:s,e:e})})});
-  function draw(){
-    var term=q.value.toLowerCase(),rows=all.filter(function(x){return(!sec.value||x.s.key===sec.value)&&(!st.value||x.e.status===st.value)&&(!term||(x.e.title+" "+x.e.summary).toLowerCase().indexOf(term)>-1)}).slice(0,300).map(function(x){
-      var e=x.e,checks=e.verified.filter(function(v){return v.indexOf("fact_check")===0||v==="rules_only"});
-      var title=el("td",{},[link(e.title,e.url),el("div",{class:"small muted",text:e.detail||""}),e.link2?el("div",{class:"small"},[link("second source",e.link2)]):null,el("div",{class:"small muted",text:e.summary.slice(0,160)+(e.summary.length>160?"…":"")})]);
-      var ck=el("td",{},[el("div",{class:"chips",style:"margin:0"},checks.map(function(c){return chip(c==="rules_only"?"no fact-check":c==="fact_check:manual"?"fact-checked by hand":c==="fact_check:llm"?"fact-checked by AI":c,c==="rules_only"?"bad":"ok")}).concat([el("span",{class:"chip",title:e.verified.join(", "),text:e.verified.length+" checks"})]))]);
-      return el("tr",{},[el("td",{text:x.s.name}),title,el("td",{},[scoreEl(e.score)]),ck,el("td",{class:"nowrap",text:e.first_seen+(e.status==="stale"?" (stale)":"")})]);
-    });
-    out.textContent="";out.appendChild(table(["Section","Entry","Score","Verification","First seen"],rows,"No entries match."));
+  var q=el("input",{type:"search",placeholder:"Search titles and summaries","aria-label":"Search posts"});
+  var counts=el("div",{class:"chips",style:"margin:0 0 12px"}),note=el("p",{class:"small muted",style:"margin:0 0 12px"}),out=el("div");
+  p.appendChild(el("div",{class:"tools"},[st,sec,q]));p.appendChild(counts);p.appendChild(note);p.appendChild(out);
+  var hasLive=(C.published||0)>0;st.value=hasLive?"published":"";
+  var LABELS={ai_related:"AI related",store_url:"Chrome Web Store",repo_url:"Repository",extension_last_updated:"Store listing updated",pricing_note:"Pricing note",tools_and_prompts:"Tools and prompts",time_to_first_result:"Time to first result",workflow_steps:"Steps",install_steps:"Install steps",example_use_case:"Example use",example_output_summary:"Example output",use_case:"Use case",skill_type:"Type"};
+  function nice(k){return LABELS[k]||(k.charAt(0).toUpperCase()+k.slice(1).replace(/_/g," "))}
+  function field(label,v){
+    var body;
+    if(Array.isArray(v))body=el("ul",{class:"fl"},v.map(function(x){return el("li",{text:String(x)})}));
+    else if(v&&typeof v==="object")body=el("div",{class:"small",text:Object.keys(v).map(function(k){return k.replace(/_/g," ")+": "+(v[k]===null?"–":v[k])}).join(" · ")});
+    else if(/^https?:\/\//.test(String(v)))body=link(String(v),String(v));
+    else body=el("div",{class:label==="prompt"?"pre":"small",text:String(v)});
+    return el("div",{class:"frow"},[el("div",{class:"flabel small muted",text:nice(label)}),body]);
   }
-  [sec,st].forEach(function(n){n.addEventListener("change",draw)});q.addEventListener("input",draw);draw();
+  function details(x){
+    var rows=[field("status",x.state+" - "+NOTE[x.state])];
+    if(x.state==="published"&&x.published_at)rows.push(field("live since",x.published_at));
+    if(x.score!=null)rows.push(field("quality score",String(x.score)));
+    if(x.first_seen)rows.push(field("first seen",x.first_seen));
+    rows=rows.concat(Object.keys(x.fields||{}).map(function(k){return field(k,x.fields[k])}));
+    var links=[];
+    if(x.live_url)links.push(link("Open on the live site",x.live_url));
+    if(x.source_url)links.push(link("Source",x.source_url));
+    if(x.pr)links.push(link("Pull request #"+x.pr,"https://github.com/"+D.site_repo+"/pull/"+x.pr));
+    if(x.verified&&x.verified.length)rows.push(field("checks",x.verified.map(function(v){return v==="rules_only"?"no fact-check":v==="fact_check:llm"?"fact-checked by AI":v==="fact_check:manual"?"fact-checked by hand":v.replace(/_/g," ")})));
+    if(x.last_checked)rows.push(field("last checked",x.last_checked));
+    var l=el("div",{class:"chips",style:"margin:0 0 10px"},links.map(function(a){var w=el("span",{class:"chip"});w.appendChild(a);return w}));
+    return el("div",{class:"detail"},[l].concat(rows));
+  }
+  function draw(){
+    var term=q.value.toLowerCase();
+    var rows=(D.posts||[]).filter(function(x){return(!st.value||x.state===st.value)&&(!sec.value||x.section===sec.value)&&(!term||(x.title+" "+x.summary).toLowerCase().indexOf(term)>-1)}).slice(0,300);
+    counts.textContent="";
+    STATES.slice(1).forEach(function(s){var b=el("button",{type:"button",class:"chip"+(CHIP[s[0]]?" "+CHIP[s[0]]:""),"aria-pressed":st.value===s[0]?"true":"false",text:s[1].split(" (")[0]+" "+(C[s[0]]||0)});b.style.cursor="pointer";b.addEventListener("click",function(){st.value=st.value===s[0]?"":s[0];draw()});counts.appendChild(b)});
+    note.textContent=st.value?NOTE[st.value]:"All posts the pipeline has handled, newest first. Pick a status above to narrow it down.";
+    var trs=[];
+    rows.forEach(function(x){
+      var open=false,det=null;
+      var btn=el("button",{type:"button",class:"btn-small","aria-expanded":"false",text:"Details"});
+      var tr=el("tr",{},[el("td",{},[chip(x.state,CHIP[x.state])]),
+        el("td",{},[x.source_url?link(x.title,x.live_url||x.source_url):el("span",{text:x.title}),el("div",{class:"small muted",text:x.section_name+(x.summary?" · "+x.summary.slice(0,140)+(x.summary.length>140?"…":""):"")})]),
+        el("td",{class:"hide-sm"},[x.score==null?el("span",{class:"muted",text:"–"}):scoreEl(x.score)]),
+        el("td",{class:"nowrap hide-sm",text:(x.state==="published"&&x.published_at?"Live "+x.published_at:x.first_seen)||""}),
+        el("td",{},[btn])]);
+      var dr=el("tr",{class:"detail-row",hidden:""},[el("td",{colspan:"5"},[])]);
+      btn.addEventListener("click",function(){open=!open;btn.setAttribute("aria-expanded",open);btn.textContent=open?"Hide":"Details";if(open&&!det){det=details(x);dr.firstChild.appendChild(det)}if(open)dr.removeAttribute("hidden");else dr.setAttribute("hidden","")});
+      trs.push(tr);trs.push(dr);
+    });
+    out.textContent="";
+    out.appendChild(rows.length?el("div",{class:"tablewrap"},[el("table",{class:"posts"},[el("thead",{},[el("tr",{},["Status","Post","Score","Date",""].map(function(h,i){return el("th",{scope:"col",class:i===2||i===3?"hide-sm":"",text:h})}))]),el("tbody",{},trs)])]):el("div",{class:"card empty",text:st.value==="published"?"Nothing has gone live from this pipeline yet. Posts appear here after a delivery is merged into the site (the first scheduled run is at the next 3-hour mark, minute 17 UTC).":"No posts match."}));
+  }
+  [st,sec].forEach(function(n){n.addEventListener("change",draw)});q.addEventListener("input",draw);draw();
 })();
 
 /* Rejected */

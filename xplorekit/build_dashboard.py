@@ -51,6 +51,54 @@ def section_data(root, section, cfg, day):
             "floor": cfg["min_quality_score"][section], "stale_after": cfg["stale_after_days"][section]}, [{**r, "section": section} for r in rej]
 
 
+SECTION_PAGES = {"money": "/make-money-with-ai/", "prompts": "/prompts/", "skills": "/skills-directory/", "extensions": "/extensions-directory/"}
+STATES = ("published", "pending", "draft", "stale", "rejected")
+HIDDEN_FIELDS = {"id", "section", "source_url", "source_urls", "first_seen", "last_checked", "status", "quality_score", "verified", "title", "name"}
+MAX_POSTS, MAX_REJECTED_POSTS = 400, 150
+
+
+def fact_checked(e):
+    return any(str(v).startswith("fact_check:") for v in e.get("verified", []))
+
+
+def post_state(e, published):
+    """published = delivered to the site and merged; pending = fact-checked, waiting for the next delivery; draft = saved but never
+    fact-checked, so never delivered; stale = withdrawn (dead link or too old)."""
+    if e.get("status") == "stale":
+        return "stale"
+    if not fact_checked(e):
+        return "draft"
+    rec = published.get(e["id"])
+    return "published" if rec and not rec.get("withdrawn_at") else "pending"
+
+
+def posts_data(root, cfg, published, rejected, site_url):
+    """One row per saved entry plus recent rejections, each with everything the detail view shows."""
+    posts = []
+    for section in cfg["sections"]:
+        d = root / section
+        for p in sorted(d.glob("*.json")) if d.exists() else []:
+            e = load_json(p) if p.name != "index.json" else None
+            if not e:
+                continue
+            state = post_state(e, published)
+            rec = published.get(e["id"]) or {}
+            posts.append({"id": e["id"], "section": section, "section_name": SECTION_NAMES.get(section, section), "title": e.get("title") or e.get("name") or e["id"], "state": state,
+                          "score": e["quality_score"], "first_seen": e["first_seen"], "last_checked": e["last_checked"],
+                          "published_at": rec.get("published_at") if state == "published" else None, "pr": rec.get("pr") if state == "published" else None,
+                          "source_url": e["source_url"], "source_urls": e.get("source_urls", []), "verified": e["verified"],
+                          "live_url": f"{site_url}{SECTION_PAGES.get(section, '/')}#feed-{e['id']}" if state == "published" else None,
+                          "summary": e.get("summary") or e.get("example_output_summary") or "",
+                          "fields": {k: v for k, v in e.items() if k not in HIDDEN_FIELDS and v not in (None, "", [])}})
+    posts.sort(key=lambda x: (x["published_at"] or x["first_seen"], x["score"]), reverse=True)
+    posts = posts[:MAX_POSTS]
+    for i, r in enumerate(sorted(rejected, key=lambda r: r.get("date", ""), reverse=True)[:MAX_REJECTED_POSTS]):
+        posts.append({"id": f"rejected-{i}", "section": r["section"], "section_name": SECTION_NAMES.get(r["section"], r["section"]), "title": r.get("title") or r.get("url") or "(untitled)",
+                      "state": "rejected", "score": None, "first_seen": r.get("date", ""), "last_checked": r.get("date", ""), "published_at": None, "pr": None, "source_url": r.get("url", ""),
+                      "source_urls": [], "verified": [], "live_url": None, "summary": "", "fields": {"why it was rejected": r.get("reason", ""), "detail": r.get("detail", "")}})
+    return posts
+
+
 def health(runs, secs, day, site_pr=None):
     """Plain-language status lines, worst first."""
     out = []
@@ -119,6 +167,11 @@ def build_dataset(data_dir):
         secs.append(sd)
         rejected += rj
     runs = load_json(root / "runs.json", [])
+    published = load_json(root / "published.json", {})
+    posts = posts_data(root, cfg, published, rejected, cfg["site_url"])
+    for s in secs:
+        s["stats"]["published"] = sum(1 for x in posts if x["section"] == s["key"] and x["state"] == "published")
+        s["stats"]["pending"] = sum(1 for x in posts if x["section"] == s["key"] and x["state"] == "pending")
     last_src = {}
     for r in runs:
         for s, v in r.get("sections", {}).items():
@@ -132,7 +185,7 @@ def build_dataset(data_dir):
             seen = last_src.get(s, {}).get(it["id"])
             src.append({"section": s, "id": it["id"], "type": it["type"], "enabled": it.get("enabled", True), "requires_key": it.get("requires_key", ""),
                         "last_status": seen["status"] if seen else None, "last_count": seen["count"] if seen else None})
-    return {"generated_at": day, "repo": cfg["repo"], "site_repo": cfg["site_repo"], "site_url": cfg["site_url"], "sections": secs, "health": health(runs, secs, day, load_json(root / "site_pr.json", None)), "site_pr": load_json(root / "site_pr.json", None), "usage": usage(runs, day),
+    return {"generated_at": day, "repo": cfg["repo"], "site_repo": cfg["site_repo"], "site_url": cfg["site_url"], "sections": secs, "posts": posts, "post_counts": {st: sum(1 for x in posts if x["state"] == st) for st in STATES}, "health": health(runs, secs, day, load_json(root / "site_pr.json", None)), "site_pr": load_json(root / "site_pr.json", None), "usage": usage(runs, day),
             "rejected": sorted(rejected, key=lambda r: r.get("date", ""), reverse=True)[:200], "runs": runs[-30:][::-1], "sources": src,
             "settings": {k: cfg[k] for k in ("caps", "min_quality_score", "stale_after_days", "title_similarity_threshold", "max_verbatim_overlap_chars", "max_realistic_monthly_income")},
             "model": cfg.get("llm", {}).get("model")}
