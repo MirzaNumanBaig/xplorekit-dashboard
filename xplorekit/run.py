@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta, timezone
 from xplorekit import agents, enrich, llm, site_known
 from xplorekit.agents import editor_verifier as editor
 from xplorekit.collectors import collect_section
-from xplorekit.common import ROOT, load_json, normalize_url, save_json, settings, today
+from xplorekit.common import ROOT, canon_key, load_json, normalize_url, save_json, settings, today
 from xplorekit.verify import dedupe, links, rules
 
 CACHE = ROOT / ".cache" / "candidates"
@@ -32,12 +32,13 @@ def load_entries(root, section):
 
 
 def cap_room(section, existing, limit=None):
+    """How many new entries this run may add: the daily and weekly caps, and a per-run maximum so output is spread over the day's runs."""
     caps = settings()["caps"]
     t = today()
     week_start = (date.fromisoformat(t) - timedelta(days=6)).isoformat()
     day_n = sum(1 for e in existing if e.get("first_seen") == t)
     week_n = sum(1 for e in existing if e.get("first_seen", "") >= week_start)
-    room = min(caps["daily"][section] - day_n, caps["weekly"][section] - week_n)
+    room = min(caps["daily"][section] - day_n, caps["weekly"][section] - week_n, settings().get("per_run_max", {}).get(section, 10**6))
     return max(0, min(room, limit) if limit else max(0, room))
 
 
@@ -59,11 +60,11 @@ def diversify(cands):
 def prefilter(cands, section, existing, known, rejected):
     seen = set()
     if section in settings().get("url_dedupe_sections", []):  # prompts may legitimately share one source page
-        seen = {normalize_url(u) for e in existing for u in dedupe.entry_urls(e)} | {u for k in known for u in k["urls"]}
-    seen |= {normalize_url(r["url"]) for r in rejected if r.get("url") and r.get("date", "") >= (date.fromisoformat(today()) - timedelta(days=30)).isoformat()}
+        seen = {u for e in existing for u in dedupe.entry_urls(e)} | {u for k in known for u in k["urls"]}
+    seen |= {canon_key(r["url"]) for r in rejected if r.get("url") and r.get("date", "") >= (date.fromisoformat(today()) - timedelta(days=30)).isoformat()}
     out, got = [], set()
     for c in cands:
-        n = normalize_url(c["url"])
+        n = canon_key(c["url"])
         if not c["url"].startswith("http") or n in seen or n in got:
             continue
         got.add(n)
@@ -102,6 +103,8 @@ def process_section(section, args, log=print, rep=None):
     existing = load_entries(root, section)
     rejected_log = load_json(root / "rejected" / f"{section}.json", [])
     known = site_known.load(args.site_dir)[section] if args.site_dir else []
+    # the same URL must not appear in two sections either (a skill is not also an extension)
+    known = known + [k for other in settings()["sections"] if other != section for k in dedupe.known_from_entries(load_entries(root, other), f"an entry in {other}", url_only=True)]
     snippets, cands = {}, []
 
     if args.drafts_file:
@@ -189,6 +192,37 @@ def recheck(args, log=print):
     append_run(root, {"type": "recheck", "date": today(), "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "checked": checked, "stale": stale})
 
 
+def reverify(args, log=print):
+    """Run every saved entry that has no independent fact-check (tag rules_only) back through the whole gate with the model.
+    It earns a real fact-check tag, or it is rejected and removed from data/ (git history keeps it)."""
+    root = data_root(args.out)
+    fact, fact_name = make_fact_checker(args.verdicts_file)
+    kept = dropped = 0
+    for section in settings()["sections"]:
+        entries = load_entries(root, section)
+        known = site_known.load(args.site_dir)[section] if args.site_dir else []
+        for e in entries:
+            if "rules_only" not in e.get("verified", []):
+                continue
+            draft = {k: v for k, v in e.items() if k not in editor.META}
+            others = [o for o in entries if o["id"] != e["id"]]
+            ctx = editor.Context(existing=others, site_known=[k for k in known if "site data" not in k["where"]], fact_check=fact, fact_check_name=fact_name)
+            acc, rej = editor.review(section, [draft], ctx)
+            path = root / section / f"{e['id']}.json"
+            if acc:
+                acc[0]["first_seen"] = e["first_seen"]
+                save_json(path, acc[0])
+                kept += 1
+                log(f"  [{section}] {e['id']}: fact-checked, score {acc[0]['quality_score']}")
+            else:
+                path.unlink(missing_ok=True)
+                save(root, section, [], [{**rej[0], "reason": "reverify_" + rej[0]["reason"]}])
+                dropped += 1
+                log(f"  [{section}] {e['id']}: removed ({rej[0]['reason']}: {rej[0]['detail'][:90]})")
+        save(root, section, [], [])
+    log(f"reverify: {kept} now fact-checked, {dropped} removed")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--section", default="all")
@@ -201,6 +235,7 @@ def main(argv=None):
     ap.add_argument("--use-cache", action="store_true")
     ap.add_argument("--collect-only", action="store_true")
     ap.add_argument("--recheck", action="store_true")
+    ap.add_argument("--reverify", action="store_true", help="fact-check saved entries that were stored without one (rules_only)")
     args = ap.parse_args(argv)
     if args.dry_run and not args.out:
         args.out = ".dryrun"
@@ -209,6 +244,9 @@ def main(argv=None):
         return 0
     if args.recheck:
         recheck(args)
+        return 0
+    if args.reverify:
+        reverify(args)
         return 0
     sections = settings()["sections"] if args.section == "all" else [args.section]
     total_a = total_r = 0

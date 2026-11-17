@@ -51,7 +51,7 @@ def section_data(root, section, cfg, day):
             "floor": cfg["min_quality_score"][section], "stale_after": cfg["stale_after_days"][section]}, [{**r, "section": section} for r in rej]
 
 
-def health(runs, secs, day):
+def health(runs, secs, day, site_pr=None):
     """Plain-language status lines, worst first."""
     out = []
     if settings().get("paused"):
@@ -72,6 +72,11 @@ def health(runs, secs, day):
         llm = last.get("llm", {})
         if llm.get("failures"):
             out.append({"level": "warn", "text": f"{llm['failures']} AI call(s) failed in the last run; Claude token slot(s) used: {', '.join(map(str, llm.get('token_slots_used', []))) or 'none'}."})
+    if site_pr:
+        if site_pr.get("state") == "error":
+            out.append({"level": "bad", "text": f"The last delivery to the site failed: {site_pr.get('reason', '')}"})
+        elif site_pr.get("state") == "open_for_review":
+            out.append({"level": "warn", "text": f"The last site update was NOT merged automatically (PR #{site_pr.get('pr')}): {site_pr.get('reason', '')}. A human needs to look."})
     for s in secs:
         if s["stats"]["rules_only"]:
             out.append({"level": "warn", "text": f"{s['name']}: {s['stats']['rules_only']} entr{'y' if s['stats']['rules_only'] == 1 else 'ies'} had no independent fact-check (rules_only). Read them before merging."})
@@ -127,7 +132,7 @@ def build_dataset(data_dir):
             seen = last_src.get(s, {}).get(it["id"])
             src.append({"section": s, "id": it["id"], "type": it["type"], "enabled": it.get("enabled", True), "requires_key": it.get("requires_key", ""),
                         "last_status": seen["status"] if seen else None, "last_count": seen["count"] if seen else None})
-    return {"generated_at": day, "repo": cfg["repo"], "site_repo": cfg["site_repo"], "site_url": cfg["site_url"], "sections": secs, "health": health(runs, secs, day), "usage": usage(runs, day),
+    return {"generated_at": day, "repo": cfg["repo"], "site_repo": cfg["site_repo"], "site_url": cfg["site_url"], "sections": secs, "health": health(runs, secs, day, load_json(root / "site_pr.json", None)), "site_pr": load_json(root / "site_pr.json", None), "usage": usage(runs, day),
             "rejected": sorted(rejected, key=lambda r: r.get("date", ""), reverse=True)[:200], "runs": runs[-30:][::-1], "sources": src,
             "settings": {k: cfg[k] for k in ("caps", "min_quality_score", "stale_after_days", "title_similarity_threshold", "max_verbatim_overlap_chars", "max_realistic_monthly_income")},
             "model": cfg.get("llm", {}).get("model")}

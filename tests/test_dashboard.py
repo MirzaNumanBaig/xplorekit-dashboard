@@ -132,3 +132,15 @@ class UsageTotalsTests(unittest.TestCase):
         run = lambda d, n, dry=False: {"type": "research", "date": d, "dry_run": dry, "llm": {"tokens": {"input": n, "output": 1, "turns": 1, "cost_usd": 0.5}}}
         u = bd.usage([run(day, 10), run("2026-11-12", 20), run("2026-10-20", 40), run(day, 999, True)], day)
         self.assertEqual((u["today"]["input"], u["7d"]["input"], u["30d"]["input"], u["30d"]["runs"]), (10, 30, 70, 3))
+
+
+class SiteDeliveryHealthTests(unittest.TestCase):
+    def test_a_pr_held_back_for_a_human_and_a_failed_delivery_are_shown(self):
+        held = {"state": "open_for_review", "pr": 80, "reason": "a hub page changed outside the generated feed block"}
+        out = bd.health([research_run()], [], today(), held)
+        self.assertEqual(out[0]["level"], "warn")
+        self.assertIn("NOT merged automatically (PR #80)", out[0]["text"])
+        bad = bd.health([research_run()], [], today(), {"state": "error", "reason": "build-feed.py failed"})
+        self.assertEqual(bad[0]["level"], "bad")
+        merged = bd.health([research_run()], [], today(), {"state": "merged", "pr": 81})
+        self.assertEqual([x["level"] for x in merged], ["ok"])

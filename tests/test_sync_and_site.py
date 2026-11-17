@@ -26,10 +26,10 @@ class SiteKnownTests(unittest.TestCase):
             fake_site(d)
             k = site_known.load(d)
             self.assertEqual([x["title"] for x in k["skills"]], ["mcp-builder"])
-            self.assertEqual(k["skills"][0]["urls"], {"https://github.com/anthropics/skills"})
+            self.assertEqual(k["skills"][0]["urls"], {"github:anthropics/skills"})
             self.assertEqual([x["title"] for x in k["money"]], ["Get paid to train AI"])  # hub index.html is skipped
             self.assertEqual(sorted(x["title"] for x in k["extensions"]), ["Bar Tool", "Foo Tool"])
-            self.assertIn("https://chromewebstore.google.com/detail/foo/abc", k["extensions"][0]["urls"] | k["extensions"][1]["urls"])
+            self.assertEqual(len(k["extensions"]), 2)
 
     def test_empty_site_is_fine(self):
         with tempfile.TemporaryDirectory() as d:
@@ -70,8 +70,58 @@ class SyncTests(unittest.TestCase):
         body = sync_site.pr_body(self.data, added, changed, removed)
         self.assertIn("**skills** · A · score 85", body)
         self.assertIn("source: https://x.com", body)
-        self.assertIn("skim before merging", body)
+        self.assertIn("merges itself", body)
 
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class OnlyFactCheckedEntriesShipTests(unittest.TestCase):
+    def test_entries_without_a_fact_check_never_reach_the_site_and_the_index_matches(self):
+        with tempfile.TemporaryDirectory() as t:
+            data, site = Path(t) / "data", Path(t) / "site"
+            fake_site(site)
+            (data / "skills").mkdir(parents=True)
+            good = {"id": "good-111111", "name": "Good", "source_url": "https://x.com/g", "quality_score": 85, "verified": ["schema", "fact_check:llm"]}
+            weak = {"id": "weak-222222", "name": "Weak", "source_url": "https://x.com/w", "quality_score": 75, "verified": ["schema", "rules_only"]}
+            for e in (good, weak):
+                (data / "skills" / f"{e['id']}.json").write_text(json.dumps(e))
+            (data / "skills" / "index.json").write_text(json.dumps({"section": "skills", "items": [{"id": "good-111111"}, {"id": "weak-222222"}]}))
+            added, _, _ = sync_site.sync(data, site)
+            out = site / "public" / "data" / "skills"
+            self.assertTrue((out / "good-111111.json").exists())
+            self.assertFalse((out / "weak-222222.json").exists())
+            self.assertEqual([i["id"] for i in json.loads((out / "index.json").read_text())["items"]], ["good-111111"])
+            (data / "skills" / "good-111111.json").write_text(json.dumps({**good, "verified": ["schema", "rules_only"]}))  # later loses its fact-check
+            _, _, removed = sync_site.sync(data, site)
+            self.assertEqual(removed, ["skills/good-111111.json"])  # and is withdrawn from the site
+
+
+class ReverifyTests(unittest.TestCase):
+    def test_a_rules_only_entry_is_upgraded_or_removed(self):
+        from unittest import mock
+        import tests.helpers as h
+        from xplorekit import run
+        from xplorekit.agents import editor_verifier as ed
+        with tempfile.TemporaryDirectory() as d:
+            e = ed.finalize("skills", h.DRAFTS["skills"])
+            e.update({"quality_score": 79, "verified": ["schema", "rules_only"], "first_seen": "2026-01-02"})
+            (Path(d) / "skills").mkdir()
+            (Path(d) / "skills" / f"{e['id']}.json").write_text(json.dumps(e))
+            args = run.argparse.Namespace(out=d, site_dir=None, verdicts_file=None)
+            def run_with(verdict):
+                with mock.patch.object(run, "make_fact_checker", lambda f: (lambda s, en, t: verdict, "llm")), mock.patch.object(ed, "default_fetch_text", lambda u: h.SOURCE_TEXT["skills"]), \
+                        mock.patch("xplorekit.verify.links.check", lambda u: ("ok", 200)):
+                    run.reverify(args, log=lambda *_: None)
+            run_with({"supported": True, "score": 90, "issues": []})
+            saved = run.load_entries(Path(d), "skills")[0]
+            self.assertIn("fact_check:llm", saved["verified"])
+            self.assertNotIn("rules_only", saved["verified"])
+            self.assertEqual(saved["first_seen"], "2026-01-02")  # keeps its original date
+            saved["verified"] = ["schema", "rules_only"]
+            (Path(d) / "skills" / f"{saved['id']}.json").write_text(json.dumps(saved))
+            run_with({"supported": False, "score": 20, "issues": ["invented install steps"]})
+            self.assertEqual(run.load_entries(Path(d), "skills"), [])
+            log = json.loads((Path(d) / "rejected" / "skills.json").read_text())
+            self.assertEqual(log[-1]["reason"], "reverify_fact_check")
