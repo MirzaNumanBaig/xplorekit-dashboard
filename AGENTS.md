@@ -40,9 +40,9 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 | Verifier rules (links, dedupe, income, hype, copy, schema) | `xplorekit/verify/`, `xplorekit/agents/editor_verifier.py` |
 | Entry point | `xplorekit/run.py` |
 | Hand-off to the site repo (sync, safety checks, PR, auto-merge) | `xplorekit/sync_site.py`, `xplorekit/site_pr.py` (cards: `scripts/build-feed.py` in the SITE repo) |
-| Dashboard (Overview, Entries, Rejected, Sources, Runs, Usage = Claude tokens per run; built to `docs/index.html`, GitHub Pages) | `xplorekit/build_dashboard.py`, `xplorekit/dashboard_template.html` |
+| Dashboard (Overview, **Posts** = status dropdown + details of everything published, pending, draft, stale or rejected; Rejected, Sources, Runs, Usage = Claude tokens per run; built to `docs/index.html`, GitHub Pages) | `xplorekit/build_dashboard.py`, `xplorekit/dashboard_template.html` |
 | Cloud-session permission to attach the private site repo (owner-approved) | `.claude/settings.json` |
-| Workflows | `.github/workflows/`: `research` (daily), `recheck` (weekly), `dashboard`, `tests` |
+| Workflows | `.github/workflows/`: `research` (every 3 hours), `recheck` (weekly), `dashboard`, `tests` |
 | Setup, how to add a source or a section | `GUIDE.md` |
 | First dry run and its findings | `samples/REPORT.md` |
 
@@ -55,7 +55,7 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 - **Undo a published batch:** in the site repo, `git revert` the squash commit "Research feed: verified entries (<date>)" and push to `main`.
 - **Change limits:** edit `settings.json` (caps, `per_run_max`, `min_quality_score`, `stale_after_days`, `max_realistic_monthly_income`, `near_duplicate`).
 - **Add / pause a source:** edit `sources.json` (see `GUIDE.md`). **Change agent behaviour:** edit the prompt file.
-- **Look at results:** the dashboard (Pages), `data/`, `data/rejected/` (why things were turned away), `data/runs.json`, `data/site_pr.json` (what the last delivery did).
+- **Look at results:** the dashboard (Pages; its **Posts** tab has a Status dropdown: Published / Pending / Draft / Stale / Rejected, and each post opens into its full details with links to the live page and the pull request), `data/`, `data/rejected/` (why things were turned away), `data/runs.json`, `data/site_pr.json` (what the last delivery did), `data/published.json` (which entries went live, when, and in which pull request: written by `site_pr.py` only after a merge).
 - **Secrets** (Settings -> Secrets -> Actions): `CLAUDE_CODE_OAUTH_TOKEN` (+ `_2`, `_3` fallbacks, tried in order when one fails or is out of
   usage), optional `ANTHROPIC_API_KEY`, `SITE_REPO_TOKEN` (fine-grained, site repo only: Contents + Pull requests read/write), optional `REDDIT_CLIENT_ID/SECRET`,
   `YOUTUBE_API_KEY`. Never commit a secret; never print one; error messages name token slots, not values.
