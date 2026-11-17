@@ -133,5 +133,17 @@
   "repo": "MirzaNumanBaig/xplorekit-dashboard",
   "site_repo": "MirzaNumanBaig/xplorekit",
   "site_url": "https://xplorekit.online",
-  "paused": false
+  "paused": false,
+  "near_duplicate": {
+    "title_jaccard": 0.5,
+    "prompt_title_jaccard": 0.4,
+    "prompt_text_jaccard": 0.33
+  },
+  "per_run_max": {
+    "money": 1,
+    "prompts": 1,
+    "extensions": 1,
+    "skills": 1
+  },
+  "auto_merge_site": true
 }

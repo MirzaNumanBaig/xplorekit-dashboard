@@ -35,7 +35,8 @@ class EnrichTests(unittest.TestCase):
         self.assertEqual(len(calls), 2)
 
     def test_prompts_may_share_a_source_url(self):
-        k = [{"title": "Other prompt", "urls": {"https://docs.example.com/p"}, "where": "accepted entry"}]
+        from xplorekit.common import canon_key
+        k = [{"title": "Other prompt", "urls": {canon_key("https://docs.example.com/p")}, "where": "accepted entry"}]
         e = {"title": "A different prompt", "source_urls": ["https://docs.example.com/p"]}
         self.assertIsNone(dedupe.find_duplicate(e, k, by_url=False))
         self.assertTrue(dedupe.find_duplicate(e, k, by_url=True))
@@ -80,3 +81,28 @@ class HeadFallbackTests(unittest.TestCase):
         from xplorekit.verify import links
         with mock.patch.object(links, "robots_allowed", lambda u: True), mock.patch.object(links, "http_get", lambda url, **k: (404, "")):
             self.assertEqual(links.check("https://example.com/gone"), ("dead", 404))
+
+
+class FocusExcerptTests(unittest.TestCase):
+    def test_the_relevant_rules_are_picked_over_navigation_boilerplate(self):
+        nav = "Help Topics Sign in Give Feedback Bookshelf Reports Community Marketing Account and Taxes Bank account " * 40
+        rules = ("Artificial intelligence (AI) content. We require you to inform us of AI-generated content when you publish a book. "
+                 "You are not required to disclose AI-assisted content. Content that is freely available on the web is not accepted. ")
+        page = nav + rules + nav
+        out = enrich.focus_excerpt(page, size=1200)
+        self.assertIn("AI-generated content", out)
+        self.assertIn("not required to disclose AI-assisted", out)
+        self.assertLessEqual(len(out), 1200)
+
+    def test_short_pages_pass_through_unchanged_and_candidates_get_details(self):
+        self.assertEqual(enrich.focus_excerpt("short page text"), "short page text")
+        c = [{"url": "https://help.example.com/x", "title": "x", "full": "intro " * 3000 + " We require you to disclose AI-generated content. " + "outro " * 3000, "kind": "page"}]
+        enrich.enrich(c, "money")
+        self.assertIn("disclose AI-generated content", c[0]["details"])
+
+    def test_slices_join_without_splitting_words_and_gaps_are_marked(self):
+        text = ("x" * 380) + ("You are not required to disclose AI-assisted content. " * 8) + ("y" * 3000) + ("An AI-generated cover must be disclosed. " * 8) + ("z" * 3000)
+        out = enrich.focus_excerpt(text, size=2000)
+        self.assertIn("not required to disclose AI-assisted content.", out)
+        self.assertIn("An AI-generated cover must be disclosed.", out)
+        self.assertIn(" … ", out)  # the two separate passages are marked as separate

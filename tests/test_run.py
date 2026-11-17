@@ -18,12 +18,15 @@ def entry(i, first_seen=None):
 class RunTests(unittest.TestCase):
     def test_daily_and_weekly_caps(self):
         daily = settings()["caps"]["daily"]["money"]
-        self.assertEqual(run.cap_room("money", []), daily)
+        per_run = settings()["per_run_max"]["money"]
+        self.assertEqual(run.cap_room("money", []), min(daily, per_run))  # one run adds at most per_run_max, so output is spread over the day
+        with mock.patch.dict(settings()["per_run_max"], {"money": 99}):
+            self.assertEqual(run.cap_room("money", []), daily)
         self.assertEqual(run.cap_room("money", [entry(i) for i in range(daily)]), 0)
         self.assertEqual(run.cap_room("money", [], limit=1), 1)
         weekly = settings()["caps"]["weekly"]["money"]
         spread = [entry(i, first_seen="2000-01-01") for i in range(weekly)]  # old entries do not count
-        self.assertEqual(run.cap_room("money", spread), daily)
+        self.assertEqual(run.cap_room("money", spread), min(daily, per_run))
 
     def test_weekly_cap_blocks_even_when_daily_is_free(self):
         from datetime import date, timedelta
@@ -38,7 +41,7 @@ class RunTests(unittest.TestCase):
 
     def test_prefilter_drops_known_rejected_and_repeats(self):
         cands = [{"url": "https://a.com/1"}, {"url": "https://www.a.com/1/?utm_source=x"}, {"url": "https://b.com/2"}, {"url": "https://c.com/3"}, {"url": "ftp://d"}]
-        known = [{"title": "", "urls": {"https://b.com/2"}, "where": "site"}]
+        known = [{"title": "", "urls": {run.canon_key("https://b.com/2")}, "where": "site"}]
         rejected = [{"url": "https://c.com/3", "date": today()}]
         out = run.prefilter(cands, "money", [], known, rejected)
         self.assertEqual([c["url"] for c in out], ["https://a.com/1"])

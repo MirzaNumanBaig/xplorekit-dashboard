@@ -160,3 +160,29 @@ def readable_text(html_text):
         if m and len(m.group(1)) > 400:
             return strip_html(m.group(1))
     return strip_html(html_text)
+
+
+_GH = re.compile(r"https?://(?:www\.)?github\.com/([\w.-]+)/([\w.-]+?)(?:\.git)?(?:[/#?].*)?$", re.I)
+_CWS = re.compile(r"(?:chromewebstore\.google\.com|chrome\.google\.com/webstore)/detail/(?:[^/?#]+/)?([a-p]{32})")
+
+
+def canon_key(url):
+    """One identity per thing, however its URL is spelled: a GitHub repo, a Chrome Web Store extension id, else the cleaned URL."""
+    url = (url or "").strip()
+    m = _GH.match(url)
+    if m:
+        return f"github:{m.group(1).lower()}/{m.group(2).lower()}"
+    m = _CWS.search(url)
+    if m:
+        return f"cws:{m.group(1)}"
+    n = normalize_url(url)
+    return "url:" + re.sub(r"^https?://", "", n.lower())
+
+
+def tokens(text):
+    return {w for w in norm_title(text).split() if len(w) > 2}
+
+
+def jaccard(a, b):
+    ta, tb = tokens(a), tokens(b)
+    return len(ta & tb) / len(ta | tb) if ta and tb else 0.0

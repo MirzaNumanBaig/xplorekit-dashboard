@@ -1,6 +1,7 @@
 import unittest
 
 import tests.helpers as h
+from xplorekit.common import canon_key
 from xplorekit.verify import dedupe, rules
 
 
@@ -38,7 +39,7 @@ class RuleTests(unittest.TestCase):
 
 class DedupeTests(unittest.TestCase):
     def test_same_url_ignoring_tracking_and_www(self):
-        a = {"title": "A", "urls": {"https://example.com/x"}, "where": "live site"}
+        a = {"title": "A", "urls": {canon_key("https://example.com/x")}, "where": "live site"}
         self.assertIn("same URL", dedupe.find_duplicate({"title": "Other", "source_urls": ["https://www.example.com/x/?utm_source=a#top"]}, [a]))
 
     def test_similar_titles(self):
