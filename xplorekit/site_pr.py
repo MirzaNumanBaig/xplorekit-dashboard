@@ -110,6 +110,31 @@ def checks_text(results):
     return "\n".join(f"- {'PASS' if why is None else 'FAIL'}: {name}" + ("" if why is None else f" ({why})") for name, why in results)
 
 
+def entries_in(changes, kinds):
+    """[{section, id}] for the entry files (public/data/<section>/<id>.json) whose change kind is in `kinds`."""
+    out = []
+    for path, kind in changes.items():
+        m = re.match(r"public/data/(\w+)/([^/]+)\.json$", path)
+        if kind in kinds and m and m.group(2) != "index":
+            out.append({"section": m.group(1), "id": m.group(2)})
+    return out
+
+
+def record_published(out_dir, outcome):
+    """Keep data/published.json: which entries went live on the site, when, and in which pull request. Only a merged delivery counts."""
+    if outcome.get("state") != "merged":
+        return
+    path = Path(out_dir) / "published.json"
+    book = load_json(path, {})
+    for e in outcome.get("delivered", []):
+        rec = book.get(e["id"]) or {}
+        book[e["id"]] = {"section": e["section"], "published_at": rec.get("published_at") or outcome["date"], "pr": rec.get("pr") or outcome.get("pr"), "withdrawn_at": None}
+    for e in outcome.get("withdrawn", []):
+        if e["id"] in book:
+            book[e["id"]]["withdrawn_at"] = outcome["date"]
+    save_json(path, book)
+
+
 def deliver(site, body_path, repo):
     """Returns the outcome dict. Never raises for an expected failure: it records why a human is needed."""
     out = {"date": today(), "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "state": "error", "reason": "", "pr": None, "files": 0}
@@ -119,7 +144,12 @@ def deliver(site, body_path, repo):
         return out
     git(site, "checkout", "-B", BRANCH, "origin/main")
     git(site, "add", "public/data", *sorted(HUB_PAGES))
-    files = [f for f in git(site, "diff", "--cached", "--name-only").splitlines() if f]
+    changes = {}  # path -> A / M / D
+    for line in git(site, "diff", "--cached", "--name-status").splitlines():
+        status, _, path = line.partition("\t")
+        if path:
+            changes[path] = status[:1]
+    files = list(changes)
     out["files"] = len(files)
     if not files:
         out.update(state="nothing_new", reason="nothing new for the site")
@@ -154,7 +184,7 @@ def deliver(site, body_path, repo):
     st, res = api("PUT", f"/repos/{repo}/pulls/{number}/merge", {"merge_method": "squash", "commit_title": f"Research feed: verified entries ({today()})"})
     if st == 200 and (res or {}).get("merged"):
         api("DELETE", f"/repos/{repo}/git/refs/heads/{BRANCH}")  # the rolling branch is recreated by the next run
-        out.update(state="merged", reason="")
+        out.update(state="merged", reason="", delivered=entries_in(changes, ("A", "M")), withdrawn=entries_in(changes, ("D",)))
     else:
         out.update(state="open_for_review", reason=f"merge refused (HTTP {st}): {((res or {}).get('message') or '')[:120]}")
     return out
@@ -168,7 +198,8 @@ def main(argv=None):
     ap.add_argument("--out", default=str(ROOT / settings().get("data_dir", "data")))
     a = ap.parse_args(argv)
     out = deliver(a.site_dir, a.body, a.repo)
-    save_json(Path(a.out) / "site_pr.json", out)
+    save_json(Path(a.out) / "site_pr.json", {k: v for k, v in out.items() if k not in ("delivered", "withdrawn")})
+    record_published(a.out, out)
     print(json.dumps(out))
     return 1 if out["state"] == "error" else 0
 

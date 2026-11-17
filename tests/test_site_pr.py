@@ -69,7 +69,7 @@ class DeliverTests(unittest.TestCase):
     def run_deliver(self, files, checks_fail=None, auto=True):
         calls = []
         def fake_git(site, *args, **k):
-            return "\n".join(files) if args[:2] == ("diff", "--cached") else ""
+            return "\n".join(f if "\t" in f else "M\t" + f for f in files) if args[:2] == ("diff", "--cached") else ""
         def fake_api(method, path, body=None):
             calls.append((method, path))
             if method == "GET":
@@ -114,7 +114,7 @@ class DeliverTests(unittest.TestCase):
     def test_an_existing_open_pr_is_updated_not_duplicated(self):
         def fake_api(method, path, body=None):
             return (200, [{"number": 5}]) if method == "GET" else (200, {"merged": True})
-        with tempfile.TemporaryDirectory() as d, mock.patch.object(site_pr, "git", lambda s, *a, **k: "public/data/x.json" if a[:2] == ("diff", "--cached") else ""), \
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(site_pr, "git", lambda s, *a, **k: "M\tpublic/data/x.json" if a[:2] == ("diff", "--cached") else ""), \
                 mock.patch.object(site_pr, "git_ok", lambda *a: True), mock.patch.object(site_pr, "api", fake_api), mock.patch.object(site_pr, "run_checks", lambda s, f: [("c", None)]), \
                 mock.patch.object(site_pr.subprocess, "run", lambda *a, **k: subprocess.CompletedProcess([], 0, "", "")):
             out = site_pr.deliver(d, Path(d) / "missing.md", "o/s")
@@ -123,3 +123,27 @@ class DeliverTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PublishedRecordTests(unittest.TestCase):
+    def test_a_merged_delivery_is_recorded_with_date_and_pr_and_withdrawals_are_marked(self):
+        files = ["A\tpublic/data/skills/graphify-aaaaaa.json", "M\tpublic/data/skills/index.json", "D\tpublic/data/prompts/old-bbbbbb.json", "M\tpublic/prompts/index.html"]
+        out, calls = DeliverTests().run_deliver(files)
+        self.assertEqual(out["state"], "merged")
+        self.assertEqual(out["delivered"], [{"section": "skills", "id": "graphify-aaaaaa"}])  # index files and pages are not entries
+        self.assertEqual(out["withdrawn"], [{"section": "prompts", "id": "old-bbbbbb"}])
+        with tempfile.TemporaryDirectory() as d:
+            Path(d, "published.json").write_text(json.dumps({"old-bbbbbb": {"section": "prompts", "published_at": "2026-11-01", "pr": 70, "withdrawn_at": None}}))
+            site_pr.record_published(d, {**out, "date": "2026-11-17", "pr": 80})
+            book = json.loads(Path(d, "published.json").read_text())
+            self.assertEqual(book["graphify-aaaaaa"], {"section": "skills", "published_at": "2026-11-17", "pr": 80, "withdrawn_at": None})
+            self.assertEqual(book["old-bbbbbb"]["withdrawn_at"], "2026-11-17")
+            self.assertEqual(book["old-bbbbbb"]["published_at"], "2026-11-01")  # the original date is kept
+            site_pr.record_published(d, {**out, "date": "2026-11-18", "pr": 81})  # delivered again later: date and PR are not rewritten
+            self.assertEqual(json.loads(Path(d, "published.json").read_text())["graphify-aaaaaa"]["published_at"], "2026-11-17")
+
+    def test_a_pr_left_open_for_a_human_records_nothing_as_published(self):
+        out, _ = DeliverTests().run_deliver(["A\tpublic/data/skills/x-111111.json"], checks_fail="a check failed")
+        with tempfile.TemporaryDirectory() as d:
+            site_pr.record_published(d, {**out, "date": "2026-11-17"})
+            self.assertFalse(Path(d, "published.json").exists())
