@@ -61,3 +61,46 @@ class UsageTests(unittest.TestCase):
                 llm.complete("b")
         t = llm.STATS["tokens"]
         self.assertEqual((t["input"], t["output"], t["cache_read"], t["turns"], t["cost_usd"]), (20, 10, 200, 2, 0.02))
+
+
+class ExtractJsonTests(unittest.TestCase):
+    def test_a_verdict_with_an_empty_issues_list_is_the_verdict_not_the_list(self):
+        # regression: the extractor used to return [] here, so every fact-check was silently dropped ("rules_only")
+        self.assertEqual(llm.extract_json('{"supported": true, "score": 90, "issues": []}', expect="object"), {"supported": True, "score": 90, "issues": []})
+        self.assertEqual(llm.extract_json('{"supported": true, "score": 90, "issues": []}'), {"supported": True, "score": 90, "issues": []})
+
+    def test_chatter_fences_and_nested_lists(self):
+        self.assertEqual(llm.extract_json('Here you go:\n```json\n{"a": [1, 2], "b": {"c": []}}\n```\nDone.')["a"], [1, 2])
+        self.assertEqual(llm.extract_json('Sure\n[{"a": [1,2]}, {"b": 2}]', expect="array"), [{"a": [1, 2]}, {"b": 2}])
+
+    def test_expect_is_enforced_and_garbage_raises(self):
+        with self.assertRaises(llm.LLMError):
+            llm.extract_json('[1, 2]', expect="object")
+        with self.assertRaises(llm.LLMError):
+            llm.extract_json("no json here")
+
+
+class FactCheckNeverSilentTests(unittest.TestCase):
+    def test_verdict_comes_through_and_unreadable_answers_raise_after_one_retry(self):
+        from xplorekit.agents import editor_verifier as ed
+        calls = []
+        with mock.patch.object(llm, "available", lambda: True), mock.patch.object(llm, "complete", lambda p, system="": calls.append(1) or '{"supported": true, "score": 91, "issues": []}'):
+            self.assertEqual(ed.llm_fact_check("skills", {"name": "x"}, "text")["score"], 91)
+        calls.clear()
+        with mock.patch.object(llm, "available", lambda: True), mock.patch.object(llm, "complete", lambda p, system="": calls.append(1) or "I could not decide."):
+            with self.assertRaises(llm.LLMError):
+                ed.llm_fact_check("skills", {"name": "x"}, "text")
+        self.assertEqual(len(calls), 2)  # one retry, then it raises instead of returning None
+
+    def test_no_model_configured_is_the_only_case_that_returns_none(self):
+        from xplorekit.agents import editor_verifier as ed
+        with mock.patch.object(llm, "available", lambda: False):
+            self.assertIsNone(ed.llm_fact_check("skills", {"name": "x"}, "text"))
+
+    def test_a_failed_fact_check_rejects_the_draft_instead_of_publishing_it_unchecked(self):
+        import tests.helpers as h
+        from xplorekit.agents import editor_verifier as ed
+        def boom(*a):
+            raise llm.LLMError("fact-check unreadable after a retry")
+        acc, rej = ed.review("skills", [h.DRAFTS["skills"]], h.ctx("skills", fact=boom))
+        self.assertEqual((acc, rej[0]["reason"]), ([], "fact_check_failed"))

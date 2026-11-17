@@ -105,14 +105,18 @@ def complete(prompt, system=""):
     raise LLMError("no language model configured (set CLAUDE_CODE_OAUTH_TOKEN with the claude CLI, or ANTHROPIC_API_KEY)")
 
 
-def extract_json(text):
-    """Pull the first JSON array/object out of a model reply (tolerates code fences and chatter around it)."""
+def extract_json(text, expect=None):
+    """Pull the first complete JSON value out of a model reply (tolerates code fences and chatter around it).
+    expect="object" or "array" insists on that kind; otherwise whichever opens first wins. A verdict such as
+    {"issues": []} must come back as the object, not as the empty list inside it."""
     text = re.sub(r"```(?:json)?", "", text)
-    for opener, closer in (("[", "]"), ("{", "}")):
-        i, j = text.find(opener), text.rfind(closer)
-        if i != -1 and j > i:
+    decoder = json.JSONDecoder()
+    wanted = {"object": "{", "array": "["}.get(expect, "{[")
+    for i, ch in enumerate(text):
+        if ch in wanted:
             try:
-                return json.loads(text[i:j + 1])
+                value, _ = decoder.raw_decode(text[i:])
             except ValueError:
                 continue
-    raise LLMError("model reply contained no valid JSON")
+            return value
+    raise LLMError("model reply contained no valid JSON" + (f" ({expect})" if expect else ""))

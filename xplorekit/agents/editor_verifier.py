@@ -44,14 +44,24 @@ def default_fetch_text(url):
 
 
 def llm_fact_check(section, entry, source_text):
-    """Ask the model to verify the draft against the source text. Returns a verdict dict, or None when no model is configured."""
+    """Ask the model to verify the draft against the source text. Returns a verdict dict, or None when no model is configured.
+    When a model IS configured, an unreadable answer is retried once and then raised: it must never silently become 'no fact-check'."""
     if not llm.available():
         return None
-    prompt = (ROOT / "xplorekit" / "prompts" / "editor_verifier.md").read_text("utf-8")
     import json
+    prompt = (ROOT / "xplorekit" / "prompts" / "editor_verifier.md").read_text("utf-8")
     prompt = prompt.replace("{{section}}", section).replace("{{draft}}", json.dumps({k: v for k, v in entry.items() if k not in META}, ensure_ascii=False, indent=1)).replace("{{source}}", source_text[:6000] or "(empty)")
-    v = llm.extract_json(llm.complete(prompt))
-    return v if isinstance(v, dict) else None
+    last = None
+    for _ in range(2):
+        try:
+            v = llm.extract_json(llm.complete(prompt), expect="object")
+        except llm.LLMError as e:
+            last = e
+            continue
+        if isinstance(v, dict) and isinstance(v.get("supported"), bool) and isinstance(v.get("score"), (int, float)):
+            return v
+        last = llm.LLMError("fact-check answer is missing 'supported' or 'score'")
+    raise llm.LLMError(f"fact-check unreadable after a retry: {last}")
 
 
 def make_id(entry):
@@ -163,7 +173,10 @@ def review_one(section, draft, ctx, batch_known):
     score += min(20, int(ratio * 60)) if section != "prompts" else 12
     score += 10 if len(rules.text_of(entry)) >= 300 else 0
 
-    verdict = ctx.fact_check(section, entry, text) if ctx.fact_check else None
+    try:
+        verdict = ctx.fact_check(section, entry, text) if ctx.fact_check else None
+    except llm.LLMError as e:  # the model was there but its check failed: reject, never publish unchecked
+        return rej("fact_check_failed", str(e)[:200])
     if verdict:
         if not verdict.get("supported", False):
             return rej("fact_check", "; ".join(map(str, verdict.get("issues", []))) or "not supported by the source")

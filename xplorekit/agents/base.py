@@ -19,7 +19,7 @@ def candidate_block(cands, max_items=16):
     rows = []
     for i, c in enumerate(cands[:max_items], 1):
         rows.append({"n": i, "title": c["title"], "url": c["url"], "discussion_url": c.get("discussion_url"),
-                     "snippet": c.get("snippet", ""), "details": (c.get("details") or "")[:2000] or None,
+                     "snippet": c.get("snippet", ""), "details": (c.get("details") or "")[:4500] or None,
                      "chrome_web_store_links_found": c.get("store_urls") or None, "published": c.get("date", ""), "found_via": c.get("source_id", "")})
     return json.dumps(rows, indent=1, ensure_ascii=False)
 
@@ -35,7 +35,7 @@ def run(prompt_file, section, cands, n):
     if not cands or n <= 0:
         return []
     reply = llm.complete(build_prompt(prompt_file, section, cands, n))
-    out = llm.extract_json(reply)
+    out = llm.extract_json(reply, expect="array")
     if isinstance(out, dict):
         out = out.get("entries", [out])
     return [d for d in out if isinstance(d, dict)][:n]
