@@ -1,0 +1,30 @@
+{
+  "source_url": "https://github.com/affaan-m/ECC",
+  "source_urls": [
+    "https://github.com/affaan-m/ECC"
+  ],
+  "name": "ECC",
+  "summary": "An MIT-licensed toolkit that adds a structured engineering workflow to coding agents: planning, testing, implementation, review, verification and memory, with reusable skills for repeated tasks. It works best with Claude Code and has adapters for other agent tools.",
+  "install_steps": [
+    "Install only from the official channels listed in the README: the GitHub repository, the npm package ecc-universal, or the ecc@ecc plugin",
+    "Follow the guided setup in the README, or use the native Claude Code plugin commands described there",
+    "Choose one install method and do not stack a full manual Claude install on top of the plugin",
+    "Check the README's platform support matrix before relying on features in tools other than Claude Code"
+  ],
+  "repo_url": "https://github.com/affaan-m/ECC",
+  "example_use_case": "You want Claude Code to plan a change, write tests first, review its own work from a fresh context and carry useful notes into later sessions, without rewriting that process in every prompt.",
+  "skill_type": "collection",
+  "section": "skills",
+  "first_seen": "2026-11-17",
+  "last_checked": "2026-11-17",
+  "status": "active",
+  "quality_score": 88,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "ecc-3429c7"
+}

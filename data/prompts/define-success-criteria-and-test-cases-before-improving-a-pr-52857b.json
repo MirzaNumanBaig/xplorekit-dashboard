@@ -21,15 +21,15 @@
   ],
   "section": "prompts",
   "first_seen": "2026-11-16",
-  "last_checked": "2026-11-16",
+  "last_checked": "2026-11-17",
   "status": "active",
-  "quality_score": 79,
+  "quality_score": 82,
   "verified": [
     "schema",
     "not_duplicate",
     "link_live",
     "no_verbatim_copy",
-    "rules_only"
+    "fact_check:llm"
   ],
   "id": "define-success-criteria-and-test-cases-before-improving-a-pr-52857b"
 }

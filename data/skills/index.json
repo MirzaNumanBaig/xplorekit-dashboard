@@ -1,16 +1,16 @@
 {
   "section": "skills",
-  "generated_at": "2026-11-16",
+  "generated_at": "2026-11-17",
   "items": [
     {
-      "id": "graphify-dd6a9d",
-      "title": "Graphify",
-      "summary": "A /graphify skill that turns a codebase and its docs, SQL schemas, configs and PDFs into a queryable knowledge graph. Code is parsed locally with deterministic AST parsing. Each connection is labelled as explicitly extracted or inferred, and it uses a graph rather than a vector store.",
-      "url": "https://github.com/Graphify-Labs/graphify",
-      "first_seen": "2026-11-16",
-      "last_checked": "2026-11-16",
+      "id": "ecc-3429c7",
+      "title": "ECC",
+      "summary": "An MIT-licensed toolkit that adds a structured engineering workflow to coding agents: planning, testing, implementation, review, verification and memory, with reusable skills for repeated tasks. It works best with Claude Code and has adapters for other agent tools.",
+      "url": "https://github.com/affaan-m/ECC",
+      "first_seen": "2026-11-17",
+      "last_checked": "2026-11-17",
       "status": "active",
-      "quality_score": 79
+      "quality_score": 88
     },
     {
       "id": "modern-web-guidance-5175b6",
@@ -18,9 +18,9 @@
       "summary": "A set of skills that gives coding agents current web platform knowledge and browser compatibility data. It nudges agents away from older JavaScript-heavy patterns and toward native browser features. It is stewarded by the Chrome, Edge, Firefox and MDN teams together with the web community.",
       "url": "https://github.com/GoogleChrome/modern-web-guidance",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-16",
+      "last_checked": "2026-11-17",
       "status": "active",
-      "quality_score": 79
+      "quality_score": 90
     }
   ]
 }

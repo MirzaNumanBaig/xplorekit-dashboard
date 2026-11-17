@@ -1,0 +1,9 @@
+[
+  {
+    "reason": "reverify_fact_check",
+    "detail": "The draft describes the older GitHub README flow (copy a prompt, open ChatGPT, paste it). The linked Chrome Web Store listing describes a newer product: it generates summaries in the extension, with timestamps, a copy-transcript button, and custom summary length and prompt. The con 'you need to paste the prompt yourself' is therefore not supported for the store version the draft links to.; 'Simple, single-purpose tool' is contradicted by the store listing. It summarizes YouTube videos, web articles and PDFs, and supports ChatGPT, Claude, Mistral AI and Gemini.; The store listing's name is 'YouTube Summary with ChatGPT & Claude'. The draft uses the old repo name and never mentions Claude, Mistral or Gemini, so it mixes two different versions of the product.; pricing is 'unknown', but the store text says it is a free extension that offers in-app purchases. The pricing and pricing_note fields should say so.; extension_last_updated is 'unknown', but the store text gives 'Updated October 17, 2026' (version 2.4.1). The date should be filled in.; 'Shows the video transcript directly on the YouTube page' is only loosely supported. The README says a 'Transcript & Summary' box appears on the page. The store text describes a toolbar icon and does not describe an on-page transcript.",
+    "title": "YouTube Summary with ChatGPT",
+    "url": "https://github.com/kazuki-sf/YouTube_Summary_with_ChatGPT",
+    "date": "2026-11-17"
+  }
+]

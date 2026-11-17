@@ -5,5 +5,12 @@
     "title": "Anthropic Skills",
     "url": "https://raw.githubusercontent.com/anthropics/skills/main/README.md",
     "date": "2026-11-16"
+  },
+  {
+    "reason": "reverify_fact_check_failed",
+    "detail": "fact-check unreadable after a retry: claude CLI failed on every token: slot 1: exit 1",
+    "title": "Graphify",
+    "url": "https://github.com/Graphify-Labs/graphify",
+    "date": "2026-11-17"
   }
 ]

@@ -25,16 +25,16 @@
   ],
   "section": "extensions",
   "first_seen": "2026-11-16",
-  "last_checked": "2026-11-16",
+  "last_checked": "2026-11-17",
   "status": "active",
-  "quality_score": 79,
+  "quality_score": 88,
   "verified": [
     "schema",
     "not_duplicate",
     "store_link_live",
     "link_live",
     "no_verbatim_copy",
-    "rules_only"
+    "fact_check:llm"
   ],
   "id": "mouse-tooltip-translator-499769"
 }

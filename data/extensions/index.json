@@ -1,26 +1,16 @@
 {
   "section": "extensions",
-  "generated_at": "2026-11-16",
+  "generated_at": "2026-11-17",
   "items": [
     {
-      "id": "chassistantgpt-1a4f5d",
-      "title": "ChassistantGPT",
-      "summary": "Runs ChatGPT as a hands-free voice assistant in the background of the browser. You start it with a spoken trigger phrase or a keyboard shortcut, and it supports more than 60 languages and dialects.",
-      "url": "https://github.com/idosal/assistant-chat-gpt",
-      "first_seen": "2026-11-16",
-      "last_checked": "2026-11-16",
+      "id": "chatgpt-extension-404299",
+      "title": "ChatGPT Extension",
+      "summary": "A simple Manifest V3 Chrome extension that lets you reach OpenAI's ChatGPT from any page on the web. You pin the toolbar icon, click it and ask your question without opening a separate ChatGPT tab.",
+      "url": "https://github.com/kazuki-sf/ChatGPT_Extension",
+      "first_seen": "2026-11-17",
+      "last_checked": "2026-11-17",
       "status": "active",
-      "quality_score": 79
-    },
-    {
-      "id": "glarity-summary-for-google-youtube-with-chatgpt-ce574a",
-      "title": "Glarity - Summary for Google/YouTube with ChatGPT",
-      "summary": "An open-source extension that shows AI-generated summaries next to Google search results and on YouTube videos. It can also summarise other web pages, PDFs and emails, and adds side-by-side translation and web content Q&A.",
-      "url": "https://github.com/sparticleinc/chatgpt-google-summary-extension",
-      "first_seen": "2026-11-16",
-      "last_checked": "2026-11-16",
-      "status": "active",
-      "quality_score": 79
+      "quality_score": 72
     },
     {
       "id": "mouse-tooltip-translator-499769",
@@ -28,9 +18,9 @@
       "summary": "Translates text in a tooltip when you hover over it or select it on a web page. It also handles PDF files, YouTube dual subtitles, text in images through OCR, and spoken pronunciation.",
       "url": "https://github.com/ttop32/MouseTooltipTranslator",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-16",
+      "last_checked": "2026-11-17",
       "status": "active",
-      "quality_score": 79
+      "quality_score": 88
     },
     {
       "id": "writely-0d1d31",
@@ -38,19 +28,29 @@
       "summary": "A browser extension that brings AI writing help to editors on any web page. It uses OpenAI's GPT models to draft text such as emails and articles, and it can also help with translation and reading. It is positioned as an alternative to Notion AI.",
       "url": "https://github.com/anc95/writely",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-16",
+      "last_checked": "2026-11-17",
       "status": "active",
-      "quality_score": 79
+      "quality_score": 88
     },
     {
-      "id": "youtube-summary-with-chatgpt-db248f",
-      "title": "YouTube Summary with ChatGPT",
-      "summary": "A simple Manifest V3 extension that shows a video's transcript on YouTube and helps you get an AI summary of it. A button copies a ready-made prompt and opens ChatGPT, where you paste it to see the summary.",
-      "url": "https://github.com/kazuki-sf/YouTube_Summary_with_ChatGPT",
+      "id": "chassistantgpt-1a4f5d",
+      "title": "ChassistantGPT",
+      "summary": "Runs ChatGPT as a hands-free voice assistant in the background of the browser. You start it with a spoken trigger phrase or a keyboard shortcut, and it supports more than 60 languages and dialects.",
+      "url": "https://github.com/idosal/assistant-chat-gpt",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-16",
+      "last_checked": "2026-11-17",
       "status": "active",
-      "quality_score": 79
+      "quality_score": 86
+    },
+    {
+      "id": "glarity-summary-for-google-youtube-with-chatgpt-ce574a",
+      "title": "Glarity - Summary for Google/YouTube with ChatGPT",
+      "summary": "An open-source extension that shows AI-generated summaries next to Google search results and on YouTube videos. It can also summarise other web pages, PDFs and emails, and adds side-by-side translation and web content Q&A.",
+      "url": "https://github.com/sparticleinc/chatgpt-google-summary-extension",
+      "first_seen": "2026-11-16",
+      "last_checked": "2026-11-17",
+      "status": "active",
+      "quality_score": 82
     }
   ]
 }

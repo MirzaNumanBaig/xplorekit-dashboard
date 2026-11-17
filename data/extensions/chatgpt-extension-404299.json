@@ -1,0 +1,40 @@
+{
+  "name": "ChatGPT Extension",
+  "summary": "A simple Manifest V3 Chrome extension that lets you reach OpenAI's ChatGPT from any page on the web. You pin the toolbar icon, click it and ask your question without opening a separate ChatGPT tab.",
+  "audience": "People who already use ChatGPT and want quick access to it from the browser toolbar.",
+  "pros": [
+    "Opens ChatGPT from any page through the toolbar icon",
+    "Built on Manifest V3, Chrome's current extension format",
+    "Listed on the Chrome Web Store, with source code on GitHub"
+  ],
+  "cons": [
+    "Needs a ChatGPT account, so you have to log in or sign up first",
+    "Relies on a third-party AI service whose availability and free access the author says are not guaranteed",
+    "The source describes it as a really simple extension, so it has few features"
+  ],
+  "pricing": "unknown",
+  "pricing_note": "",
+  "ai_related": true,
+  "store_url": "https://chromewebstore.google.com/detail/chatgpt-chrome-extension/cdjifpfganmhoojfclednjdnnpooaojb",
+  "extension_last_updated": "unknown",
+  "alternatives": [],
+  "source_url": "https://github.com/kazuki-sf/ChatGPT_Extension",
+  "source_urls": [
+    "https://github.com/kazuki-sf/ChatGPT_Extension",
+    "https://chromewebstore.google.com/detail/chatgpt-chrome-extension/cdjifpfganmhoojfclednjdnnpooaojb"
+  ],
+  "section": "extensions",
+  "first_seen": "2026-11-17",
+  "last_checked": "2026-11-17",
+  "status": "active",
+  "quality_score": 72,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "chatgpt-extension-404299"
+}

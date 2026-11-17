@@ -1,0 +1,50 @@
+{
+  "chassistantgpt-1a4f5d": {
+    "section": "extensions",
+    "published_at": "2026-11-17",
+    "pr": 76,
+    "withdrawn_at": null
+  },
+  "chatgpt-extension-404299": {
+    "section": "extensions",
+    "published_at": "2026-11-17",
+    "pr": 76,
+    "withdrawn_at": null
+  },
+  "glarity-summary-for-google-youtube-with-chatgpt-ce574a": {
+    "section": "extensions",
+    "published_at": "2026-11-17",
+    "pr": 76,
+    "withdrawn_at": null
+  },
+  "mouse-tooltip-translator-499769": {
+    "section": "extensions",
+    "published_at": "2026-11-17",
+    "pr": 76,
+    "withdrawn_at": null
+  },
+  "writely-0d1d31": {
+    "section": "extensions",
+    "published_at": "2026-11-17",
+    "pr": 76,
+    "withdrawn_at": null
+  },
+  "define-success-criteria-and-test-cases-before-improving-a-pr-52857b": {
+    "section": "prompts",
+    "published_at": "2026-11-17",
+    "pr": 76,
+    "withdrawn_at": null
+  },
+  "ecc-3429c7": {
+    "section": "skills",
+    "published_at": "2026-11-17",
+    "pr": 76,
+    "withdrawn_at": null
+  },
+  "modern-web-guidance-5175b6": {
+    "section": "skills",
+    "published_at": "2026-11-17",
+    "pr": 76,
+    "withdrawn_at": null
+  }
+}
