@@ -6,26 +6,28 @@ secrets. Any person or AI tool can continue the work by reading this file. `CLAU
 
 ## What it does
 Finds, verifies and rewrites content for four sections of the Xplorekit site (private repo `MirzaNumanBaig/xplorekit`, live at
-xplorekit.online): **Make Money with AI** (highest priority), **Prompts**, **Chrome Extensions**, **Claude Skills**. Output is JSON in
-`data/<section>/`; each run opens one rolling pull request on the site repo (`public/data/...`); a human merges it.
+xplorekit.online): **Make Money with AI** (highest priority), **Prompts**, **Chrome Extensions**, **Claude Skills**. It runs **every 3 hours**
+and **publishes by itself**: output is JSON in `data/<section>/`; every run renders the verified entries as cards inside the existing hub pages of
+the site, runs safety checks, and merges the pull request on the site repo when they all pass (merging deploys to Cloudflare).
 
 ```
-collectors -> prefilter (already on the site / already rejected / relevant) -> enrich (README, Web Store links)
-  -> section agent (Claude writes drafts) -> Editor/Verifier -> data/ -> dashboard (docs/) + PR on the site repo
+collectors -> prefilter (already on the site / already rejected / relevant) -> enrich (README, Web Store links, focused page excerpts)
+  -> section agent (Claude writes drafts) -> Editor/Verifier (incl. a real fact-check) -> data/
+  -> reverify older unchecked entries -> sync to the site repo -> site's build-feed.py renders cards -> safety checks -> auto-merge
+  -> dashboard (docs/)
 ```
 
 ## Project goal and scope (updated)
 The site's front end is to become three data-driven libraries, each filled by this pipeline: a **Prompt library** (grouped by job: marketing,
 SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome Extension library**. "Make Money with AI" stays a fourth section.
-- Libraries are for the site visitor. Pages read `public/data/<section>/index.json` in the private site repo; no page may invent data.
-- Done when: all three library pages are live on the site, show merged data, and the dashboard shows entries and Claude token usage.
+- Libraries are for the site visitor. Cards are built from `public/data/<section>/` in the private site repo by its `scripts/build-feed.py`; no page may invent data.
+- Done when: the hub pages show merged, fact-checked cards, new items keep arriving every 3 hours without duplicates, and the dashboard shows entries and Claude token usage.
 - Open-source images are optional: use one only when its licence is clear and it is stored with the entry's source. Skipping is fine.
-- Rollout: the owner checks the pages after the **first real run**; scheduled automatic runs are turned on only after that.
+- Rollout: **the owner approved scheduled runs and automatic publishing on 2026-11-17** (every 3 hours, auto-merge on).
 - `Researcher-agents` (celebrity news) is a workflow reference only. Never copy its data, names or sources.
-- Status (2026-11-17): **built and proven end to end once.** Two real manual runs on 2026-11-16 used the Claude CLI with the OAuth token (token slot 1,
-  0 AI failures) and saved real entries; the hand-off opened PR #76 on the site repo (open, not yet merged); the dashboard and the library pages are
-  deployed on GitHub Pages and CI is green. Still pending: the owner's review and merge of PR #76, the three library pages on the private site, and
-  turning on scheduled runs (see Known gaps).
+- Status (2026-11-17): the pipeline and dashboard are built. Two real manual runs on 2026-11-16 worked (Claude CLI via the OAuth token, real entries,
+  hand-off opened PR #76 on the site repo). On 2026-11-17 these were fixed and the site-side card builder was added (see Known gaps for what is not yet
+  proven live). Cards live in the existing hub pages, **not** on separate pages (owner decision).
 
 ## Where things are
 | What | Where |
@@ -37,7 +39,7 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 | Collectors (HN, GitHub, RSS, Reddit API, YouTube, plain pages) | `xplorekit/collectors/` |
 | Verifier rules (links, dedupe, income, hype, copy, schema) | `xplorekit/verify/`, `xplorekit/agents/editor_verifier.py` |
 | Entry point | `xplorekit/run.py` |
-| Hand-off to the site repo | `xplorekit/sync_site.py`, `scripts/open_site_pr.sh` |
+| Hand-off to the site repo (sync, safety checks, PR, auto-merge) | `xplorekit/sync_site.py`, `xplorekit/site_pr.py` (cards: `scripts/build-feed.py` in the SITE repo) |
 | Dashboard (Overview, Entries, Rejected, Sources, Runs, Usage = Claude tokens per run; built to `docs/index.html`, GitHub Pages) | `xplorekit/build_dashboard.py`, `xplorekit/dashboard_template.html` |
 | Cloud-session permission to attach the private site repo (owner-approved) | `.claude/settings.json` |
 | Workflows | `.github/workflows/`: `research` (daily), `recheck` (weekly), `dashboard`, `tests` |
@@ -45,14 +47,18 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 | First dry run and its findings | `samples/REPORT.md` |
 
 ## How to operate it (all from GitHub)
+- **Schedule:** `research.yml` runs at minute 17 of every 3rd hour. `per_run_max` (1 per section) spreads the daily/weekly caps over the day's runs; a run
+  whose section is already at its cap exits before spending any Claude tokens.
 - **Run now:** Actions -> Research -> Run workflow (`dry_run: true` writes nothing; `section`, `limit` optional).
-- **Pause / resume:** set `"paused": true` or `false` in `settings.json`, or disable the workflow in Actions.
-- **Change limits:** edit `settings.json` (caps, `min_quality_score`, `stale_after_days`, `max_realistic_monthly_income`).
+- **Pause / resume:** `"paused": true` or `false` in `settings.json`, or disable the workflow in Actions. Nothing is collected, written or published while paused.
+- **Stop publishing but keep researching:** `"auto_merge_site": false` in `settings.json`. Pull requests then open and wait for a human.
+- **Undo a published batch:** in the site repo, `git revert` the squash commit "Research feed: verified entries (<date>)" and push to `main`.
+- **Change limits:** edit `settings.json` (caps, `per_run_max`, `min_quality_score`, `stale_after_days`, `max_realistic_monthly_income`, `near_duplicate`).
 - **Add / pause a source:** edit `sources.json` (see `GUIDE.md`). **Change agent behaviour:** edit the prompt file.
-- **Look at results:** the dashboard (Pages), `data/`, `data/rejected/` (why things were turned away), `data/runs.json`.
+- **Look at results:** the dashboard (Pages), `data/`, `data/rejected/` (why things were turned away), `data/runs.json`, `data/site_pr.json` (what the last delivery did).
 - **Secrets** (Settings -> Secrets -> Actions): `CLAUDE_CODE_OAUTH_TOKEN` (+ `_2`, `_3` fallbacks, tried in order when one fails or is out of
-  usage), optional `ANTHROPIC_API_KEY`, `SITE_REPO_TOKEN` (fine-grained, site repo only), optional `REDDIT_CLIENT_ID/SECRET`, `YOUTUBE_API_KEY`.
-  Never commit a secret; never print one; error messages name token slots, not values.
+  usage), optional `ANTHROPIC_API_KEY`, `SITE_REPO_TOKEN` (fine-grained, site repo only: Contents + Pull requests read/write), optional `REDDIT_CLIENT_ID/SECRET`,
+  `YOUTUBE_API_KEY`. Never commit a secret; never print one; error messages name token slots, not values.
 
 ## Content rules (they apply to every agent and to every human edit)
 1. Only facts present in the collected source material. Never guess a price, date, feature, number or income figure.
@@ -60,6 +66,7 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 3. **Income figures only when the cited source text itself states them**, copied exactly, never above the realistic cap. No "get rich quick",
    no guarantees, no passive-income promises. Risks and limits are mandatory in the Money section.
 4. No popularity numbers (stars, users, downloads, ratings) anywhere: the site forbids them.
+   Cards carry the byline "Researched with AI, checked by Xplorekit" (owner decision), never "Reviewed by"; Make Money cards show an income figure only when the source states it, attributed.
 5. Respect robots.txt and site terms. Official APIs, RSS and public pages first. Reddit only through its official API. A site that refuses
    bots (403 or robots.txt) is not read, and nothing is claimed from it. Never spoof a browser to get around it.
 6. Skipping is correct. Fewer, verified entries beat padded ones. A weak candidate is dropped, not rescued.
@@ -68,9 +75,24 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
    The Editor/Verifier decides; a human merges the site PR.
 
 ## Quality gate (code, not opinion)
-Schema -> duplicate (accepted, same batch, **already on the live site**: URL + title similarity) -> source link alive (GitHub repos via the raw README
-host; HEAD falls back to GET) -> section rules (extension needs a live Chrome Web Store page; Money income and hype gate) -> verbatim-copy check ->
-fact-check -> score (min of rule score and fact-check score). No independent fact-check = tagged `rules_only` and capped at 79, below the Money floor (80).
+Schema -> duplicate (see "No duplicates") -> source link alive (GitHub repos via the raw README host; HEAD falls back to GET) -> section rules (extension
+needs a live Chrome Web Store page; Money income and hype gate) -> verbatim-copy check -> **fact-check** (the model checks every claim against the source
+text; an unreadable answer is retried once, then the draft is rejected as `fact_check_failed`, never published unchecked) -> score (min of rule score and
+fact-check score). An entry stored without an independent fact-check is tagged `rules_only`, capped at 79 (below the Money floor, 80), **never delivered to
+the site**, and is re-run through the whole gate by `python -m xplorekit.run --reverify` (it earns a real fact-check or is removed).
+
+## No duplicates (decided 2026-11-17; enforced in code at four places)
+1. **Identity, not just URL:** one key per thing: a GitHub repo (`owner/repo`, any spelling), a Chrome Web Store extension id (any slug or host), else the cleaned URL.
+2. **Against everything known:** entries already accepted, the rest of the batch, **other sections** (a skill is not also an extension), data already delivered to
+   the site (`public/data`), and the hand-written site pages (their `<h1>` and outbound links).
+3. **Wording, only where there is no unique id:** prompts (title overlap >= 0.4 or prompt-text overlap >= 0.33) and money ideas (title overlap >= 0.5). Shared generic words
+   do NOT make two extensions or skills duplicates (their store id / repo decides). Thresholds: `settings.json` -> `near_duplicate`.
+4. **Again at render time:** the site's `scripts/build-feed.py` applies the same identity and wording rules and shows each thing once.
+
+## Publishing safety (what must pass before the pipeline merges by itself)
+`xplorekit/site_pr.py` merges the pull request only if ALL of these pass: only `public/data/` and the four hub pages changed; the change is not unusually
+large (`auto_merge_max_files`, default 60); the hub pages changed only inside the generated feed blocks; every entry has a `fact_check:*` tag and no popularity-count
+field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull request stays open with the failed checks listed, and the dashboard shows a warning.
 
 ## How we work on this repo (people and AI tools)
 - **Branch, test, merge, delete.** Build every change on a branch; run `python -m unittest discover -s tests` (all must pass); merge it to
@@ -85,19 +107,20 @@ fact-check -> score (min of rule score and fact-check score). No independent fac
 - The repo is public: no secrets, no personal contact details, no private information in code, data, logs or commit messages.
 
 ## Known gaps (update this list; do not hide them)
-- **Make Money produced 0 drafts in both real runs** (2026-11-16) even though it is the priority section: the agent returned nothing, or the candidates
-  were filtered out. Not diagnosed yet. Check `data/runs.json` (`money.collected`, `fresh`, `drafts`) and `data/rejected/money.json`, then the sources
-  (official platform rules pages work best; generic searches return noise) and the Money prompt.
-- The three library pages on the **private site** do not exist yet; nothing there reads `public/data/` (separate work in the site repo, whose
-  `CLAUDE.md` section "Research data feed" documents the rules). PR #76 on the site repo carries the first data and is waiting for the owner.
-- **Schedule vs rollout rule:** `research.yml` has a daily cron (05:23 UTC), but the rollout rule above says automatic runs start only after the owner
-  has checked the pages. Decide whether to disable the schedule (Actions -> Research -> Disable workflow) until then.
-- Both real runs were started by hand; the scheduled path, the weekly `recheck` workflow and the `ANTHROPIC_API_KEY` / token-fallback (`_2`, `_3`)
-  paths have not run for real yet.
-- Medium and Upwork block bots, so nothing is claimed from them.
+- **Auto-publish is not yet proven live.** The path "render cards -> safety checks -> auto-merge -> Cloudflare deploy" is tested with fakes and on a throwaway copy of the
+  site, not in a real run. The first scheduled run is the first real proof: check the dashboard (a held-back PR shows as a warning) and the site's `main`.
+- **Everything saved before 2026-11-17 was stored without a fact-check** (`rules_only`): fact-check replies were parsed as the wrong piece of JSON and silently
+  dropped. Fixed (and covered by a regression test). Those entries are held back from the site; `--reverify` runs on every research run and either gives them a real
+  fact-check or removes them.
+- **Make Money produced 0 drafts in both real runs (2026-11-16).** Cause found: for rules pages (KDP, Etsy) the agent saw only the page's navigation text. Fixed with
+  focused excerpts (the AI/rules passages); not yet seen working in a real run. Generic searches are still noisy; Medium and Upwork block bots, so nothing is claimed from them.
+- **Token use at a 3-hour cadence is unknown.** The first real runs cost roughly 1 USD API-equivalent each. Watch the dashboard's Usage tab; tune `per_run_max` or the caps
+  if usage runs high.
+- The scheduled path, the weekly `recheck` workflow, the token fallback (`_2`, `_3`) and the `ANTHROPIC_API_KEY` path have not run for real yet.
+- The site's UI is to be redesigned (owner request, 2026-11-17); the direction is not chosen, so nothing is restyled yet. Feed cards use only the site's tokens and card classes, so they follow.
+- Open question for the owner: should the site's `robots.txt` disallow `/data/` (the raw JSON)?
 
-## Open owner decisions (asked 2026-11-17; use the safe default until answered)
-1. **Byline for pipeline entries.** The site's standard byline says "Reviewed by Xplorekit's independent developer". Default: do not use it for feed
-   entries unless the owner really reviewed the PR. Proposed: "Researched with AI, checked by Xplorekit".
-2. **Income figures on Make Money pages.** Default: show none. The data keeps a figure only when the cited source states it.
-3. **Auto-merge of the site PR.** Default: a human merges it (merging deploys to the live site).
+## Owner decisions
+Decided 2026-11-17: cards go **inside the existing hub pages**; byline "Researched with AI, checked by Xplorekit"; Make Money cards **show income figures only when the
+source states them**, attributed; the pipeline **merges by itself** (safety checks above); **no duplicates**; schedule **every 3 hours**.
+Still open: the new site UI direction; whether `/data/` is hidden from search engines.

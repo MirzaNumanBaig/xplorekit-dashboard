@@ -84,6 +84,6 @@ Only after step 6 passes and the owner agrees.
 Give the owner: which steps passed, the dashboard URL, the PR link (if step 7 ran), and anything unverified. Be honest that the Claude-agent step and the cross-repo PR are proven only once step 6/7 have actually run green.
 
 ## Known gaps (not part of this task)
-- The site pages do not read `public/data/` yet; that is separate work in the private site repo, so merged data will not show on xplorekit.online until then.
+- Since 2026-11-17 the private site repo has `scripts/build-feed.py`, which renders the delivered data as cards inside the four hub pages; the pipeline runs it and merges the result itself (see AGENTS.md).
 - Sample entries in `samples/` were fact-checked by hand, not by the scheduled agent. Money discovery is weak; official platform rules pages work best.
-- Schedules after setup: `research.yml` daily 05:23 UTC, `recheck.yml` weekly (Mondays 05:41 UTC). Pause by setting `"paused": true` in `xplorekit/config/settings.json`.
+- Schedules after setup: `research.yml` every 3 hours (minute 17), `recheck.yml` weekly (Mondays 05:41 UTC). Pause by setting `"paused": true` in `xplorekit/config/settings.json`.

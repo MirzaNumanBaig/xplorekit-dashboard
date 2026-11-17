@@ -18,7 +18,7 @@ collectors (HN, GitHub, RSS, official docs, Reddit/YouTube with keys)
    -> section agent (Claude writes drafts in its own words)
    -> Editor/Verifier (schema, duplicates, live links, income + hype gate, copy check, fact-check, score)
    -> data/<section>/*.json + index.json   (this repo)
-   -> one rolling pull request on the private site repo (public/data/...)  -> you review -> merge -> Cloudflare deploys
+   -> sync to the private site repo -> its build-feed.py renders cards into the hub pages -> safety checks -> the pull request merges itself -> Cloudflare deploys
 ```
 
 ## Quality gate (what gets rejected)
@@ -31,7 +31,7 @@ fact-check are tagged `rules_only` and capped at 79, so they can never pass the 
 ## Rules the pipeline follows
 robots.txt is checked before every page fetch (and Reddit is used through its official API only) · official APIs, RSS and public pages first ·
 nothing is copied; the source URL is always stored · no star, user, download or rating counts are ever stored (the site's own rule) ·
-daily and weekly caps per section (`xplorekit/config/settings.json`).
+daily and weekly caps per section (and a per-run maximum, since it runs every 3 hours) (`xplorekit/config/settings.json`).
 
 ## Dashboard
 `docs/index.html` is rebuilt after every run and served by GitHub Pages (Settings -> Pages -> branch `main`, folder `/docs`). It shows health warnings,

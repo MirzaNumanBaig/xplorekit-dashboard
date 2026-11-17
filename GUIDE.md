@@ -35,11 +35,12 @@ Alternative without a subscription: an API key from console.anthropic.com saved 
 `https://<your-github-name>.github.io/xplorekit-dashboard/`. It is rebuilt by every research run and by the `Dashboard` workflow when data or settings change.
 
 ## 2. Run it
-- **Automatically:** `research.yml` runs daily; `recheck.yml` runs weekly (re-checks links, flags stale entries).
+- **Automatically:** `research.yml` runs **every 3 hours**; `recheck.yml` runs weekly (re-checks links, flags stale entries).
 - **By hand:** Actions → *Research* → *Run workflow*. Use `dry_run: true` the first time: it writes to `.dryrun/` and commits nothing.
 - **Locally:** `python -m xplorekit.run --section money --dry-run --site-dir ../xplorekit` (needs `claude` CLI + token, or an API key).
-- **Review:** each run opens (or updates) **one** pull request on the site repo from the branch `feed/xplorekit-research`. It lists every new entry with its
-  source, score and checks. Merge it to publish the data; Cloudflare deploys as it does for any merge to `main`.
+- **Publishing (automatic):** each run syncs the fact-checked entries to the site repo, whose `scripts/build-feed.py` renders them as cards inside the four hub pages, then
+  `xplorekit/site_pr.py` runs the safety checks (see AGENTS.md) and **merges the pull request itself** (branch `feed/xplorekit-research`); Cloudflare deploys as for any merge to `main`.
+  If a check fails, the pull request stays open and the dashboard shows why. To stop publishing, set `"auto_merge_site": false` in `settings.json`; to undo a batch, `git revert` its squash commit in the site repo.
 - **Caps** (daily/weekly per section), score floors, stale-after days and the income cap live in `xplorekit/config/settings.json`.
 
 Useful flags: `--limit N`, `--section money|prompts|extensions|skills|all`, `--collect-only`, `--use-cache`,
