@@ -13,5 +13,6 @@ def collect(src):
         m = re.search(r"(?is)<title[^>]*>(.*?)</title>", body)
         title = strip_html(m.group(1)) if m else url.rsplit("/", 1)[-1]
         text = body if url.endswith((".md", ".txt")) else readable_text(body)
-        out.append({"title": title, "url": url, "snippet": re.sub(r"\s+", " ", text)[:1500], "date": "", "score": 0, "extra": {}})
+        flat = re.sub(r"\s+", " ", text)
+        out.append({"title": title, "url": url, "snippet": flat[:1500], "full": flat[:30000], "kind": "page", "date": "", "score": 0, "extra": {}})
     return out

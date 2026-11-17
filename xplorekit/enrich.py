@@ -54,11 +54,47 @@ def readme_plain(owner, repo, limit=20000):
     return re.sub(r"\s+", " ", re.sub(r"!\[[^\]]*\]\([^)]*\)|<[^>]+>", " ", text))[:limit]
 
 
+AI_WORDS = ("artificial intelligence", "ai-generated", "ai-assisted", "ai generated", "ai tool", "chatgpt", "claude", "gemini", "generative")
+RULE_WORDS = ("must", "required", "not allowed", "disclose", "guideline", "polic", "eligible", "not accepted", "we require", "you may not", "prohibit")
+MONEY_WORDS = ("earn", "income", "per hour", "per month", "revenue", "royalt", "commission", "payout")
+
+
+def _score(p):
+    """AI terms dominate: a menu that merely says 'Payments' or 'Royalties' must not outrank the paragraph that explains the AI rules."""
+    low = p.lower()
+    ai = sum(low.count(w) for w in AI_WORDS) + len(re.findall(r"\bai\b", low))
+    return 8 * ai + 2 * sum(low.count(w) for w in RULE_WORDS) + 1 * sum(low.count(w) for w in MONEY_WORDS) if ai else 0
+
+
+def focus_excerpt(text, size=4500, chunk=380):
+    """The passages of a long page that matter (AI first, then rules and earning), in page order, instead of its navigation-heavy first lines."""
+    text = re.sub(r"\s+", " ", text or "")
+    if len(text) <= size:
+        return text
+    parts = [text[i:i + chunk] for i in range(0, len(text), chunk)]
+    budget = max(1, size // chunk)
+    ranked = [i for i in sorted(range(len(parts)), key=lambda i: _score(parts[i]), reverse=True) if _score(parts[i]) > 0][: max(1, budget // 2)]
+    if not ranked:  # nothing mentions AI: fall back to the start of the main text
+        return text[:size]
+    keep = set(ranked)
+    for i in ranked:  # the neighbours keep sentences whole (a slice boundary may cut one in half)
+        for j in (i - 1, i + 1):
+            if 0 <= j < len(parts) and len(keep) < budget:
+                keep.add(j)
+    out, prev = "", None
+    for i in sorted(keep):  # neighbouring slices are contiguous text: join them seamlessly; separate passages get a visible gap
+        out += parts[i] if prev is not None and i == prev + 1 else (" … " if prev is not None else "") + parts[i]
+        prev = i
+    return out[:size]
+
+
 def enrich(cands, section, limit=None):
     """Mutates and returns cands: adds `details` (README excerpt) and `store_urls` for GitHub repos, for the first `limit` only."""
     limit = limit or settings().get("enrich_max", 12)
     done = 0
     for c in cands:
+        if c.get("full") and not c.get("details"):  # a plain page: hand the agent the relevant passages, not the first lines
+            c["details"] = focus_excerpt(c["full"])
         m = GH_REPO.match(c["url"])
         if not m or done >= limit:
             continue
