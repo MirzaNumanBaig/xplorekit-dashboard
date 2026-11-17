@@ -22,7 +22,10 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 - Open-source images are optional: use one only when its licence is clear and it is stored with the entry's source. Skipping is fine.
 - Rollout: the owner checks the pages after the **first real run**; scheduled automatic runs are turned on only after that.
 - `Researcher-agents` (celebrity news) is a workflow reference only. Never copy its data, names or sources.
-- Status: pipeline and dashboard are built; the first workflow run, the secrets and the three site pages are still pending (see Known gaps).
+- Status (2026-11-17): **built and proven end to end once.** Two real manual runs on 2026-11-16 used the Claude CLI with the OAuth token (token slot 1,
+  0 AI failures) and saved real entries; the hand-off opened PR #76 on the site repo (open, not yet merged); the dashboard and the library pages are
+  deployed on GitHub Pages and CI is green. Still pending: the owner's review and merge of PR #76, the three library pages on the private site, and
+  turning on scheduled runs (see Known gaps).
 
 ## Where things are
 | What | Where |
@@ -36,6 +39,7 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 | Entry point | `xplorekit/run.py` |
 | Hand-off to the site repo | `xplorekit/sync_site.py`, `scripts/open_site_pr.sh` |
 | Dashboard (Overview, Entries, Rejected, Sources, Runs, Usage = Claude tokens per run; built to `docs/index.html`, GitHub Pages) | `xplorekit/build_dashboard.py`, `xplorekit/dashboard_template.html` |
+| Cloud-session permission to attach the private site repo (owner-approved) | `.claude/settings.json` |
 | Workflows | `.github/workflows/`: `research` (daily), `recheck` (weekly), `dashboard`, `tests` |
 | Setup, how to add a source or a section | `GUIDE.md` |
 | First dry run and its findings | `samples/REPORT.md` |
@@ -71,12 +75,29 @@ fact-check -> score (min of rule score and fact-check score). No independent fac
 ## How we work on this repo (people and AI tools)
 - **Branch, test, merge, delete.** Build every change on a branch; run `python -m unittest discover -s tests` (all must pass); merge it to
   `main` yourself (fast-forward when possible) and delete the branch. Small commits with clear messages. No long-lived branches.
+- **Cloud sessions cannot delete remote branches** (the sandbox proxy blocks both `git push --delete` and the GitHub API). So: build on a *local*
+  branch, merge it locally (fast-forward), and push only `main`; never push a throwaway feature branch. If one was pushed, delete it on GitHub.
+- **Other writers touch `main`:** the research bot commits `data/` and `docs/`, and other Claude sessions may be working here too (branches
+  `claude/...`). Always `git fetch` and fast-forward or rebase before editing, and read the current files first; never overwrite someone else's change.
 - Add or change behaviour together with a test. Tests are offline: no network, no model.
 - Say plainly what was and was not verified. Never claim a live workflow, token or cross-repo push works until it has run.
 - Do not add dependencies: the project is Python standard library only (plus the `claude` CLI inside the workflow).
 - The repo is public: no secrets, no personal contact details, no private information in code, data, logs or commit messages.
 
 ## Known gaps (update this list; do not hide them)
-- The agents running through `claude -p` with the OAuth token, and `scripts/open_site_pr.sh` with `SITE_REPO_TOKEN`, have not run for real yet.
-- The site pages do not read `public/data/` yet (separate work in the site repo).
-- Money discovery is weak with generic searches; official platform rules pages work best. Medium and Upwork block bots.
+- **Make Money produced 0 drafts in both real runs** (2026-11-16) even though it is the priority section: the agent returned nothing, or the candidates
+  were filtered out. Not diagnosed yet. Check `data/runs.json` (`money.collected`, `fresh`, `drafts`) and `data/rejected/money.json`, then the sources
+  (official platform rules pages work best; generic searches return noise) and the Money prompt.
+- The three library pages on the **private site** do not exist yet; nothing there reads `public/data/` (separate work in the site repo, whose
+  `CLAUDE.md` section "Research data feed" documents the rules). PR #76 on the site repo carries the first data and is waiting for the owner.
+- **Schedule vs rollout rule:** `research.yml` has a daily cron (05:23 UTC), but the rollout rule above says automatic runs start only after the owner
+  has checked the pages. Decide whether to disable the schedule (Actions -> Research -> Disable workflow) until then.
+- Both real runs were started by hand; the scheduled path, the weekly `recheck` workflow and the `ANTHROPIC_API_KEY` / token-fallback (`_2`, `_3`)
+  paths have not run for real yet.
+- Medium and Upwork block bots, so nothing is claimed from them.
+
+## Open owner decisions (asked 2026-11-17; use the safe default until answered)
+1. **Byline for pipeline entries.** The site's standard byline says "Reviewed by Xplorekit's independent developer". Default: do not use it for feed
+   entries unless the owner really reviewed the PR. Proposed: "Researched with AI, checked by Xplorekit".
+2. **Income figures on Make Money pages.** Default: show none. The data keeps a figure only when the cited source states it.
+3. **Auto-merge of the site PR.** Default: a human merges it (merging deploys to the live site).
