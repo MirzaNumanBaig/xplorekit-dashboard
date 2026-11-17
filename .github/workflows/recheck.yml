@@ -23,6 +23,12 @@ jobs:
           path: site
           fetch-depth: 1
       - run: python -m xplorekit.run --recheck
+      - name: Update the site (withdraw stale entries; merges itself when every safety check passes)
+        env:
+          GH_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
+        run: |
+          python -m xplorekit.sync_site --site-dir site --pr-body pr.md
+          python -m xplorekit.site_pr --site-dir site --body pr.md
       - name: Rebuild the dashboard and commit
         run: |
           python -m xplorekit.build_dashboard
@@ -30,9 +36,3 @@ jobs:
           git config user.email "xplorekit-research-bot@users.noreply.github.com"
           git add data docs
           git diff --cached --quiet || { git commit -m "Recheck links, flag stale entries, rebuild dashboard" && bash scripts/push_retry.sh; }
-      - name: Update the site pull request
-        env:
-          GH_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
-        run: |
-          python -m xplorekit.sync_site --site-dir site --pr-body pr.md
-          bash scripts/open_site_pr.sh site pr.md

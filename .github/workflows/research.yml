@@ -1,12 +1,14 @@
 name: Research
-# Daily: collect -> agents write -> Editor/Verifier gate -> commit data/ here -> one rolling pull request on the private site repo.
+# Every 3 hours: collect -> Claude writes drafts -> Editor/Verifier gate -> re-verify older unchecked entries -> deliver to the site repo
+# (cards are rendered into the hub pages, safety checks run, then the pull request merges itself) -> rebuild the dashboard.
+# Settings live in xplorekit/config/settings.json: "paused", "auto_merge_site", caps, per_run_max. Instructions: AGENTS.md.
 on:
-  schedule: [{cron: "23 5 * * *"}]
+  schedule: [{cron: "17 */3 * * *"}]
   workflow_dispatch:
     inputs:
       section: {description: "money, prompts, extensions, skills or all", default: "all"}
       limit: {description: "max new entries per section (empty = the caps in settings.json)", default: ""}
-      dry_run: {description: "true = write to .dryrun/, do not commit or open a PR", default: "false"}
+      dry_run: {description: "true = write to .dryrun/, do not commit or deliver", default: "false"}
 concurrency: {group: research, cancel-in-progress: false}
 permissions:
   contents: write
@@ -16,15 +18,24 @@ jobs:
     timeout-minutes: 45
     env:
       SITE_REPO: MirzaNumanBaig/xplorekit
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      CLAUDE_CODE_OAUTH_TOKEN_2: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_2 }}
+      CLAUDE_CODE_OAUTH_TOKEN_3: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_3 }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+      REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      XK_CONTACT: ${{ vars.XK_CONTACT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - uses: actions/setup-node@v4
         with: {node-version: "20"}
-      - name: Install the Claude Code CLI (the agents run through it with CLAUDE_CODE_OAUTH_TOKEN)
+      - name: Install the Claude Code CLI (the agents run through it with the OAuth token)
         run: npm install -g @anthropic-ai/claude-code
-      - name: Check out the private site repo (to know what the site already has, and to open the PR)
+      - name: Check out the private site repo (what it already has, and where the pull request goes)
         uses: actions/checkout@v4
         with:
           repository: ${{ env.SITE_REPO }}
@@ -33,15 +44,6 @@ jobs:
           fetch-depth: 1
       - name: Run the research pipeline
         env:
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          CLAUDE_CODE_OAUTH_TOKEN_2: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_2 }}
-          CLAUDE_CODE_OAUTH_TOKEN_3: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_3 }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
-          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-          XK_CONTACT: ${{ vars.XK_CONTACT }}
           IN_SECTION: ${{ inputs.section }}
           IN_LIMIT: ${{ inputs.limit }}
           IN_DRY: ${{ inputs.dry_run }}
@@ -50,6 +52,18 @@ jobs:
           if [ -n "$IN_LIMIT" ]; then args+=(--limit "$IN_LIMIT"); fi
           if [ "$IN_DRY" = "true" ]; then args+=(--dry-run); fi
           python -m xplorekit.run "${args[@]}"
+      - name: Fact-check older entries that were stored without one
+        if: inputs.dry_run != 'true'
+        run: python -m xplorekit.run --reverify --site-dir site
+      - name: Deliver to the site repo (render cards, safety checks, merge when everything passes)
+        id: deliver
+        if: inputs.dry_run != 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
+        run: |
+          python -m xplorekit.sync_site --site-dir site --pr-body pr.md
+          python -m xplorekit.site_pr --site-dir site --body pr.md
       - name: Rebuild the dashboard and commit the results to this repo
         if: inputs.dry_run != 'true'
         run: |
@@ -58,10 +72,6 @@ jobs:
           git config user.email "xplorekit-research-bot@users.noreply.github.com"
           git add data docs
           git diff --cached --quiet || { git commit -m "Research: update entries and dashboard" && bash scripts/push_retry.sh; }
-      - name: Send the verified data to the site repo as a pull request
-        if: inputs.dry_run != 'true'
-        env:
-          GH_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
-        run: |
-          python -m xplorekit.sync_site --site-dir site --pr-body pr.md
-          bash scripts/open_site_pr.sh site pr.md
+      - name: Fail the run when delivery to the site broke
+        if: steps.deliver.outcome == 'failure'
+        run: echo "Delivery to the site repo failed (see the 'Deliver' step). The data was still committed here." && exit 1
