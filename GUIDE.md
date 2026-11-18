@@ -89,3 +89,16 @@ By default the token is forgotten when you close the tab; tick "Remember it on t
 **What the controls do:** **Pause / Resume** sets `paused` in `settings.json`; **Run now** starts the Research workflow; **New posts go to** sets `publish_mode`: *Published (live)* merges by itself, *Pending* opens a pull request that a person merges, *Draft* only researches and saves (nothing is sent to the site). Every change is a commit on `main` titled "Dashboard: ...", so it shows in git history and can be reverted. A change applies from the next run.
 Without a token the bar still shows the schedule and live run status (it reads GitHub's public API) and the buttons just ask you to connect.
 Safety: the page only ever contacts `api.github.com` (the browser enforces this), the token travels only in a request header (never in a URL), and the page can only read, run the workflow, or write that one settings file: it has no way to delete anything.
+
+
+## 8. How the whole system works (same text as the dashboard's "How it works" tab)
+1. **Wake up** every 3 hours (Research workflow, minute 17), or when you press Run now. Paused or at the daily/weekly limit = nothing is spent.
+2. **Collect** from the per-section sources in `sources.json` (Hacker News, GitHub, official blogs/feeds, public pages). robots.txt is respected; a site that refuses bots is not read.
+3. **Filter** repeats before any AI is used (already on the site, accepted, rejected, in another section) and drop off-topic items.
+4. **Read the real page** (README, Chrome Web Store listing, platform help page) and keep the relevant passages.
+5. **Claude writes a draft** per section from `xplorekit/prompts/`: own words, no invented facts, may write nothing.
+6. **The Editor checks it**: schema, duplicates, live link, section rules (money income only if the source states it), copy limit, a second AI fact-check of every claim, and a minimum score. If the AI check cannot run, the entry waits and is retried, never published unchecked.
+7. **Save** to `data/` (shows in the dashboard as Pending).
+8. **Deliver**: copied to the site repo, which builds a card on the hub page and a full page at `/research/<section>/<id>` plus a sitemap line; safety checks run; with publish mode "Published" it merges by itself and Cloudflare deploys it.
+9. **Stay honest**: stale or dead entries are withdrawn; entries stored without a fact-check are re-checked every run.
+Watch it all in the dashboard: Overview (last run step by step), Activity (every item saved or turned away, with reasons), Posts (every entry and its live page).

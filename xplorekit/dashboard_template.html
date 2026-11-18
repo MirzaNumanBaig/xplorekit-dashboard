@@ -76,6 +76,21 @@ code{background:var(--chip);padding:1px 6px;border-radius:5px;font-size:13px}
 h2{font-size:16px;margin:22px 0 10px}
 footer{color:var(--muted);font-size:12.5px;padding:8px 0 30px}
 td.nowrap{white-space:nowrap}
+.flow{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:0 0 6px}
+.stage{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.stage b{display:block;font-size:26px;line-height:1.1}.stage span{display:block;font-weight:600;font-size:13px}.stage small{color:var(--muted);font-size:12px}
+.stage.end{border-color:var(--ok)}
+@media (min-width:900px){.stage:not(:last-child)::after{content:"\2192";position:absolute;right:-10px;top:50%;transform:translateY(-50%);background:var(--bg);color:var(--muted);width:20px;text-align:center;z-index:1}}
+details.run{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:0 0 10px;box-shadow:var(--shadow)}
+details.run>summary{cursor:pointer;padding:12px 14px;display:flex;gap:8px 14px;flex-wrap:wrap;align-items:center;list-style:none}
+details.run>summary::-webkit-details-marker{display:none}
+details.run>summary::before{content:"\25B8";color:var(--muted)}details.run[open]>summary::before{content:"\25BE"}
+.runbody{padding:2px 14px 14px;display:grid;gap:12px}
+.rsec{border-top:1px solid var(--line);padding-top:10px;min-width:0;overflow-wrap:anywhere}.rsec h4{margin:0 0 4px;font-size:14px}
+.rsec ul{margin:4px 0 0;padding-left:18px}.rsec li{margin:2px 0}
+.how{max-width:860px}.how h2{margin-top:26px}.how .step{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;margin:0 0 16px}
+.how .num{width:30px;height:30px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-weight:700;font-size:14px}
+.how p{margin:4px 0}.how ul{margin:4px 0;padding-left:18px}.how .where{margin-top:6px}
 </style>
 </head>
 <body>
@@ -112,14 +127,14 @@ var L=$("#links");
 [["Run it now",gh("/actions/workflows/research.yml"),true],["Actions",gh("/actions"),false],["Site pull requests","https://github.com/"+D.site_repo+"/pulls",false],["Live site",D.site_url,false]].forEach(function(x){
   var a=link(x[0],x[1]);a.className="btn"+(x[2]?" primary":"");L.appendChild(a)});
 
-var TABS=[["overview","Overview"],["posts","Posts"],["rejected","Rejected"],["sources","Sources"],["runs","Runs"],["usage","Usage"],["setup","Setup"]];
+var TABS=[["overview","Overview"],["activity","Activity"],["posts","Posts"],["sources","Sources"],["usage","Usage"],["how","How it works"],["setup","Setup"]];
 var tabs=$("#tabs"),panels=$("#panels"),P={};
 TABS.forEach(function(t){
   var b=el("button",{role:"tab",id:"tab-"+t[0],"aria-controls":"p-"+t[0],"aria-selected":"false",text:t[1]});
   b.addEventListener("click",function(){show(t[0])});tabs.appendChild(b);
   P[t[0]]=el("section",{id:"p-"+t[0],role:"tabpanel","aria-labelledby":"tab-"+t[0],hidden:""});panels.appendChild(P[t[0]]);
 });
-function show(id){TABS.forEach(function(t){var on=t[0]===id;$("#tab-"+t[0]).setAttribute("aria-selected",on);if(on)P[t[0]].removeAttribute("hidden");else P[t[0]].setAttribute("hidden","")});try{history.replaceState(null,"","#"+id)}catch(e){}}
+function show(id){var cw=document.querySelector(".ctl-wrap");if(cw){if(id==="overview"||id==="setup")cw.removeAttribute("hidden");else cw.setAttribute("hidden","")}TABS.forEach(function(t){var on=t[0]===id;$("#tab-"+t[0]).setAttribute("aria-selected",on);if(on)P[t[0]].removeAttribute("hidden");else P[t[0]].setAttribute("hidden","")});try{history.replaceState(null,"","#"+id)}catch(e){}}
 
 /* Overview */
 (function(){
@@ -127,6 +142,17 @@ function show(id){TABS.forEach(function(t){var on=t[0]===id;$("#tab-"+t[0]).setA
   var ul=el("ul",{class:"health","aria-label":"Status"});
   D.health.forEach(function(h){ul.appendChild(el("li",{class:h.level},[el("strong",{text:{ok:"OK  ",warn:"Check  ",bad:"Problem  "}[h.level]}),h.text]))});
   p.appendChild(ul);
+  var research=D.runs.filter(function(r){return r.type==="research"&&!r.dry_run}),lastR=research[0];
+  p.appendChild(el("h2",{text:"The last run, step by step"}));
+  if(lastR){
+    var tot=function(k){return Object.keys(lastR.sections||{}).reduce(function(a,x){return a+(((lastR.sections[x]||{})[k])||0)},0)};
+    var live=(D.post_counts||{}).published||0;
+    var st=[["Found",tot("collected"),"links gathered from the sources"],["New and relevant",tot("fresh"),"left after dropping repeats and off-topic"],["Written by AI",tot("drafts"),"drafts from Claude"],["Passed the checks",tot("accepted"),"saved ("+tot("rejected")+" turned away)"],["Live on the site",live,"all-time, each with its own page"]];
+    var fl=el("div",{class:"flow"});st.forEach(function(x,i){fl.appendChild(el("div",{class:"stage"+(i===4?" end":"")},[el("span",{text:x[0]}),el("b",{text:String(x[1])}),el("small",{text:x[2]})]))});
+    p.appendChild(fl);
+    p.appendChild(el("p",{class:"small muted",text:"Run of "+(lastR.time||lastR.date).replace("T"," ").replace("+00:00"," UTC")+". Open the Activity tab to see every item it saved or turned away, and why."}));
+  }else p.appendChild(el("div",{class:"card empty",text:"No run recorded yet."}));
+  p.appendChild(el("h2",{text:"Sections"}));
   var g=el("div",{class:"grid"});
   D.sections.forEach(function(s){
     var pct=Math.min(100,Math.round(100*s.stats.week/s.caps.weekly));
@@ -137,16 +163,12 @@ function show(id){TABS.forEach(function(t){var on=t[0]===id;$("#tab-"+t[0]).setA
       el("div",{class:"small",text:"Live on the site: "+(s.stats.published||0)+" · waiting to go live: "+(s.stats.pending||0)}),el("div",{class:"small muted",text:"New this week: "+s.stats.week+" of "+s.caps.weekly+" · today: "+s.stats.today+" of "+s.caps.daily}),
       el("div",{class:"small muted",text:"Average score: "+(s.stats.avg_score==null?"–":s.stats.avg_score)+" · minimum to pass: "+s.floor})]);
     var ch=el("div",{class:"chips"});
-    if(s.stats.rejected_week){ch.appendChild(chip(s.stats.rejected_week+" rejected this week","warn"));Object.keys(s.stats.reasons_week).forEach(function(k){ch.appendChild(chip(k+" × "+s.stats.reasons_week[k]))})}
+    if(s.stats.rejected_week){ch.appendChild(chip(s.stats.rejected_week+" rejected this week","warn"));Object.keys(s.stats.reasons_week).forEach(function(k){var b=k.indexOf("reverify_")===0?k.slice(9):k;ch.appendChild(chip(((D.reasons||{})[b]||b.replace(/_/g," "))+" × "+s.stats.reasons_week[k]))})}
     else ch.appendChild(chip("nothing rejected this week"));
     if(s.stats.rules_only)ch.appendChild(chip(s.stats.rules_only+" without fact-check","bad"));
     c.appendChild(ch);g.appendChild(c);
   });
   p.appendChild(g);
-  var last=D.runs.filter(function(r){return r.type==="research"})[0];
-  p.appendChild(el("h2",{text:"Latest research run"}));
-  p.appendChild(last?el("div",{class:"card"},[el("div",{text:last.date+" · AI: "+(last.provider||"none")+(last.dry_run?" · dry run":"")+" · AI calls failed: "+(((last.llm||{}).failures||0))}),
-    el("div",{class:"chips"},Object.keys(last.sections||{}).map(function(k){var v=last.sections[k];return chip(k+": "+(v.status==="ok"?(v.accepted+" new, "+v.rejected+" rejected"):(v.status||"skipped").replace("_"," ")),v.status==="ok"?"ok":v.status==="cap_reached"?"":"bad")}))]):el("div",{class:"card empty",text:"No run recorded yet."}));
 })();
 
 /* Posts: everything this pipeline has saved, published or turned away. The Status dropdown picks what to show. */
@@ -212,9 +234,64 @@ function show(id){TABS.forEach(function(t){var on=t[0]===id;$("#tab-"+t[0]).setA
   [st,sec].forEach(function(n){n.addEventListener("change",draw)});q.addEventListener("input",draw);draw();
 })();
 
-/* Rejected */
-P.rejected.appendChild(table(["Date","Section","Title","Why","Detail"],D.rejected.map(function(r){
-  return el("tr",{},[el("td",{class:"nowrap",text:r.date||""}),el("td",{text:r.section}),el("td",{},[r.url?link(r.title||r.url,r.url):(r.title||"")]),el("td",{},[chip(r.reason,"warn")]),el("td",{class:"small muted",text:(r.detail||"").slice(0,240)})])}),"Nothing rejected yet. When the Verifier turns something away, the reason shows here."));
+/* Activity: every run, what each section did, what was saved and what was turned away */
+(function(){
+  var p=P.activity,R=D.reasons||{};
+  function why(c){c=c||"";var b=c.indexOf("reverify_")===0?c.slice(9):c;return R[b]||b.replace(/_/g," ")}
+  var live={};(D.posts||[]).forEach(function(x){if(x.live_url)live[x.id]=x.live_url});
+  p.appendChild(el("p",{class:"muted",text:"One entry per run, newest first. Everything the pipeline did is listed: what the sources found, what it wrote, what passed, what was turned away and why. Open a run to see the items."}));
+  var runs=D.runs;if(!runs.length){p.appendChild(el("div",{class:"card empty",text:"No runs recorded yet."}));return}
+  runs.forEach(function(r,i){
+    var when=(r.time||r.date).replace("T"," ").replace("+00:00"," UTC");
+    var secs=Object.keys(r.sections||{}),acc=0,rej=0;secs.forEach(function(k){acc+=(r.sections[k].accepted||0);rej+=(r.sections[k].rejected||0)});
+    var sum=el("summary",{},[el("strong",{text:when}),chip(r.type==="recheck"?"weekly re-check":(r.dry_run?"dry run":"research"),r.dry_run?"warn":""),
+      r.type==="recheck"?el("span",{class:"small muted",text:r.checked+" entries re-checked, "+r.stale+" stale"}):el("span",{class:"small",text:acc+" saved · "+rej+" turned away"+((r.llm||{}).failures?" · "+r.llm.failures+" AI call(s) failed":"")})]);
+    var body=el("div",{class:"runbody"});
+    secs.forEach(function(k){
+      var v=r.sections[k],nm=(D.sections.filter(function(x){return x.key===k})[0]||{}).name||k;
+      var line=v.status==="ok"?("found "+(v.collected||0)+" → new and relevant "+(v.fresh||0)+" → drafted "+(v.drafts||0)+" → saved "+(v.accepted||0)+", turned away "+(v.rejected||0)):v.status==="cap_reached"?"Skipped: today's or this week's limit was already reached.":v.status==="agent_failed"?"The AI step failed: "+(v.error||""):v.status==="no_model"?"No AI token was available.":(v.status||"").replace(/_/g," ");
+      var sec=el("div",{class:"rsec"},[el("h4",{text:nm}),el("div",{class:"small",text:line})]);
+      if((v.accepted_items||[]).length){var ul=el("ul");v.accepted_items.forEach(function(x){ul.appendChild(el("li",{},[chip("saved","ok")," ",live[x.id]?link(x.title,live[x.id]):el("span",{text:x.title})," ",el("span",{class:"small muted",text:"score "+x.score})]))});sec.appendChild(ul)}
+      if((v.rejected_items||[]).length){var ur=el("ul");v.rejected_items.forEach(function(x){ur.appendChild(el("li",{},[chip("turned away","warn")," ",x.url?link(x.title,x.url):el("span",{text:x.title})," ",el("span",{class:"small muted",text:"— "+why(x.reason)})]))});sec.appendChild(ur)}
+      else if(v.rejected&&v.reasons){sec.appendChild(el("div",{class:"small muted",text:"Turned away: "+Object.keys(v.reasons).map(function(c){return v.reasons[c]+" × "+why(c)}).join("; ")}))}
+      if(v.status==="ok"&&!(v.accepted_items||[]).length&&v.accepted)sec.appendChild(el("div",{class:"small muted",text:"Item titles were not recorded for this older run."}));
+      var skipped=(v.sources||[]).filter(function(x){return !/^ok/.test(x.status)});
+      if(skipped.length)sec.appendChild(el("div",{class:"small muted",text:"Sources not used: "+skipped.map(function(x){return x.id+" ("+x.status.replace("skipped, missing ","needs ")+")"}).join(", ")}));
+      body.appendChild(sec);
+    });
+    if(!secs.length)body.appendChild(el("div",{class:"small muted",text:"No per-section detail for this entry."}));
+    var d=el("details",{class:"run"},[sum,body]);if(i===0)d.setAttribute("open","");p.appendChild(d);
+  });
+})();
+
+/* How it works: the whole flow in plain words, with this system's live numbers */
+(function(){
+  var p=P.how,C=D.control||{},S=D.settings||{},sch=C.schedule,every=sch?sch.every_hours:3;
+  var srcCount={};D.sources.forEach(function(x){if(x.enabled)srcCount[x.section]=(srcCount[x.section]||0)+1});
+  function step(n,title,kids){return el("div",{class:"step"},[el("div",{class:"num",text:String(n)}),el("div",{},[el("strong",{text:title})].concat(kids))])}
+  function para(t){return el("p",{text:t})}
+  function list(a){return el("ul",{},a.map(function(x){return el("li",{text:x})}))}
+  p.className="how";
+  p.appendChild(el("h2",{text:"How this system works, from finding something to a live page"}));
+  p.appendChild(para("Every "+every+" hours a GitHub workflow wakes up by itself. It looks for new, useful things for four sections of xplorekit.online, has Claude write them up in its own words, checks them hard, and publishes the ones that pass as pages on the site. Nobody has to press anything. This dashboard shows every step as it happens."));
+  p.appendChild(el("h2",{text:"The steps"}));
+  p.appendChild(step(1,"Wake up (every "+every+" hours"+(sch?", at minute "+sch.minute:"")+")",[para("The Research workflow starts on a timer. It does nothing if you paused it (Overview, Pause), and a section that already reached its daily or weekly limit is skipped before any AI is used. You can also start it yourself with Run now."),el("div",{class:"small muted where",text:"See it: Activity tab, newest run at the top."})]));
+  p.appendChild(step(2,"Collect",[para("Each section has its own list of sources: "+D.sections.map(function(s){return s.name+" ("+(srcCount[s.key]||0)+")"}).join(", ")+". They include Hacker News, GitHub, official blogs and feeds, and plain public pages. It respects robots.txt, never pretends to be a browser, and a site that refuses bots is simply not read."),el("div",{class:"small muted where",text:"See it: Sources tab shows each source, whether it worked and how much it found. Edit sources.json to add or pause one."})]));
+  p.appendChild(step(3,"Filter",[para("Before any AI is used, repeats are thrown out: things already on the site, already accepted, already rejected, or already in another section. Off-topic items are dropped too. What is left is \"new and relevant\"."),el("div",{class:"small muted where",text:"See it: the Overview flow strip (Found, New and relevant)."})]));
+  p.appendChild(step(4,"Read the real page",[para("For what survives, the pipeline downloads the actual page (a README, a Chrome Web Store listing, a platform's help page) and keeps the passages that matter. The writer only gets facts that are really there.")]));
+  p.appendChild(step(5,"Claude writes a draft",[para("One AI writer per section follows its own instruction file in xplorekit/prompts. It writes in its own words, never copies, never invents a price, date or income figure, and may write nothing if the source is weak. Limits per run: "+D.sections.map(function(s){return s.name+" "+((S.per_run_max||{})[s.key]||1)}).join(", ")+"; per day: "+D.sections.map(function(s){return s.caps.daily}).join(" / ")+"."),el("div",{class:"small muted where",text:"See it: Activity (Written by AI count) and Usage (tokens used)."})]));
+  p.appendChild(step(6,"The Editor checks it (the quality gate)",[list(["The fields match the section's schema.","It is not a duplicate: by identity (same GitHub repo or Web Store id), then by wording for prompts and money ideas.","The source link opens.","Section rules: an extension needs a live Chrome Web Store page; a money idea shows income only if the source states it, and no hype words.","No more than "+(S.max_verbatim_overlap_chars||120)+" characters copied from the source.","A second AI pass fact-checks every claim against the source text. If it cannot run, the entry waits and is retried, never published unchecked.","The score must reach the section's minimum: "+D.sections.map(function(s){return s.name+" "+s.floor}).join(", ")+"."]),el("div",{class:"small muted where",text:"See it: Activity shows each rejection with its reason. Posts, filter Rejected, shows them all."})]));
+  p.appendChild(step(7,"Save",[para("What passes is saved in this repository (data/) with its checks recorded. It appears in Posts as Pending."),el("div",{class:"small muted where",text:"See it: Posts tab."})]));
+  p.appendChild(step(8,"Deliver to the website and publish",[para("The entry is copied to the private site repository. The site builds a card on the section's page and a full page of its own for every entry (/research/<section>/<id>), adds it to the sitemap, and safety checks run: only allowed files changed, the size is normal, every entry carries a fact-check, no popularity numbers. With publish mode \"Published\" ("+({publish:"currently on",pending:"currently off: a person merges",draft:"currently off: nothing is sent"}[C.publish_mode]||C.publish_mode)+") the change merges by itself and Cloudflare deploys it within a minute or two. With \"Pending\" a pull request waits for you. With \"Draft\" nothing leaves this repository."),el("div",{class:"small muted where",text:"See it: Posts, Published, with a link to each live page; the Site pull requests button."})]));
+  p.appendChild(step(9,"Stay honest over time",[para("Entries are re-checked from time to time. If a source disappears or the entry is older than its limit ("+D.sections.map(function(s){return s.name+" "+s.stale_after+" days"}).join(", ")+") it is marked stale and withdrawn from the site. Entries saved without a fact-check are re-checked on every run and either earn it or are removed.")]));
+  p.appendChild(el("h2",{text:"Where each result ends up on the site"}));
+  var rows=D.sections.map(function(s){var hub=(D.section_pages||{})[s.key]||"/";return el("tr",{},[el("td",{text:s.name}),el("td",{},[link(D.site_url+hub,D.site_url+hub)]),el("td",{},[el("code",{text:"/research/"+s.key+"/<id>"})])])});
+  p.appendChild(table(["Section","Card appears on","Its own page"],rows,""));
+  p.appendChild(el("h2",{text:"What you control, and where"}));
+  p.appendChild(list(["Pause, Run now and \"New posts go to\": the bar on Overview (needs a GitHub token, see Setup).","Sources: sources.json. Limits and score floors: settings.json. What each AI writer is told: xplorekit/prompts/.","Undo a published batch: revert its \"Research feed: verified entries\" commit in the site repository.","Everything above is a file in GitHub, so any person or tool can continue the work."]));
+  p.appendChild(el("h2",{text:"What is not proven yet"}));
+  p.appendChild(list(["Make Money has produced no entries so far; its sources were replaced and the first real run will show whether that worked.","The weekly re-check and the backup Claude tokens have not run for real yet.","GitHub can delay or skip scheduled runs on quiet repositories. If the Overview says the last run was long ago, press Run now."]));
+})();
 
 /* Sources */
 (function(){
@@ -224,11 +301,6 @@ P.rejected.appendChild(table(["Date","Section","Title","Why","Detail"],D.rejecte
     var state=!s.enabled?chip("paused"):s.last_status===null?chip("not run yet"):/^ok/.test(s.last_status)?chip("ok","ok"):/^skipped/.test(s.last_status)?chip("skipped","warn"):chip("error","bad");
     return el("tr",{},[el("td",{text:s.section}),el("td",{text:s.id}),el("td",{text:s.type}),el("td",{},[state]),el("td",{class:"small muted",text:s.last_status===null?"":(s.last_status+" · "+s.last_count+" found")}),el("td",{class:"small",text:s.requires_key||"–"})])}),"No sources configured."));
 })();
-
-/* Runs */
-P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
-  var res=r.type==="recheck"?el("td",{text:r.checked+" entries re-checked, "+r.stale+" stale"}):el("td",{},[el("div",{class:"chips",style:"margin:0"},Object.keys(r.sections||{}).map(function(k){var v=r.sections[k];return chip(k+": "+(v.status==="ok"?(v.accepted+" new / "+v.rejected+" rejected"):(v.status||"skipped").replace("_"," ")),v.status==="ok"?"ok":v.status==="cap_reached"?"":"bad")}))]);
-  return el("tr",{},[el("td",{text:(r.time||r.date).replace("T"," ").replace("+00:00"," UTC")}),el("td",{text:r.type+(r.dry_run?" (dry run)":"")}),el("td",{text:r.type==="recheck"?"–":(r.provider||"none")+((r.llm||{}).failures?" · "+r.llm.failures+" failed":"")}),res])}),"No runs recorded yet."));
 
 /* Usage: Claude tokens per period and per run (exact counts; the dollar figure is only what the same work would cost on the API) */
 (function(){

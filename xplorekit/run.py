@@ -160,7 +160,9 @@ def process_section(section, args, log=print, rep=None):
         log(f"  + {e['quality_score']:>3}  {(e.get('title') or e.get('name'))[:70]}  [{', '.join(e['verified'])}]")
     for r in rejected:
         log(f"  - REJECTED ({r['reason']}): {r['title'][:50]}  {r['detail'][:110]}")
-    rep.update(status="ok", accepted=len(accepted), rejected=len(rejected), reasons=dict(Counter(r["reason"] for r in rejected)))
+    rep.update(status="ok", accepted=len(accepted), rejected=len(rejected), reasons=dict(Counter(r["reason"] for r in rejected)),
+               accepted_items=[{"id": e["id"], "title": (e.get("title") or e.get("name") or "")[:120], "score": e["quality_score"]} for e in accepted][:20],
+               rejected_items=[{"title": r["title"][:120], "reason": r["reason"], "url": r.get("url", "")} for r in rejected][:20])
     return len(accepted), len(rejected)
 
 
