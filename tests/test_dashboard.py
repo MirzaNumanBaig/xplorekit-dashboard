@@ -101,12 +101,30 @@ class SafetyTests(unittest.TestCase):
         self.assertNotIn("<", data)
         self.assertIn("</script><script>window.pwned=1</script>", json.loads(data)["sections"][3]["entries"][0]["title"])  # decoded intact in the browser
 
-    def test_page_loads_nothing_from_the_network(self):
+    def test_page_talks_only_to_the_github_api_and_the_browser_enforces_it(self):
+        import re
         t = bd.TEMPLATE.read_text("utf-8")
         self.assertNotRegex(t, r'<script[^>]+src=')
         self.assertNotRegex(t, r'<link[^>]+href="https?:')
-        self.assertNotIn("fetch(", t)
         self.assertNotIn("innerHTML", t)  # all dynamic text goes through textContent
+        # exactly one network call site, and it can only reach the GitHub API
+        self.assertEqual(len(re.findall(r"\bfetch\(", t)), 1)
+        self.assertIn('fetch(API+path', t)
+        self.assertEqual(re.findall(r'API="(https?://[^"]+)"', t), ["https://api.github.com"])
+        # the browser itself blocks anything else (a CSP, so even injected code could not send the token elsewhere)
+        csp = re.search(r'http-equiv="Content-Security-Policy" content="([^"]+)"', t).group(1)
+        self.assertIn("default-src 'none'", csp)
+        self.assertIn("connect-src https://api.github.com;", csp)
+        self.assertNotRegex(csp, r"script-src[^;]*(https?:|\*)")
+        # the token goes in a header only: never in a URL, never logged
+        self.assertNotRegex(t, r"access_token|[?&]token=|console\.log")
+        self.assertIn('h.Authorization="Bearer "+t', t)
+
+    def test_the_token_is_remembered_only_when_asked_and_can_be_forgotten(self):
+        t = bd.TEMPLATE.read_text("utf-8")
+        self.assertIn("sessionStorage", t)          # default: gone when the tab closes
+        self.assertIn("rem.checked", t)             # localStorage only after the visitor ticks "remember"
+        self.assertIn("Forget token", t)
 
 
 if __name__ == "__main__":
@@ -201,3 +219,26 @@ class PostsTests(unittest.TestCase):
             ds = bd.build_dataset(d)
             self.assertEqual([p["id"] for p in ds["posts"][:2]], [new["id"], old["id"]])
             self.assertEqual({s["key"]: s["stats"]["published"] for s in ds["sections"]}["extensions"], 1)
+
+
+class ControlInfoTests(unittest.TestCase):
+    def test_schedule_is_read_from_the_workflow_file_not_hard_coded(self):
+        s = bd.schedule_info()
+        self.assertEqual(s, {"minute": 17, "every_hours": 3})  # research.yml: cron "17 */3 * * *"
+
+    def test_dataset_carries_what_the_control_bar_needs(self):
+        with tempfile.TemporaryDirectory() as d:
+            c = bd.build_dataset(d)["control"]
+            self.assertEqual((c["workflow"], c["settings_path"], c["branch"]), ("research.yml", "xplorekit/config/settings.json", "main"))
+            self.assertIn(c["publish_mode"], ("publish", "pending", "draft"))
+            self.assertIsInstance(c["paused"], bool)
+
+    def test_a_mode_other_than_publish_shows_a_warning_that_names_the_fix(self):
+        from unittest import mock
+        for mode, word in (("draft", "nothing is sent"), ("pending", "waits for a person")):
+            with mock.patch.object(bd, "publish_mode", lambda m=mode: m):
+                first = bd.health([research_run()], [], today())[0]
+            self.assertEqual(first["level"], "warn")
+            self.assertIn(word, first["text"])
+        with mock.patch.object(bd, "publish_mode", lambda: "publish"):
+            self.assertEqual([x["level"] for x in bd.health([research_run()], [], today())], ["ok"])

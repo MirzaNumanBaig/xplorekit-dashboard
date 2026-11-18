@@ -7,12 +7,13 @@ The data is embedded in the page, so it also opens straight from disk.
 """
 import argparse
 import json
+import re
 import sys
 from collections import Counter
 from datetime import date, timedelta
 from pathlib import Path
 
-from xplorekit.common import ROOT, days_between, load_json, settings, sources, today
+from xplorekit.common import ROOT, days_between, load_json, publish_mode, settings, sources, today
 
 TEMPLATE = Path(__file__).with_name("dashboard_template.html")
 SECTION_NAMES = {"money": "Make Money with AI", "prompts": "Prompts", "extensions": "Chrome Extensions", "skills": "Claude Skills"}
@@ -99,9 +100,30 @@ def posts_data(root, cfg, published, rejected, site_url):
     return posts
 
 
+def schedule_info():
+    """The research schedule, read from the workflow file so the dashboard can never disagree with it: {minute, every_hours} or None."""
+    try:
+        text = (ROOT / ".github" / "workflows" / "research.yml").read_text("utf-8")
+    except OSError:
+        return None
+    m = re.search(r'cron:\s*"(\d+)\s+\*/(\d+)\s+\*\s+\*\s+\*"', text)
+    return {"minute": int(m.group(1)), "every_hours": int(m.group(2))} if m else None
+
+
+def control_info(cfg):
+    """What the dashboard's control bar shows and can change (the changing itself happens in the browser, through the GitHub API)."""
+    return {"paused": bool(cfg.get("paused")), "publish_mode": publish_mode(), "schedule": schedule_info(), "repo": cfg["repo"], "workflow": "research.yml",
+            "settings_path": "xplorekit/config/settings.json", "branch": "main"}
+
+
 def health(runs, secs, day, site_pr=None):
     """Plain-language status lines, worst first."""
     out = []
+    mode = publish_mode()
+    if mode == "draft":
+        out.append({"level": "warn", "text": "Publish mode is 'draft': research keeps running and saving, but nothing is sent to the site. Switch it to 'Published' in the bar above to go live."})
+    elif mode == "pending":
+        out.append({"level": "warn", "text": "Publish mode is 'pending': every delivery opens a pull request and waits for a person to merge it. Switch to 'Published' in the bar above to let it go live by itself."})
     if settings().get("paused"):
         out.append({"level": "warn", "text": "Research is paused: settings.json has \"paused\": true. Set it to false to resume."})
     research = [r for r in runs if r.get("type") == "research" and not r.get("dry_run")]
@@ -188,7 +210,7 @@ def build_dataset(data_dir):
     return {"generated_at": day, "repo": cfg["repo"], "site_repo": cfg["site_repo"], "site_url": cfg["site_url"], "sections": secs, "posts": posts, "post_counts": {st: sum(1 for x in posts if x["state"] == st) for st in STATES}, "health": health(runs, secs, day, load_json(root / "site_pr.json", None)), "site_pr": load_json(root / "site_pr.json", None), "usage": usage(runs, day),
             "rejected": sorted(rejected, key=lambda r: r.get("date", ""), reverse=True)[:200], "runs": runs[-30:][::-1], "sources": src,
             "settings": {k: cfg[k] for k in ("caps", "min_quality_score", "stale_after_days", "title_similarity_threshold", "max_verbatim_overlap_chars", "max_realistic_monthly_income")},
-            "model": cfg.get("llm", {}).get("model")}
+            "model": cfg.get("llm", {}).get("model"), "control": control_info(cfg)}
 
 
 def render(dataset):

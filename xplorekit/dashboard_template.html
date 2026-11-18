@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
 <title>Xplorekit Research Dashboard</title>
 <style>
 :root{--bg:#f6f7f9;--surface:#fff;--ink:#15202b;--muted:#5b6876;--line:#e1e5ea;--brand:#1d4ed8;--brand-ink:#fff;--ok:#0f7b45;--ok-bg:#e3f5ec;--warn:#8a5a00;--warn-bg:#fdf1d6;--bad:#b42318;--bad-bg:#fde8e6;--chip:#eef1f5;--shadow:0 1px 2px rgba(16,24,40,.06)}
@@ -52,6 +53,16 @@ tr:last-child td{border-bottom:0}
 .score{font-weight:700;border-radius:8px;padding:2px 8px;display:inline-block}
 .s-hi{background:var(--ok-bg);color:var(--ok)}.s-mid{background:var(--warn-bg);color:var(--warn)}.s-lo{background:var(--bad-bg);color:var(--bad)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
+.ctl-wrap{padding-top:14px}
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.ctl-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);font-size:14px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);display:inline-block}.dot.off{background:var(--warn)}
+.ctl-text{color:var(--muted);font-size:14px;flex:1 1 220px}
+.ctl-label{display:inline-flex;align-items:center;gap:8px}
+.btn-small.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.btn-small:disabled{opacity:.55;cursor:not-allowed}
+.ctl-msg{flex:1 1 100%;padding:8px 10px;border-radius:8px;background:var(--chip)}.ctl-msg.ok{background:var(--ok-bg);color:var(--ok)}.ctl-msg.bad{background:var(--bad-bg);color:var(--bad)}.ctl-msg.warn{background:var(--warn-bg);color:var(--warn)}
+.ctl-card{margin-top:10px;display:grid;gap:8px;max-width:720px}.ctl-row{display:flex;gap:8px;flex-wrap:wrap}.ctl-row input[type=password]{flex:1 1 300px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
 .btn-small{padding:4px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
 .btn-small:hover{border-color:var(--brand)}.btn-small:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 tr.detail-row>td{background:var(--bg);padding:14px 18px}
@@ -74,8 +85,9 @@ td.nowrap{white-space:nowrap}
   </div>
   <nav role="tablist" aria-label="Dashboard sections" id="tabs"></nav>
 </div></header>
+<div class="wrap ctl-wrap"><div class="ctl" id="ctl" role="region" aria-label="Pipeline controls"></div><div id="ctlpanel" hidden></div></div>
 <main class="wrap" id="panels"></main>
-<div class="wrap"><footer>Built from this repository's own files by <code>python -m xplorekit.build_dashboard</code>. This page never contacts Claude or any server; the AI runs only inside the scheduled GitHub workflow.</footer></div>
+<div class="wrap"><footer>Built from this repository's own files by <code>python -m xplorekit.build_dashboard</code>. This page contacts only api.github.com (to show the run status and, if you connect a token, to run, pause or change settings). It never contacts Claude: the AI runs only inside the scheduled GitHub workflow.</footer></div>
 <script id="data" type="application/json">/*__DATA__*/null</script>
 <script>
 (function(){
@@ -251,6 +263,130 @@ P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
   var S=D.settings,rows=D.sections.map(function(s){return el("tr",{},[el("td",{text:s.name}),el("td",{text:s.caps.daily+" / day, "+s.caps.weekly+" / week"}),el("td",{text:String(s.floor)}),el("td",{text:s.stale_after+" days"})])});
   p.appendChild(table(["Section","New entries allowed","Minimum score","Stale after"],rows,""));
   p.appendChild(el("p",{class:"muted small",text:"Income figures are accepted only when the cited source contains them, and never above "+S.max_realistic_monthly_income+" per month. Text copied from a source is limited to "+S.max_verbatim_overlap_chars+" characters."}));
+})();
+
+/* Control bar: schedule status, Pause/Resume, Run now and "New posts go to". The page changes things through GitHub's own API, with a token the
+   visitor pastes in. The token stays in this browser and is sent ONLY to api.github.com (the page's Content-Security-Policy forbids anything else). */
+(function(){
+  var C=D.control||{},API="https://api.github.com",REPO=C.repo,KEY="xk-gh-token";
+  var bar=$("#ctl"),panel=$("#ctlpanel");
+  var S={paused:!!C.paused,mode:C.publish_mode,run:null,runErr:false,msg:"",msgLevel:"",busy:false};
+  var MODES=[["publish","Published (live)"],["pending","Pending (a person merges)"],["draft","Draft (research only)"]];
+  var MODE_HELP={publish:"Each delivery is merged by itself and goes live on the site.",pending:"Each delivery opens a pull request on the site repo and waits for a person to merge it.",draft:"Research keeps running and saving here, but nothing is sent to the site."};
+  function tok(){try{return sessionStorage.getItem(KEY)||localStorage.getItem(KEY)||""}catch(e){return ""}}
+  function saveTok(t,remember){try{sessionStorage.removeItem(KEY);localStorage.removeItem(KEY);if(t)(remember?localStorage:sessionStorage).setItem(KEY,t)}catch(e){}}
+  function api(method,path,body){
+    var h={"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"},t=tok();
+    if(t)h.Authorization="Bearer "+t;if(body)h["Content-Type"]="application/json";
+    return fetch(API+path,{method:method,headers:h,body:body?JSON.stringify(body):undefined,cache:"no-store"}).then(function(r){return r.text().then(function(txt){var d=null;try{d=txt?JSON.parse(txt):null}catch(e){}return{status:r.status,data:d}})});
+  }
+  function why(st){
+    if(st===401)return "GitHub rejected the token. Paste a fresh one.";
+    if(st===403||st===404)return "The token is missing a permission. It needs Actions and Contents (read and write) on this repository.";
+    if(st===409||st===422)return "The settings file changed at the same moment. Try again.";
+    return "GitHub answered "+st+". Try again in a minute.";
+  }
+  function say(text,level){S.msg=text;S.msgLevel=level||"";draw()}
+  /* schedule maths: the cron is "minute, every N hours" in UTC */
+  function slots(now){
+    var s=C.schedule;if(!s||24%s.every_hours!==0)return null;
+    var d=new Date(now),step=s.every_hours*3600000,base=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),0,s.minute);
+    var n=Math.floor((now-base)/step),last=base+n*step;return{last:last,next:last+step};
+  }
+  function hhmm(ms){var d=new Date(ms);return ("0"+d.getUTCHours()).slice(-2)+":"+("0"+d.getUTCMinutes()).slice(-2)+" UTC"}
+  function span(ms){var m=Math.max(0,Math.round(ms/60000)),h=Math.floor(m/60);return h?h+"h "+(m%60)+"m":m+"m"}
+  function lastRunMs(){
+    if(S.run&&S.run.created_at)return Date.parse(S.run.created_at);
+    var r=(D.runs||[]).filter(function(x){return x.type==="research"&&!x.dry_run})[0];return r&&r.time?Date.parse(r.time):0;
+  }
+  function statusText(){
+    if(S.paused)return"Paused: nothing runs until you resume it.";
+    if(S.run&&(S.run.status==="in_progress"||S.run.status==="queued"))return"Running now… started "+hhmm(Date.parse(S.run.created_at))+". It takes a few minutes.";
+    var now=Date.now(),sl=slots(now);if(!sl)return"Runs on a schedule (see the workflow).";
+    if(now-sl.last<30*60000&&lastRunMs()<sl.last)return"Due now. GitHub can take a few minutes to start it.";
+    var t="Next run in "+span(sl.next-now)+" ("+hhmm(sl.next)+")",lr=lastRunMs();
+    if(lr)t+=" · last run "+span(now-lr)+" ago"+(S.run&&S.run.conclusion&&S.run.conclusion!=="success"?" ("+S.run.conclusion+")":"");
+    return t;
+  }
+  function refreshRun(){
+    return api("GET","/repos/"+REPO+"/actions/workflows/"+C.workflow+"/runs?per_page=1&branch="+C.branch).then(function(r){
+      if(r.status===200&&r.data&&r.data.workflow_runs){S.run=r.data.workflow_runs[0]||null;S.runErr=false}else S.runErr=true;draw();
+    },function(){S.runErr=true;draw()});
+  }
+  function needToken(why){
+    openPanel(why||"Connect GitHub to change this.");return false;
+  }
+  /* edit one key of the settings file with a minimal text change (the file keeps its exact formatting) */
+  function setKey(text,key,literal){
+    var re=new RegExp('("'+key+'"\\s*:\\s*)(true|false|"[^"]*")');
+    if(!re.test(text))return null;return text.replace(re,function(m,a){return a+literal});
+  }
+  function putSetting(key,literal,message,retry){
+    var path="/repos/"+REPO+"/contents/"+C.settings_path;
+    return api("GET",path+"?ref="+C.branch).then(function(r){
+      if(r.status!==200)return r;
+      var text;try{text=decodeURIComponent(escape(atob(r.data.content.replace(/\n/g,""))))}catch(e){return{status:500}}
+      var next=setKey(text,key,literal);if(next===null)return{status:422,data:{message:"key not found"}};
+      if(next===text)return{status:200,data:{unchanged:true}};
+      return api("PUT",path,{message:message,content:btoa(unescape(encodeURIComponent(next))),sha:r.data.sha,branch:C.branch});
+    }).then(function(r){return(r.status===409||r.status===422)&&retry!==false?putSetting(key,literal,message,false):r});
+  }
+  function busy(on){S.busy=on;draw()}
+  function setPaused(p){
+    if(!tok())return needToken("Connect GitHub to "+(p?"pause":"resume")+" the pipeline.");
+    busy(true);putSetting("paused",p?"true":"false","Dashboard: "+(p?"pause":"resume")+" the research pipeline").then(function(r){
+      busy(false);
+      if(r.status===200||r.status===201){S.paused=p;say(p?"Paused. No new runs start until you resume. A run already in progress finishes.":"Resumed. The next run starts at its scheduled time.","ok")}else say(why(r.status),"bad");
+    },function(){busy(false);say("Could not reach GitHub.","bad")});
+  }
+  function setMode(m,selectEl){
+    if(!tok()){selectEl.value=S.mode;return needToken("Connect GitHub to change where new posts go.")}
+    busy(true);putSetting("publish_mode",'"'+m+'"',"Dashboard: new posts go to "+m).then(function(r){
+      busy(false);
+      if(r.status===200||r.status===201){S.mode=m;say("Saved: new posts go to "+MODES.filter(function(x){return x[0]===m})[0][1]+". "+MODE_HELP[m]+" It applies from the next run.","ok")}else{selectEl.value=S.mode;say(why(r.status),"bad")}
+    },function(){busy(false);selectEl.value=S.mode;say("Could not reach GitHub.","bad")});
+  }
+  function runNow(){
+    if(!tok())return needToken("Connect GitHub to start a run.");
+    if(S.paused)return say("It is paused. Resume it first, because a paused pipeline exits straight away.","warn");
+    busy(true);api("POST","/repos/"+REPO+"/actions/workflows/"+C.workflow+"/dispatches",{ref:C.branch}).then(function(r){
+      busy(false);
+      if(r.status===204){say("Started. GitHub can take a few minutes to begin it.","ok");setTimeout(refreshRun,6000)}else say(why(r.status),"bad");
+    },function(){busy(false);say("Could not reach GitHub.","bad")});
+  }
+  /* connect panel */
+  function openPanel(note){
+    panel.textContent="";panel.removeAttribute("hidden");
+    var inp=el("input",{type:"password",autocomplete:"off",spellcheck:"false",placeholder:"github_pat_…","aria-label":"GitHub token"}),rem=el("input",{type:"checkbox",id:"remtok"});
+    var save=el("button",{type:"button",class:"btn-small",text:"Save token"}),cancel=el("button",{type:"button",class:"btn-small",text:"Close"});
+    save.addEventListener("click",function(){var v=inp.value.trim();if(!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(v)){say("That does not look like a GitHub token. It starts with github_pat_ (fine-grained).","bad");return}saveTok(v,rem.checked);panel.setAttribute("hidden","");say("Connected. The buttons above now work.","ok")});
+    cancel.addEventListener("click",function(){panel.setAttribute("hidden","")});
+    var forget=el("button",{type:"button",class:"btn-small",text:"Forget token"});forget.addEventListener("click",function(){saveTok("");panel.setAttribute("hidden","");say("Token removed from this browser.","")});
+    panel.appendChild(el("div",{class:"card ctl-card"},[
+      el("strong",{text:note||"Connect GitHub"}),
+      el("p",{class:"small muted",text:"These buttons run, pause and configure the pipeline by writing to this repository through GitHub's API, so GitHub needs to know it is you. Create a fine-grained token for THIS repository only, with Actions and Contents set to read and write, then paste it here. It stays in this browser and is sent only to api.github.com."}),
+      el("p",{class:"small"},[link("Create a token on GitHub","https://github.com/settings/personal-access-tokens/new")," · expiry: pick a short one (for example 90 days)"]),
+      el("div",{class:"ctl-row"},[inp]),
+      el("label",{class:"small",for:"remtok"},[rem," Remember it on this device (otherwise it is forgotten when you close this tab)"]),
+      el("div",{class:"ctl-row"},[save,cancel].concat(tok()?[forget]:[]))]));
+    inp.focus();
+  }
+  function draw(){
+    bar.textContent="";
+    var live=!S.paused;
+    bar.appendChild(el("span",{class:"ctl-pill"},[el("i",{class:"dot"+(live?"":" off"),"aria-hidden":"true"}),el("strong",{text:live?"Runs every "+((C.schedule||{}).every_hours||"?")+"h":"Paused"})]));
+    bar.appendChild(el("span",{class:"ctl-text",role:"status",text:statusText()}));
+    var pause=el("button",{type:"button",class:"btn-small",text:S.paused?"Resume":"Pause"});pause.disabled=S.busy;pause.addEventListener("click",function(){setPaused(!S.paused)});
+    var run=el("button",{type:"button",class:"btn-small primary",text:"Run now"});run.disabled=S.busy;run.addEventListener("click",runNow);
+    var sel=el("select",{"aria-label":"New posts go to",title:MODE_HELP[S.mode]},MODES.map(function(m){return el("option",{value:m[0],text:m[1]})}));sel.value=S.mode;sel.disabled=S.busy;sel.addEventListener("change",function(){setMode(sel.value,sel)});
+    bar.appendChild(pause);bar.appendChild(run);
+    bar.appendChild(el("label",{class:"ctl-label small muted"},["New posts go to "]));bar.lastChild.appendChild(sel);
+    var c=el("button",{type:"button",class:"btn-small",text:tok()?"GitHub connected":"Connect GitHub"});c.addEventListener("click",function(){openPanel()});bar.appendChild(c);
+    if(S.msg)bar.appendChild(el("div",{class:"ctl-msg small "+S.msgLevel,role:"status",text:S.msg}));
+  }
+  draw();refreshRun();
+  setInterval(draw,30000);                                  /* keeps the countdown honest, no network */
+  setInterval(function(){if(!document.hidden)refreshRun()},120000);
 })();
 
 var start=(location.hash||"#overview").slice(1);show(TABS.some(function(t){return t[0]===start})?start:"overview");
