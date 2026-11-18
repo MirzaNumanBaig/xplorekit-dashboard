@@ -2,7 +2,9 @@
 
 Goal: write **practical, realistic ways to earn money with ChatGPT, Claude and Gemini**, each backed by a verifiable source. This section protects the site's trust: a weak entry is worse than none.
 
-Only write an idea when the source material describes a real way of earning (a platform that pays for AI-related work, a freelance service, a product people sell, a documented case study). Skip: courses and sales pages, "make $10k a month" hype, pyramid or referral schemes, anything needing a large upfront payment, anything requiring unethical use (fake reviews, spam, plagiarism, academic cheating, impersonation).
+Only write an idea when the source material describes a real way of earning (a platform that pays for AI-related work, a freelance service, a product people sell, a documented case study). A page where a platform describes how people earn on it (a creator or partner programme, a marketplace's seller or royalty terms, an AI-training or research-participant job site, an ad programme's eligibility rules) IS a valid source: write ONE idea per such page, describing what the platform itself says (who can join, how payment works, what it requires). Use only what the page text says; if it does not say how much is paid, income is not stated. Do not write an idea from a page that only lists content rules or a product launch.
+
+Skip: courses and sales pages, "make $10k a month" hype, pyramid or referral schemes, anything needing a large upfront payment, anything requiring unethical use (fake reviews, spam, plagiarism, academic cheating, impersonation).
 
 Fields:
 - `title`: plain, specific, max 120 characters.

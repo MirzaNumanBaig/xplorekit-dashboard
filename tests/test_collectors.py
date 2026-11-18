@@ -56,3 +56,15 @@ class CollectorTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MoneySourcesTests(unittest.TestCase):
+    def test_money_reads_earning_programme_pages_not_launch_feeds_or_news(self):
+        import json
+        from xplorekit.common import ROOT
+        ids = {s["id"]: s for s in json.loads((ROOT / "xplorekit" / "config" / "sources.json").read_text())["money"]}
+        for noisy in ("ph-feed", "rundown", "bens-bites"):
+            self.assertNotIn(noisy, ids)  # product launches and news are not ways to earn
+        urls = ids["earning-programs"]["urls"]
+        self.assertGreaterEqual(len(urls), 8)
+        self.assertTrue(any("youtube.com" in u or "support.google.com/youtube" in u for u in urls))

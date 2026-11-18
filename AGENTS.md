@@ -122,8 +122,7 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
 - **Everything saved before 2026-11-17 was stored without a fact-check** (`rules_only`): fact-check replies were parsed as the wrong piece of JSON and silently
   dropped. Fixed (and covered by a regression test). Those entries are held back from the site; `--reverify` runs on every research run and either gives them a real
   fact-check or removes them.
-- **Make Money still has no live cards (checked 2026-11-18).** It produced 0 drafts in the first two real runs (2026-11-16). Cause found: for rules pages (KDP, Etsy) the agent saw only the page's navigation text. Fixed with
-  focused excerpts (the AI/rules passages); not yet seen working in a real run. Generic searches are still noisy; Medium and Upwork block bots, so nothing is claimed from them.
+- **Make Money had no live entries (checked 2026-11-18).** Cause: its sources were product-launch feeds, newsletters and essays (almost nothing that describes a way to earn), plus rules pages, so the writer correctly returned nothing; Hacker News returned 0 (queries too long). Fix: sources are now programme pages where the platform states how people earn (YouTube Partner Programme, AdSense, KDP royalties, Shopify partners, Gumroad, Outlier, DataAnnotation, Etsy, Respondent, User Interviews) plus broader HN queries, and the writer prompt says such pages are valid sources (one idea per page, income only if the page states it). Not yet seen in a real run (no model access outside Actions). Medium and Upwork block bots, so nothing is claimed from them.
 - **Token use at a 3-hour cadence is unknown.** The first real runs cost roughly 1 USD API-equivalent each. Watch the dashboard's Usage tab; tune `per_run_max` or the caps
   if usage runs high.
 - The scheduled path, the weekly `recheck` workflow, the token fallback (`_2`, `_3`) and the `ANTHROPIC_API_KEY` path have not run for real yet.

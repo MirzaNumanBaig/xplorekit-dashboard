@@ -6,13 +6,13 @@
       "type": "hn",
       "enabled": true,
       "queries": [
-        "I made money with ChatGPT",
-        "I earn freelancing with Claude",
+        "make money with AI",
+        "AI side hustle",
+        "freelancing with ChatGPT",
         "AI side project revenue",
-        "how I make money with AI",
-        "AI freelance clients income"
+        "earn income with Claude"
       ],
-      "min_points": 25
+      "min_points": 10
     },
     {
       "id": "gh-money",
@@ -48,24 +48,6 @@
       "requires_key": "REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET"
     },
     {
-      "id": "ph-feed",
-      "type": "producthunt_rss",
-      "enabled": true,
-      "url": "https://www.producthunt.com/feed"
-    },
-    {
-      "id": "rundown",
-      "type": "rss",
-      "enabled": true,
-      "url": "https://www.therundown.ai/feed"
-    },
-    {
-      "id": "bens-bites",
-      "type": "rss",
-      "enabled": true,
-      "url": "https://www.bensbites.com/feed"
-    },
-    {
       "id": "youtube-money",
       "type": "youtube",
       "enabled": true,
@@ -76,14 +58,21 @@
       ]
     },
     {
-      "id": "platform-rules",
+      "id": "earning-programs",
       "type": "webpage",
       "enabled": true,
       "urls": [
-        "https://kdp.amazon.com/en_US/help/topic/G200672390",
         "https://help.etsy.com/hc/en-us/articles/115015628347",
         "https://support.google.com/youtube/answer/14328491",
-        "https://www.dataannotation.tech/"
+        "https://www.dataannotation.tech/",
+        "https://support.google.com/youtube/answer/72851",
+        "https://kdp.amazon.com/en_US/help/topic/G201834330",
+        "https://www.shopify.com/partners",
+        "https://gumroad.com/pricing",
+        "https://www.outlier.ai/",
+        "https://support.google.com/adsense/answer/9724",
+        "https://www.respondent.io/",
+        "https://www.userinterviews.com/"
       ]
     }
   ],
