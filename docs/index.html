@@ -184,7 +184,7 @@ function show(id){var cw=document.querySelector(".ctl-wrap");if(cw){if(id==="ove
   var counts=el("div",{class:"chips",style:"margin:0 0 12px"}),note=el("p",{class:"small muted",style:"margin:0 0 12px"}),out=el("div");
   p.appendChild(el("div",{class:"tools"},[st,sec,q]));p.appendChild(counts);p.appendChild(note);p.appendChild(out);
   var hasLive=(C.published||0)>0;st.value=hasLive?"published":"";
-  var LABELS={ai_related:"AI related",store_url:"Chrome Web Store",repo_url:"Repository",extension_last_updated:"Store listing updated",pricing_note:"Pricing note",tools_and_prompts:"Tools and prompts",time_to_first_result:"Time to first result",workflow_steps:"Steps",install_steps:"Install steps",example_use_case:"Example use",example_output_summary:"Example output",use_case:"Use case",skill_type:"Type"};
+  var LABELS={ai_related:"AI related",store_url:"Chrome Web Store",repo_url:"Repository",extension_last_updated:"Store listing updated",pricing_note:"Pricing note",account:"Account",open_source:"Open source",tools_and_prompts:"Tools and prompts",time_to_first_result:"Time to first result",workflow_steps:"Steps",install_steps:"Install steps",example_use_case:"Example use",example_output_summary:"Example output",use_case:"Use case",skill_type:"Type"};
   function nice(k){return LABELS[k]||(k.charAt(0).toUpperCase()+k.slice(1).replace(/_/g," "))}
   function field(label,v){
     var body;
