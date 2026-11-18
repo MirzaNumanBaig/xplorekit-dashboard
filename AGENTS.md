@@ -134,6 +134,15 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
 
 - **Library layout (2026-11-18).** The site's hub pages are now filterable libraries (site repo, `scripts/build-feed.py`). The extension scout prompt and schema accept optional `account` and `open_source` (only when the source states them); the site shows "not stated" otherwise. `permissions` is not collected yet, so the "Permissions" check is empty for pipeline entries. The pipeline's safety check is unchanged: a delivery still changes only `public/data/`, `public/research/`, the sitemap, and the generated blocks of the hub pages and the homepage.
 
+## Roadmap split (owner request 2026-11-18): done now on the site, and later work for this pipeline
+**Done now (site repo, live):** one filter and one grid on `/extensions-directory/` (three columns; researched extensions join the hand-picked list, category "Newly researched"); "Last updated" at the top of the extensions, skills and prompts pages = the day something was last ADDED (newest `first_seen` of an entry, or `scripts/hand-updated.json` for hand-written ones), generated inside the feed block, so this pipeline's PRs keep it current; byline "by the Xplorekit team"; a hand-written prompt library on `/prompts/` (34 prompts in 8 fields, each with an output: camera diagrams for image and video prompts), where researched prompts join the same grid (`feed:prompts_items`, `feed:prompts_chip`, which the safety check treats as feed blocks); guide pages use the full width. The prompt hunter prompt now asks for field-specific, useful prompts (see `xplorekit/prompts/prompt_hunter.md`).
+**Later (needs code and tests here, not started):**
+1. Prompt schema: add a `field` (image, video, code-review, agents, website, writing, copywriting, fitness, ...) and an optional `output` (text) so cards can show an output and the site can group by field instead of the current `use_case` list. Update `schemas/prompts.schema.json`, the verifier, the fact-check and `build-feed.py` together.
+2. New sources for field prompts (official prompt guides of the image and video tools, the vendors' own prompting documentation). Add them in `sources.json`; never copy a prompt longer than 120 characters.
+3. Make Money: `YOUTUBE_API_KEY` (and Reddit, if approved) to find ideas and embeddable creator videos; facts only from the official programme page; never repeat a creator's income claim as a fact; one guide a day only if each passes the fact-check.
+4. Dashboard: a Posts filter by field and a "hand-written" count, once the schema has `field`.
+5. Skills: a "Last updated" per category from its newest skill, and one filter for the skills page like extensions (not done; skills still has the rail plus its own grid).
+
 ## Owner decisions
 Decided 2026-11-17: cards go **inside the existing hub pages**; byline "Researched with AI, checked by Xplorekit"; Make Money cards **show income figures only when the
 source states them**, attributed; the pipeline **merges by itself** (safety checks above); **no duplicates**; schedule **every 3 hours**.
