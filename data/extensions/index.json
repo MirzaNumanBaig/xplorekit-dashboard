@@ -1,7 +1,17 @@
 {
   "section": "extensions",
-  "generated_at": "2026-11-17",
+  "generated_at": "2026-11-18",
   "items": [
+    {
+      "id": "surfmind-cf61ec",
+      "title": "SurfMind",
+      "summary": "An AI assistant that opens as a browser sidebar, reads the page you are on and answers using the AI model you pick. It can connect MCP servers and skills, and can take actions on the page as well as answer questions.",
+      "url": "https://github.com/surfmind-space/awesome-surfmind",
+      "first_seen": "2026-11-18",
+      "last_checked": "2026-11-18",
+      "status": "active",
+      "quality_score": 88
+    },
     {
       "id": "chatgpt-extension-404299",
       "title": "ChatGPT Extension",

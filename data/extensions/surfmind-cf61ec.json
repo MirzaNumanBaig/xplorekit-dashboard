@@ -1,0 +1,42 @@
+{
+  "source_url": "https://github.com/surfmind-space/awesome-surfmind",
+  "source_urls": [
+    "https://github.com/surfmind-space/awesome-surfmind",
+    "https://chromewebstore.google.com/detail/pghallcbnfabbgfijhbcldaapmgidnaa"
+  ],
+  "name": "SurfMind",
+  "summary": "An AI assistant that opens as a browser sidebar, reads the page you are on and answers using the AI model you pick. It can connect MCP servers and skills, and can take actions on the page as well as answer questions.",
+  "audience": "People who want an AI sidebar in their browser and prefer to choose their own model provider, including local models.",
+  "pros": [
+    "Works with your own API key from providers such as OpenAI, Anthropic or Google, or through OpenRouter",
+    "Can run local models through tools such as Ollama, LM Studio, llama.cpp or vLLM",
+    "Supports MCP servers and skills for extending what it can do",
+    "Can act on the page, not only answer questions",
+    "Available for Chrome, Edge, Firefox and Safari"
+  ],
+  "cons": [
+    "Relies on a third-party AI service or a local model that you set up yourself",
+    "Using your own API key means model usage costs depend on your provider",
+    "Reads the content of the page you are viewing, so page text goes to the model you choose"
+  ],
+  "pricing": "unknown",
+  "pricing_note": "",
+  "ai_related": true,
+  "store_url": "https://chromewebstore.google.com/detail/pghallcbnfabbgfijhbcldaapmgidnaa",
+  "extension_last_updated": "unknown",
+  "alternatives": [],
+  "section": "extensions",
+  "first_seen": "2026-11-18",
+  "last_checked": "2026-11-18",
+  "status": "active",
+  "quality_score": 88,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "surfmind-cf61ec"
+}

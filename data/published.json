@@ -46,5 +46,11 @@
     "published_at": "2026-11-17",
     "pr": 76,
     "withdrawn_at": null
+  },
+  "surfmind-cf61ec": {
+    "section": "extensions",
+    "published_at": "2026-11-18",
+    "pr": 78,
+    "withdrawn_at": null
   }
 }
