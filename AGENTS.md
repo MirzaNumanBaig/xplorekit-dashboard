@@ -40,7 +40,7 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 | Verifier rules (links, dedupe, income, hype, copy, schema) | `xplorekit/verify/`, `xplorekit/agents/editor_verifier.py` |
 | Entry point | `xplorekit/run.py` |
 | Hand-off to the site repo (sync, safety checks, PR, auto-merge) | `xplorekit/sync_site.py`, `xplorekit/site_pr.py` (cards: `scripts/build-feed.py` in the SITE repo) |
-| Dashboard (Overview, **Posts** = status dropdown + details of everything published, pending, draft, stale or rejected; Rejected, Sources, Runs, Usage = Claude tokens per run; built to `docs/index.html`, GitHub Pages) | `xplorekit/build_dashboard.py`, `xplorekit/dashboard_template.html` |
+| Dashboard (**Overview** = status, last-run flow strip, sections; **Activity** = every run with the items saved/turned away and why; **Posts** = status dropdown + details of everything published, pending, draft, stale or rejected; Sources; Usage = Claude tokens per run; **How it works** = the whole flow in plain words with live numbers; Setup; built to `docs/index.html`, GitHub Pages) | `xplorekit/build_dashboard.py`, `xplorekit/dashboard_template.html` |
 | Cloud-session permission to attach the private site repo (owner-approved) | `.claude/settings.json` |
 | Workflows | `.github/workflows/`: `research` (every 3 hours), `recheck` (weekly), `dashboard`, `tests` |
 | Setup, how to add a source or a section | `GUIDE.md` |
@@ -128,6 +128,8 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
 - The scheduled path, the weekly `recheck` workflow, the token fallback (`_2`, `_3`) and the `ANTHROPIC_API_KEY` path have not run for real yet.
 - Open question for the owner: should the site's `robots.txt` disallow `/data/` (the raw JSON)?
 - **Rejection fixes (2026-11-18).** `--reverify` used to judge duplicate partners against each other (both deleted) and delete an entry when the AI check merely crashed; the fact-checker also saw only the first 6,000 characters of a long page. Now: entries are judged one at a time against entries that are staying (one of a duplicate pair always survives); `fact_check_failed`, `error` and `dead_link` leave the entry untouched to retry; the checker gets the page start plus the passages relevant to the draft (~14,000 chars). The Posts tab shows a plain-English reason per rejection. Five wrongly removed entries were restored from git (they re-run through reverify). Not yet seen in a real run.
+
+- **Dashboard reworked (2026-11-18).** Tabs: Overview, Activity, Posts, Sources, Usage, How it works, Setup (the old Rejected and Runs tabs are folded into Posts and Activity; the control bar shows on Overview and Setup only). `run.py` now records the titles saved and turned away per run (`accepted_items`, `rejected_items` in `data/runs.json`); runs before this change show counts only. A published post links to its own page `/research/<section>/<id>`.
 
 ## Owner decisions
 Decided 2026-11-17: cards go **inside the existing hub pages**; byline "Researched with AI, checked by Xplorekit"; Make Money cards **show income figures only when the

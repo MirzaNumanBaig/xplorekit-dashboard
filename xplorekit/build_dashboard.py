@@ -104,7 +104,8 @@ def posts_data(root, cfg, published, rejected, site_url):
                           "score": e["quality_score"], "first_seen": e["first_seen"], "last_checked": e["last_checked"],
                           "published_at": rec.get("published_at") if state == "published" else None, "pr": rec.get("pr") if state == "published" else None,
                           "source_url": e["source_url"], "source_urls": e.get("source_urls", []), "verified": e["verified"],
-                          "live_url": f"{site_url}{SECTION_PAGES.get(section, '/')}#feed-{e['id']}" if state == "published" else None,
+                          "live_url": f"{site_url}/research/{section}/{e['id']}" if state == "published" else None,
+                          "hub_url": f"{site_url}{SECTION_PAGES.get(section, '/')}#feed-{e['id']}" if state == "published" else None,
                           "summary": e.get("summary") or e.get("example_output_summary") or "",
                           "fields": {k: v for k, v in e.items() if k not in HIDDEN_FIELDS and v not in (None, "", [])}})
     posts.sort(key=lambda x: (x["published_at"] or x["first_seen"], x["score"]), reverse=True)
@@ -165,7 +166,8 @@ def health(runs, secs, day, site_pr=None):
             out.append({"level": "warn", "text": f"The last site update was NOT merged automatically (PR #{site_pr.get('pr')}): {site_pr.get('reason', '')}. A human needs to look."})
     for s in secs:
         if s["stats"]["rules_only"]:
-            out.append({"level": "warn", "text": f"{s['name']}: {s['stats']['rules_only']} entr{'y' if s['stats']['rules_only'] == 1 else 'ies'} had no independent fact-check (rules_only). Read them before merging."})
+            n = s["stats"]["rules_only"]
+            out.append({"level": "warn", "text": f"{s['name']}: {n} saved entr{'y is' if n == 1 else 'ies are'} still waiting for the AI fact-check. They are never published until they pass, and are retried on every run."})
         if s["stats"]["stale"]:
             out.append({"level": "warn", "text": f"{s['name']}: {s['stats']['stale']} stale entr{'y' if s['stats']['stale'] == 1 else 'ies'} (dead link or too old)."})
     if not out:
@@ -224,8 +226,9 @@ def build_dataset(data_dir):
             src.append({"section": s, "id": it["id"], "type": it["type"], "enabled": it.get("enabled", True), "requires_key": it.get("requires_key", ""),
                         "last_status": seen["status"] if seen else None, "last_count": seen["count"] if seen else None})
     return {"generated_at": day, "repo": cfg["repo"], "site_repo": cfg["site_repo"], "site_url": cfg["site_url"], "sections": secs, "posts": posts, "post_counts": {st: sum(1 for x in posts if x["state"] == st) for st in STATES}, "health": health(runs, secs, day, load_json(root / "site_pr.json", None)), "site_pr": load_json(root / "site_pr.json", None), "usage": usage(runs, day),
-            "rejected": sorted(rejected, key=lambda r: r.get("date", ""), reverse=True)[:200], "runs": runs[-30:][::-1], "sources": src,
-            "settings": {k: cfg[k] for k in ("caps", "min_quality_score", "stale_after_days", "title_similarity_threshold", "max_verbatim_overlap_chars", "max_realistic_monthly_income")},
+            "rejected": sorted(rejected, key=lambda r: r.get("date", ""), reverse=True)[:200], "runs": runs[-40:][::-1], "reasons": REASONS, "sources": src,
+            "settings": {k: cfg[k] for k in ("caps", "min_quality_score", "stale_after_days", "title_similarity_threshold", "max_verbatim_overlap_chars", "max_realistic_monthly_income", "per_run_max")},
+            "section_pages": SECTION_PAGES,
             "model": cfg.get("llm", {}).get("model"), "control": control_info(cfg)}
 
 

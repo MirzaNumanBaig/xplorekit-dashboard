@@ -191,7 +191,7 @@ class PostsTests(unittest.TestCase):
             Path(d, "published.json").write_text(json.dumps({pub["id"]: {"section": "skills", "published_at": "2026-11-17", "pr": 80, "withdrawn_at": None}}))
             by = self.posts(d)
             live = by[pub["id"]]
-            self.assertEqual(live["live_url"], f"https://xplorekit.online/skills-directory/#feed-{pub['id']}")
+            self.assertEqual(live["live_url"], f"https://xplorekit.online/research/skills/{pub['id']}")
             self.assertEqual((live["published_at"], live["pr"]), ("2026-11-17", 80))
             self.assertIsNone(by[pend["id"]]["live_url"])
 
@@ -267,3 +267,17 @@ class TokenCheckTests(unittest.TestCase):
         self.assertNotIn("dispatches", body)
         self.assertNotIn('api("PUT"', body)
         self.assertNotIn("putSetting", body)
+
+
+class ReworkTests(unittest.TestCase):
+    def test_page_has_the_new_tabs_and_the_dataset_carries_reasons_and_entry_page_links(self):
+        from xplorekit import build_dashboard as bd
+        html = bd.TEMPLATE.read_text("utf-8")
+        for tab in ('["activity","Activity"]', '["how","How it works"]'):
+            self.assertIn(tab, html)
+        self.assertNotIn('["rejected","Rejected"]', html)  # rejections live in Posts (status filter) and Activity
+        self.assertNotIn('["runs","Runs"]', html)
+        ds = bd.build_dataset(bd.ROOT / "data")
+        self.assertIn("duplicate", ds["reasons"])
+        self.assertIn("section_pages", ds)
+        self.assertIn("per_run_max", ds["settings"])
