@@ -139,7 +139,7 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
 **Later (needs code and tests here, not started):**
 1. Prompt schema: add a `field` (image, video, code-review, agents, website, writing, copywriting, fitness, ...) and an optional `output` (text) so cards can show an output and the site can group by field instead of the current `use_case` list. Update `schemas/prompts.schema.json`, the verifier, the fact-check and `build-feed.py` together.
 2. New sources for field prompts (official prompt guides of the image and video tools, the vendors' own prompting documentation). Add them in `sources.json`; never copy a prompt longer than 120 characters.
-3. Make Money: `YOUTUBE_API_KEY` (and Reddit, if approved) to find ideas and embeddable creator videos; facts only from the official programme page; never repeat a creator's income claim as a fact; one guide a day only if each passes the fact-check.
+3. Make Money (owner decision 2026-11-18: at most 3 guides per week, 1 per day, caps in `settings.json`): `YOUTUBE_API_KEY` is saved and works (a dry run on 2026-11-18 got 16 candidates from the YouTube source; the writer still produced 0 drafts, reason not yet investigated); Reddit (if approved) to find ideas and embeddable creator videos; facts only from the official programme page; never repeat a creator's income claim as a fact; one guide a day only if each passes the fact-check.
 4. Dashboard: a Posts filter by field and a "hand-written" count, once the schema has `field`.
 5. Skills: a "Last updated" per category from its newest skill (the skills page already has one filter, the feed rail, and its "Last updated" now follows the rule above).
 
