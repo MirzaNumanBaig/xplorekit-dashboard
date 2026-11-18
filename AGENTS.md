@@ -131,6 +131,8 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
 
 - **Dashboard reworked (2026-11-18).** Tabs: Overview, Activity, Posts, Sources, Usage, How it works, Setup (the old Rejected and Runs tabs are folded into Posts and Activity; the control bar shows on Overview and Setup only). `run.py` now records the titles saved and turned away per run (`accepted_items`, `rejected_items` in `data/runs.json`); runs before this change show counts only. A published post links to its own page `/research/<section>/<id>`.
 
+- **Library layout (2026-11-18).** The site's hub pages are now filterable libraries (site repo, `scripts/build-feed.py`). The extension scout prompt and schema accept optional `account` and `open_source` (only when the source states them); the site shows "not stated" otherwise. `permissions` is not collected yet, so the "Permissions" check is empty for pipeline entries. The pipeline's safety check is unchanged: a delivery still changes only `public/data/`, `public/research/`, the sitemap, and the generated blocks of the hub pages and the homepage.
+
 ## Owner decisions
 Decided 2026-11-17: cards go **inside the existing hub pages**; byline "Researched with AI, checked by Xplorekit"; Make Money cards **show income figures only when the
 source states them**, attributed; the pipeline **merges by itself** (safety checks above); **no duplicates**; schedule **every 3 hours**.

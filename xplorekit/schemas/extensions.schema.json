@@ -96,6 +96,17 @@
     "pricing_note": {
       "type": "string"
     },
+    "account": {
+      "type": "string",
+      "enum": [
+        "none",
+        "optional",
+        "required"
+      ]
+    },
+    "open_source": {
+      "type": "boolean"
+    },
     "ai_related": {
       "type": "boolean"
     },

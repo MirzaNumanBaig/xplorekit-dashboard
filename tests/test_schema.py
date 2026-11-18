@@ -27,6 +27,14 @@ class SchemaTests(unittest.TestCase):
         self.assertIn("pattern", errs)
         self.assertIn("fewer than 1 items", errs)
 
+    def test_extension_account_and_open_source_are_optional_but_typed(self):
+        ok = editor.finalize("extensions", {**h.DRAFTS["extensions"], "account": "none", "open_source": True})
+        self.assertEqual(validate(ok, load_schema("extensions")), [])
+        bad = editor.finalize("extensions", {**h.DRAFTS["extensions"], "account": "maybe", "open_source": "yes"})
+        errs = " ".join(validate(bad, load_schema("extensions")))
+        self.assertIn("account", errs)
+        self.assertIn("open_source", errs)
+
     def test_money_income_rejects_text_numbers(self):
         e = editor.finalize("money", {**h.DRAFTS["money"], "income": {**h.DRAFTS["money"]["income"], "low": "lots"}})
         self.assertTrue(any("income.low" in x for x in validate(e, load_schema("money"))))
