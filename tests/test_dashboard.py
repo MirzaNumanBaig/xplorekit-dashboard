@@ -182,7 +182,7 @@ class PostsTests(unittest.TestCase):
             self.assertEqual([by[pub["id"]]["state"], by[pend["id"]]["state"], by[draft["id"]]["state"], by[stale["id"]]["state"]], ["published", "pending", "draft", "stale"])
             self.assertEqual(ds["post_counts"], {"published": 1, "pending": 1, "draft": 1, "stale": 1, "rejected": 1})
             rej = [p for p in ds["posts"] if p["state"] == "rejected"][0]
-            self.assertEqual((rej["title"], rej["fields"]["why it was rejected"]), ("Hype idea", "money_gate"))
+            self.assertEqual((rej["title"], rej["fields"]["why it was rejected"]), ("Hype idea", "Income claim not backed by the source."))
 
     def test_only_published_posts_link_to_the_live_site_and_carry_date_and_pr(self):
         with tempfile.TemporaryDirectory() as d:

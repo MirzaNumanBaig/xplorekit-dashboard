@@ -101,6 +101,30 @@ def grounding_ratio(entry, source_text):
     return len(mine & theirs) / len(mine) if mine and theirs else 0.0
 
 
+def relevant_excerpt(entry, source, limit=14000, chunk=500, head=1500):
+    """For the fact-checker: the source in full when it fits, otherwise the start (what it is) plus the passages that mention the most words
+    the draft's claims use (install commands, prices, steps), so a claim from deep in a long README can actually be checked.
+    Excerpts are joined by ' ... '; neighbouring slices are joined seamlessly."""
+    source = source or ""
+    if len(source) <= limit:
+        return source
+    claim = _tokens(text_of(entry))
+    parts = [source[i:i + chunk] for i in range(head // chunk * 0, len(source), chunk)]
+    start = (head + chunk - 1) // chunk
+    ranked = sorted(range(start, len(parts)), key=lambda i: len(claim & _tokens(parts[i])), reverse=True)
+    budget = max(1, (limit - head) // chunk)
+    keep = {i for i in ranked[: max(1, budget // 2)] if claim & _tokens(parts[i])}
+    for i in list(keep):
+        for j in (i - 1, i + 1):
+            if start <= j < len(parts) and len(keep) < budget:
+                keep.add(j)
+    out, prev = "".join(parts[:start]), start - 1
+    for i in sorted(keep):
+        out += (parts[i] if i == prev + 1 else " ... " + parts[i])
+        prev = i
+    return out[:limit]
+
+
 def age_days(entry):
     return days_between(entry.get("last_checked", today()), today())
 

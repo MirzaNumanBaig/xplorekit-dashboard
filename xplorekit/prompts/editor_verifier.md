@@ -17,5 +17,5 @@ Return ONLY a JSON object:
 DRAFT:
 {{draft}}
 
-SOURCE TEXT (may be a short snippet):
+SOURCE TEXT (a long page is shown as its start plus the passages relevant to this draft, separated by " ... "):
 {{source}}

@@ -73,6 +73,22 @@ def post_state(e, published):
     return "published" if rec and not rec.get("withdrawn_at") else "pending"
 
 
+REASONS = {"duplicate": "Already covered: the same thing is on the site or was accepted earlier.",
+           "fact_check": "The AI fact-check found claims the source does not support.",
+           "fact_check_failed": "The AI check could not run (an outage, not a content problem); it is retried.",
+           "dead_link": "The source link did not open.", "money_gate": "Income claim not backed by the source.",
+           "schema": "The entry was incomplete or malformed.", "low_quality": "Quality score below the minimum.",
+           "copied_text": "Too much text copied from the source.", "hype": "Hype wording (guarantees, passive income, ...).",
+           "ungrounded": "Not enough in the source to write it honestly.", "error": "A technical error while checking; retried."}
+
+
+def reason_text(code):
+    """Plain-English version of a rejection code (reverify_* = the same finding made on an older saved entry)."""
+    code = code or ""
+    base = code[len("reverify_"):] if code.startswith("reverify_") else code
+    return REASONS.get(base, base.replace("_", " ") or "rejected")
+
+
 def posts_data(root, cfg, published, rejected, site_url):
     """One row per saved entry plus recent rejections, each with everything the detail view shows."""
     posts = []
@@ -96,7 +112,7 @@ def posts_data(root, cfg, published, rejected, site_url):
     for i, r in enumerate(sorted(rejected, key=lambda r: r.get("date", ""), reverse=True)[:MAX_REJECTED_POSTS]):
         posts.append({"id": f"rejected-{i}", "section": r["section"], "section_name": SECTION_NAMES.get(r["section"], r["section"]), "title": r.get("title") or r.get("url") or "(untitled)",
                       "state": "rejected", "score": None, "first_seen": r.get("date", ""), "last_checked": r.get("date", ""), "published_at": None, "pr": None, "source_url": r.get("url", ""),
-                      "source_urls": [], "verified": [], "live_url": None, "summary": "", "fields": {"why it was rejected": r.get("reason", ""), "detail": r.get("detail", "")}})
+                      "source_urls": [], "verified": [], "live_url": None, "summary": reason_text(r.get("reason")), "fields": {"why it was rejected": reason_text(r.get("reason")), "code": r.get("reason", ""), "detail": r.get("detail", "")}})
     return posts
 
 

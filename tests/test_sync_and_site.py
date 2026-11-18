@@ -125,3 +125,76 @@ class ReverifyTests(unittest.TestCase):
             self.assertEqual(run.load_entries(Path(d), "skills"), [])
             log = json.loads((Path(d) / "rejected" / "skills.json").read_text())
             self.assertEqual(log[-1]["reason"], "reverify_fact_check")
+
+
+class ReverifyOrderTests(unittest.TestCase):
+    def _setup(self, d, entries):
+        from xplorekit import run
+        (Path(d) / "prompts").mkdir()
+        for e in entries:
+            (Path(d) / "prompts" / f"{e['id']}.json").write_text(json.dumps(e))
+        return run.argparse.Namespace(out=d, site_dir=None, verdicts_file=None)
+
+    def _entries(self):
+        import tests.helpers as h
+        from xplorekit.agents import editor_verifier as ed
+        a = ed.finalize("prompts", h.DRAFTS["prompts"])
+        b = ed.finalize("prompts", {**h.DRAFTS["prompts"], "source_url": "https://example.com/other", "source_urls": ["https://example.com/other"]})
+        b["id"] = "zz-" + b["id"]
+        for i, e in enumerate((a, b)):
+            e.update({"quality_score": 79, "verified": ["schema", "rules_only"], "first_seen": f"2026-01-0{i + 1}"})
+        return a, b
+
+    def _run(self, args, verdict):
+        from unittest import mock
+        import tests.helpers as h
+        from xplorekit import run
+        from xplorekit.agents import editor_verifier as ed
+        def fact(s, en, t):
+            if isinstance(verdict, Exception):
+                raise verdict
+            return verdict
+        with mock.patch.object(run, "make_fact_checker", lambda f: (fact, "llm")), mock.patch.object(ed, "default_fetch_text", lambda u: h.SOURCE_TEXT["prompts"]), \
+                mock.patch("xplorekit.verify.links.check", lambda u: ("ok", 200)):
+            run.reverify(args, log=lambda *_: None)
+
+    def test_two_duplicates_keep_exactly_one(self):
+        from xplorekit import run
+        with tempfile.TemporaryDirectory() as d:
+            a, b = self._entries()
+            args = self._setup(d, [a, b])
+            self._run(args, {"supported": True, "score": 90, "issues": []})
+            left = run.load_entries(Path(d), "prompts")
+            self.assertEqual([e["id"] for e in left], [a["id"]])
+            self.assertIn("fact_check:llm", left[0]["verified"])
+
+    def test_an_ai_outage_leaves_entries_untouched(self):
+        from xplorekit import run
+        with tempfile.TemporaryDirectory() as d:
+            a, b = self._entries()
+            args = self._setup(d, [a, b])
+            self._run(args, RuntimeError("model down"))
+            left = run.load_entries(Path(d), "prompts")
+            self.assertEqual([e["id"] for e in left], [a["id"]])  # the real duplicate goes; the first stays, unchecked, to retry
+            self.assertIn("rules_only", left[0]["verified"])
+
+
+class RelevantExcerptTests(unittest.TestCase):
+    def test_a_claim_deep_in_a_long_page_is_included(self):
+        from xplorekit.verify import rules
+        filler = "General words about nothing in particular. " * 1200
+        source = "Intro about the tool. " + filler + " Run npx magicinstall --global to install it. " + filler
+        entry = {"summary": "Install with npx magicinstall --global", "install_steps": ["npx magicinstall --global"]}
+        out = rules.relevant_excerpt(entry, source)
+        self.assertLessEqual(len(out), 14000)
+        self.assertIn("magicinstall", out)
+        self.assertTrue(out.startswith("Intro about the tool."))
+        self.assertEqual(rules.relevant_excerpt(entry, "short"), "short")
+
+
+class RejectedRowTests(unittest.TestCase):
+    def test_reasons_are_plain_english(self):
+        from xplorekit import build_dashboard as bd
+        self.assertIn("could not run", bd.reason_text("reverify_fact_check_failed"))
+        self.assertIn("Already covered", bd.reason_text("duplicate"))
+        self.assertEqual(bd.reason_text("something_new"), "something new")

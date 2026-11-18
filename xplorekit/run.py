@@ -192,35 +192,46 @@ def recheck(args, log=print):
     append_run(root, {"type": "recheck", "date": today(), "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "checked": checked, "stale": stale})
 
 
+# A reverify rejection for one of these says nothing about the entry's content (the AI crashed, or a link check hiccuped), so the entry is
+# left exactly as it was and retried on the next run. Only definitive findings (duplicate, unsupported claim, copied text, ...) remove it.
+HOLD_REASONS = {"fact_check_failed", "error", "dead_link"}
+
+
 def reverify(args, log=print):
     """Run every saved entry that has no independent fact-check (tag rules_only) back through the whole gate with the model.
-    It earns a real fact-check tag, or it is rejected and removed from data/ (git history keeps it)."""
+    It earns a real fact-check tag, or it is rejected and removed from data/ (git history keeps it).
+    Entries are judged one at a time, oldest and best first, and each is compared only with entries that are STAYING (already fact-checked
+    ones plus those kept earlier in this pass). So of two duplicates exactly one survives: they are never both removed for duplicating each other."""
     root = data_root(args.out)
     fact, fact_name = make_fact_checker(args.verdicts_file)
-    kept = dropped = 0
+    kept = dropped = held = 0
     for section in settings()["sections"]:
         entries = load_entries(root, section)
         known = site_known.load(args.site_dir)[section] if args.site_dir else []
-        for e in entries:
-            if "rules_only" not in e.get("verified", []):
-                continue
+        staying = [e for e in entries if "rules_only" not in e.get("verified", [])]
+        todo = sorted((e for e in entries if "rules_only" in e.get("verified", [])), key=lambda e: (e.get("first_seen", ""), -e.get("quality_score", 0), e["id"]))
+        for e in todo:
             draft = {k: v for k, v in e.items() if k not in editor.META}
-            others = [o for o in entries if o["id"] != e["id"]]
-            ctx = editor.Context(existing=others, site_known=[k for k in known if "site data" not in k["where"]], fact_check=fact, fact_check_name=fact_name)
+            ctx = editor.Context(existing=staying, site_known=[k for k in known if "site data" not in k["where"]], fact_check=fact, fact_check_name=fact_name)
             acc, rej = editor.review(section, [draft], ctx)
             path = root / section / f"{e['id']}.json"
             if acc:
                 acc[0]["first_seen"] = e["first_seen"]
                 save_json(path, acc[0])
+                staying.append(acc[0])
                 kept += 1
                 log(f"  [{section}] {e['id']}: fact-checked, score {acc[0]['quality_score']}")
+            elif rej[0]["reason"] in HOLD_REASONS:
+                staying.append(e)  # still a candidate: later duplicates of it are judged against it
+                held += 1
+                log(f"  [{section}] {e['id']}: left as is, will retry ({rej[0]['reason']}: {rej[0]['detail'][:90]})")
             else:
                 path.unlink(missing_ok=True)
                 save(root, section, [], [{**rej[0], "reason": "reverify_" + rej[0]["reason"]}])
                 dropped += 1
                 log(f"  [{section}] {e['id']}: removed ({rej[0]['reason']}: {rej[0]['detail'][:90]})")
         save(root, section, [], [])
-    log(f"reverify: {kept} now fact-checked, {dropped} removed")
+    log(f"reverify: {kept} now fact-checked, {dropped} removed, {held} left to retry")
 
 
 def main(argv=None):

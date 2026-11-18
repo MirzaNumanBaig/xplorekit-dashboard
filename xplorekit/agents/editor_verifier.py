@@ -50,7 +50,7 @@ def llm_fact_check(section, entry, source_text):
         return None
     import json
     prompt = (ROOT / "xplorekit" / "prompts" / "editor_verifier.md").read_text("utf-8")
-    prompt = prompt.replace("{{section}}", section).replace("{{draft}}", json.dumps({k: v for k, v in entry.items() if k not in META}, ensure_ascii=False, indent=1)).replace("{{source}}", source_text[:6000] or "(empty)")
+    prompt = prompt.replace("{{section}}", section).replace("{{draft}}", json.dumps({k: v for k, v in entry.items() if k not in META}, ensure_ascii=False, indent=1)).replace("{{source}}", rules.relevant_excerpt(entry, source_text) or "(empty)")
     last = None
     for _ in range(2):
         try:

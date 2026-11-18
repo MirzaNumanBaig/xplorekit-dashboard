@@ -128,6 +128,7 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
   if usage runs high.
 - The scheduled path, the weekly `recheck` workflow, the token fallback (`_2`, `_3`) and the `ANTHROPIC_API_KEY` path have not run for real yet.
 - Open question for the owner: should the site's `robots.txt` disallow `/data/` (the raw JSON)?
+- **Rejection fixes (2026-11-18).** `--reverify` used to judge duplicate partners against each other (both deleted) and delete an entry when the AI check merely crashed; the fact-checker also saw only the first 6,000 characters of a long page. Now: entries are judged one at a time against entries that are staying (one of a duplicate pair always survives); `fact_check_failed`, `error` and `dead_link` leave the entry untouched to retry; the checker gets the page start plus the passages relevant to the draft (~14,000 chars). The Posts tab shows a plain-English reason per rejection. Five wrongly removed entries were restored from git (they re-run through reverify). Not yet seen in a real run.
 
 ## Owner decisions
 Decided 2026-11-17: cards go **inside the existing hub pages**; byline "Researched with AI, checked by Xplorekit"; Make Money cards **show income figures only when the

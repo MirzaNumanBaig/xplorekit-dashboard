@@ -5,19 +5,5 @@
     "title": "Anthropic Skills",
     "url": "https://raw.githubusercontent.com/anthropics/skills/main/README.md",
     "date": "2026-11-16"
-  },
-  {
-    "reason": "reverify_fact_check_failed",
-    "detail": "fact-check unreadable after a retry: claude CLI failed on every token: slot 1: exit 1",
-    "title": "Graphify",
-    "url": "https://github.com/Graphify-Labs/graphify",
-    "date": "2026-11-17"
-  },
-  {
-    "reason": "fact_check",
-    "detail": "Source text is truncated and never shows the Claude Code install command reading 'Clone the repository'. The 'Clone the repository' step is not stated; the source only says 'No clone' for the app and shows ./scripts/install.sh, so cloning is implied but not stated.; 'Grouped by division such as engineering' is only partly supported: the source mentions 'one division' and an engineering/ directory, but never lists the divisions.; 'Working process and expected deliverables' is only loosely supported: the source says each agent has 'processes' and 'deliverables', but the 'markdown file' format is inferred from the .md copy command.; 'Several other coding tools' is supported (Cursor, Codex, Gemini CLI, OpenCode and others are named), but the summary leaves out that the source describes the collection as growing from a Reddit thread, which is fine.; The desktop app step says it 'browses the roster and installs agents into Claude Code and other tools'. This is supported.; The source text claims 'proven deliverables', 'battle-tested' and 'production-ready' workflows. The draft correctly avoids repeating these, which is good tone, but the source offers no evidence for them.; The example_use_case ('activate one of those agents') is supported by the quoted activation example ('activate Frontend Developer mode'), but 'Frontend Developer' is not from the engineering folder in the source text, so the link between engineering/ and that agent is an inference.",
-    "title": "Agency Agents",
-    "url": "https://github.com/msitarzewski/agency-agents",
-    "date": "2026-11-18"
   }
 ]

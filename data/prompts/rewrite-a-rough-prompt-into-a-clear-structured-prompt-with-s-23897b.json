@@ -1,0 +1,36 @@
+{
+  "source_url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+  "source_urls": [
+    "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+    "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview"
+  ],
+  "title": "Rewrite a rough prompt into a clear, structured prompt with success criteria",
+  "prompt": "You are a careful prompt editor. I will give you a first-draft prompt and you will rewrite it so an AI assistant can follow it without guessing.\n\n<draft_prompt>\n[PASTE YOUR FIRST-DRAFT PROMPT HERE]\n</draft_prompt>\n\n<context>\nWho the output is for: [AUDIENCE]\nWhat I will use the output for: [PURPOSE]\nThings the answer must not do: [CONSTRAINTS]\n</context>\n\n<success_criteria>\nThe answer is good if: [2-4 CHECKABLE CRITERIA, for example length, format, tone, required sections]\n</success_criteria>\n\nDo the following:\n1. List any information that is missing or ambiguous in the draft and ask me up to 3 short questions about it. If nothing is missing, say so.\n2. Rewrite the draft as a self-contained prompt with these parts, each wrapped in its own XML-style tag: role, task, context, constraints, output_format.\n3. State the task directly and specifically. Say what to do, not only what to avoid.\n4. Add one short example of the desired output format, using [PLACEHOLDER] values rather than invented facts.\n5. Finish with a two-line note explaining the two most important changes you made and why.\n\nReturn the rewritten prompt first, then the note. Do not add claims about how well the new prompt performs.",
+  "models": [
+    "claude",
+    "chatgpt",
+    "gemini"
+  ],
+  "use_case": "productivity",
+  "example_output_summary": "A short list of clarifying questions, then a rewritten prompt split into role, task, context, constraints and output format sections with a small example format, followed by a two-line explanation of the main changes.",
+  "tags": [
+    "prompt-engineering",
+    "rewrite",
+    "xml-tags",
+    "success-criteria",
+    "clarity"
+  ],
+  "section": "prompts",
+  "first_seen": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "status": "active",
+  "quality_score": 79,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "rules_only"
+  ],
+  "id": "rewrite-a-rough-prompt-into-a-clear-structured-prompt-with-s-23897b"
+}
