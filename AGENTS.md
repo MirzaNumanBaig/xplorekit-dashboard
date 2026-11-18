@@ -141,7 +141,7 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
 2. New sources for field prompts (official prompt guides of the image and video tools, the vendors' own prompting documentation). Add them in `sources.json`; never copy a prompt longer than 120 characters.
 3. Make Money: `YOUTUBE_API_KEY` (and Reddit, if approved) to find ideas and embeddable creator videos; facts only from the official programme page; never repeat a creator's income claim as a fact; one guide a day only if each passes the fact-check.
 4. Dashboard: a Posts filter by field and a "hand-written" count, once the schema has `field`.
-5. Skills: a "Last updated" per category from its newest skill, and one filter for the skills page like extensions (not done; skills still has the rail plus its own grid).
+5. Skills: a "Last updated" per category from its newest skill (the skills page already has one filter, the feed rail, and its "Last updated" now follows the rule above).
 
 ## Owner decisions
 Decided 2026-11-17: cards go **inside the existing hub pages**; byline "Researched with AI, checked by Xplorekit"; Make Money cards **show income figures only when the
