@@ -7,13 +7,13 @@
   ],
   "caps": {
     "daily": {
-      "money": 3,
+      "money": 1,
       "prompts": 5,
       "extensions": 5,
       "skills": 5
     },
     "weekly": {
-      "money": 15,
+      "money": 3,
       "prompts": 25,
       "extensions": 25,
       "skills": 25
