@@ -73,11 +73,19 @@ If a site refuses bots (403) or disallows them in robots.txt, the pipeline will 
 
 
 ## 6. The dashboard control bar (Pause, Run now, "New posts go to")
-Above the tabs on the dashboard. To use the buttons, GitHub has to know it is you, so you connect a token once:
-1. On the dashboard click **Connect GitHub** (or any button), then **Create a token on GitHub**.
-2. Fine-grained token, **Only select repositories** -> `xplorekit-dashboard`. Permissions: **Actions: Read and write** (to start a run) and **Contents: Read and write** (to change `settings.json`). Pick a short expiry (for example 90 days).
-3. Paste it into the panel and **Save token**. By default it is forgotten when you close the tab; tick "Remember it on this device" to keep it. **Forget token** removes it.
+Above the tabs on the dashboard. To use the buttons, GitHub has to know it is you, so you connect a token once.
 
-What the controls do: **Pause / Resume** sets `paused` in `settings.json`; **Run now** starts the Research workflow; **New posts go to** sets `publish_mode`: *Published (live)* merges by itself, *Pending* opens a pull request that a person merges, *Draft* only researches and saves (nothing is sent to the site). Every change is a commit on `main` titled "Dashboard: ...", so it shows in git history and can be reverted. A change applies from the next run.
+**Create (or fix) the token**
+1. On the dashboard click **Connect GitHub**, then **Create a fine-grained token on GitHub** (or open the token you already made and choose **Edit**).
+2. **Repository access: Only select repositories**, then pick `xplorekit-dashboard`.
+3. **Repository permissions:** **Actions: Read and write** and **Contents: Read and write**. (Metadata read-only is added automatically.)
+4. Generate (or **Update**) the token and paste it into the panel. Editing an existing token's permissions takes effect straight away, so it does not need pasting again. A short expiry (for example 90 days) is wise. A classic token works too if you tick `repo` and `workflow`.
+5. Press **Check token**. It tests each permission without changing anything visible (it creates one unused git object to prove write access) and tells you exactly what is missing. Actions-write is the one thing it cannot test safely: that is confirmed the first time you press **Run now**.
+
+By default the token is forgotten when you close the tab; tick "Remember it on this device" to keep it, or use **Forget token**.
+
+**If a button says GitHub refused:** the message names which step failed (read settings.json, change settings.json, or start the run), which permission to set, and quotes GitHub's own words. The usual causes are the repository not being selected for the token, or Contents / Actions not set to Read and write.
+
+**What the controls do:** **Pause / Resume** sets `paused` in `settings.json`; **Run now** starts the Research workflow; **New posts go to** sets `publish_mode`: *Published (live)* merges by itself, *Pending* opens a pull request that a person merges, *Draft* only researches and saves (nothing is sent to the site). Every change is a commit on `main` titled "Dashboard: ...", so it shows in git history and can be reverted. A change applies from the next run.
 Without a token the bar still shows the schedule and live run status (it reads GitHub's public API) and the buttons just ask you to connect.
-Safety: the page only ever contacts `api.github.com` (the browser enforces this), and the token travels only in a request header, never in a URL.
+Safety: the page only ever contacts `api.github.com` (the browser enforces this), the token travels only in a request header (never in a URL), and the page can only read, run the workflow, or write that one settings file: it has no way to delete anything.

@@ -58,7 +58,8 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
   (dispatches `research.yml`) and a **"New posts go to"** dropdown (sets `publish_mode`). It works by calling GitHub's API from the browser with a fine-grained token
   the owner pastes in (this repository only; Actions and Contents read/write; kept in `sessionStorage`, or `localStorage` only if "remember" is ticked). The page's
   Content-Security-Policy lets it contact **only `https://api.github.com`**, the token only ever travels as an `Authorization` header, and a change is a normal commit to
-  `main` ("Dashboard: ..."), so it is visible and reversible in git history. A change applies from the next run.
+  `main` ("Dashboard: ..."), so it is visible and reversible in git history. A change applies from the next run. **Check token** tests each permission without changing anything
+  visible; a refused action names the step, the permission and GitHub's own message (the usual cause: the repo is not selected for the token, or Contents/Actions is not Read and write).
 - **Undo a published batch:** in the site repo, `git revert` the squash commit "Research feed: verified entries (<date>)" and push to `main`.
 - **Change limits:** edit `settings.json` (caps, `per_run_max`, `min_quality_score`, `stale_after_days`, `max_realistic_monthly_income`, `near_duplicate`).
 - **Add / pause a source:** edit `sources.json` (see `GUIDE.md`). **Change agent behaviour:** edit the prompt file.
