@@ -51,7 +51,14 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
   whose section is already at its cap exits before spending any Claude tokens.
 - **Run now:** Actions -> Research -> Run workflow (`dry_run: true` writes nothing; `section`, `limit` optional).
 - **Pause / resume:** `"paused": true` or `false` in `settings.json`, or disable the workflow in Actions. Nothing is collected, written or published while paused.
-- **Stop publishing but keep researching:** `"auto_merge_site": false` in `settings.json`. Pull requests then open and wait for a human.
+- **Where new posts go (`"publish_mode"` in `settings.json`):** `"publish"` = delivered and merged by itself, live on the site; `"pending"` = a pull request opens and a
+  person merges it; `"draft"` = research only, nothing is sent to the site. Anything unrecognised falls back to `"pending"`, never to publishing. Old files with
+  `auto_merge_site` still work (true = publish, otherwise pending).
+- **Dashboard control bar** (above the tabs, like the old researcher dashboard): shows "Runs every 3h" and the next run, **Pause / Resume** (sets `paused`), **Run now**
+  (dispatches `research.yml`) and a **"New posts go to"** dropdown (sets `publish_mode`). It works by calling GitHub's API from the browser with a fine-grained token
+  the owner pastes in (this repository only; Actions and Contents read/write; kept in `sessionStorage`, or `localStorage` only if "remember" is ticked). The page's
+  Content-Security-Policy lets it contact **only `https://api.github.com`**, the token only ever travels as an `Authorization` header, and a change is a normal commit to
+  `main` ("Dashboard: ..."), so it is visible and reversible in git history. A change applies from the next run.
 - **Undo a published batch:** in the site repo, `git revert` the squash commit "Research feed: verified entries (<date>)" and push to `main`.
 - **Change limits:** edit `settings.json` (caps, `per_run_max`, `min_quality_score`, `stale_after_days`, `max_realistic_monthly_income`, `near_duplicate`).
 - **Add / pause a source:** edit `sources.json` (see `GUIDE.md`). **Change agent behaviour:** edit the prompt file.
@@ -90,7 +97,7 @@ the site**, and is re-run through the whole gate by `python -m xplorekit.run --r
 4. **Again at render time:** the site's `scripts/build-feed.py` applies the same identity and wording rules and shows each thing once.
 
 ## Publishing safety (what must pass before the pipeline merges by itself)
-`xplorekit/site_pr.py` merges the pull request only if ALL of these pass: only `public/data/` and the four hub pages changed; the change is not unusually
+`xplorekit/site_pr.py` (in `publish_mode` `"publish"` only) merges the pull request only if ALL of these pass: only `public/data/` and the four hub pages changed; the change is not unusually
 large (`auto_merge_max_files`, default 60); the hub pages changed only inside the generated feed blocks; every entry has a `fact_check:*` tag and no popularity-count
 field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull request stays open with the failed checks listed, and the dashboard shows a warning.
 
@@ -107,20 +114,22 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
 - The repo is public: no secrets, no personal contact details, no private information in code, data, logs or commit messages.
 
 ## Known gaps (update this list; do not hide them)
-- **Auto-publish is not yet proven live.** The path "render cards -> safety checks -> auto-merge -> Cloudflare deploy" is tested with fakes and on a throwaway copy of the
-  site, not in a real run. The first scheduled run is the first real proof: check the dashboard (a held-back PR shows as a warning) and the site's `main`.
+- **Auto-publish is proven live (2026-11-17/18).** The site's `main` has "Research feed: verified entries" commits from the pipeline (2026-11-17 02:02 and 2026-11-18 07:57 UTC),
+  `data/published.json` records what went live, and the cards are visible on the real hub pages (extensions, prompts, skills). Still unproven: a delivery that fails a safety
+  check (it should stay open and show a warning), `publish_mode` `pending`/`draft` in a real run, and the dashboard control bar against the real GitHub API (it is tested only
+  against a faked one).
 - **Everything saved before 2026-11-17 was stored without a fact-check** (`rules_only`): fact-check replies were parsed as the wrong piece of JSON and silently
   dropped. Fixed (and covered by a regression test). Those entries are held back from the site; `--reverify` runs on every research run and either gives them a real
   fact-check or removes them.
-- **Make Money produced 0 drafts in both real runs (2026-11-16).** Cause found: for rules pages (KDP, Etsy) the agent saw only the page's navigation text. Fixed with
+- **Make Money still has no live cards (checked 2026-11-18).** It produced 0 drafts in the first two real runs (2026-11-16). Cause found: for rules pages (KDP, Etsy) the agent saw only the page's navigation text. Fixed with
   focused excerpts (the AI/rules passages); not yet seen working in a real run. Generic searches are still noisy; Medium and Upwork block bots, so nothing is claimed from them.
 - **Token use at a 3-hour cadence is unknown.** The first real runs cost roughly 1 USD API-equivalent each. Watch the dashboard's Usage tab; tune `per_run_max` or the caps
   if usage runs high.
 - The scheduled path, the weekly `recheck` workflow, the token fallback (`_2`, `_3`) and the `ANTHROPIC_API_KEY` path have not run for real yet.
-- The site's UI is to be redesigned (owner request, 2026-11-17); the direction is not chosen, so nothing is restyled yet. Feed cards use only the site's tokens and card classes, so they follow.
 - Open question for the owner: should the site's `robots.txt` disallow `/data/` (the raw JSON)?
 
 ## Owner decisions
 Decided 2026-11-17: cards go **inside the existing hub pages**; byline "Researched with AI, checked by Xplorekit"; Make Money cards **show income figures only when the
 source states them**, attributed; the pipeline **merges by itself** (safety checks above); **no duplicates**; schedule **every 3 hours**.
-Still open: the new site UI direction; whether `/data/` is hidden from search engines.
+Decided 2026-11-17/18 (later): the site UI is redesigned ("clean product directory"); the homepage's third tile is Prompts; the dashboard has a Posts tab and a control bar.
+Still open: whether `/data/` is hidden from search engines.

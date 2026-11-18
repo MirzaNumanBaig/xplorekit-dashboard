@@ -40,7 +40,7 @@ Alternative without a subscription: an API key from console.anthropic.com saved 
 - **Locally:** `python -m xplorekit.run --section money --dry-run --site-dir ../xplorekit` (needs `claude` CLI + token, or an API key).
 - **Publishing (automatic):** each run syncs the fact-checked entries to the site repo, whose `scripts/build-feed.py` renders them as cards inside the four hub pages, then
   `xplorekit/site_pr.py` runs the safety checks (see AGENTS.md) and **merges the pull request itself** (branch `feed/xplorekit-research`); Cloudflare deploys as for any merge to `main`.
-  If a check fails, the pull request stays open and the dashboard shows why. To stop publishing, set `"auto_merge_site": false` in `settings.json`; to undo a batch, `git revert` its squash commit in the site repo.
+  If a check fails, the pull request stays open and the dashboard shows why. To change where new posts go, use the dashboard's **"New posts go to"** dropdown or set `"publish_mode"` (`publish` / `pending` / `draft`) in `settings.json`; to undo a batch, `git revert` its squash commit in the site repo.
 - **Caps** (daily/weekly per section), score floors, stale-after days and the income cap live in `xplorekit/config/settings.json`.
 
 Useful flags: `--limit N`, `--section money|prompts|extensions|skills|all`, `--collect-only`, `--use-cache`,
@@ -70,3 +70,14 @@ If a site refuses bots (403) or disallows them in robots.txt, the pipeline will 
 `public/data/<section>/<id>.json` plus `public/data/<section>/index.json` and a manifest `public/data/index.json`
 (served at `/data/...`). The folder is fully generated: do not hand-edit it. The site's pages must read these files
 (a build script that renders marker blocks, as `scripts/build-hub.py` does, or client-side fetch for sliders). That rendering step is separate work.
+
+
+## 6. The dashboard control bar (Pause, Run now, "New posts go to")
+Above the tabs on the dashboard. To use the buttons, GitHub has to know it is you, so you connect a token once:
+1. On the dashboard click **Connect GitHub** (or any button), then **Create a token on GitHub**.
+2. Fine-grained token, **Only select repositories** -> `xplorekit-dashboard`. Permissions: **Actions: Read and write** (to start a run) and **Contents: Read and write** (to change `settings.json`). Pick a short expiry (for example 90 days).
+3. Paste it into the panel and **Save token**. By default it is forgotten when you close the tab; tick "Remember it on this device" to keep it. **Forget token** removes it.
+
+What the controls do: **Pause / Resume** sets `paused` in `settings.json`; **Run now** starts the Research workflow; **New posts go to** sets `publish_mode`: *Published (live)* merges by itself, *Pending* opens a pull request that a person merges, *Draft* only researches and saves (nothing is sent to the site). Every change is a commit on `main` titled "Dashboard: ...", so it shows in git history and can be reverted. A change applies from the next run.
+Without a token the bar still shows the schedule and live run status (it reads GitHub's public API) and the buttons just ask you to connect.
+Safety: the page only ever contacts `api.github.com` (the browser enforces this), and the token travels only in a request header, never in a URL.
