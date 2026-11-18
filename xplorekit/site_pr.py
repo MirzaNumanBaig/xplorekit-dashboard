@@ -22,7 +22,10 @@ from xplorekit.common import ROOT, load_json, publish_mode, save_json, settings,
 
 BRANCH = "feed/xplorekit-research"
 SITEMAP = "public/sitemap.xml"  # may change only inside its feed block
-HUB_PAGES = {"public/make-money-with-ai/index.html", "public/prompts/index.html", "public/skills-directory/index.html", "public/extensions-directory/index.html"}
+# The four hub pages, plus the homepage (owner decision 2026-11-18: "Latest" sliders on the home page). Every one of them may change ONLY inside
+# <!-- feed:...:start/end --> blocks (the homepage's are feed:home_prompts, feed:home_extensions, feed:home_skills, feed:home_money).
+HUB_PAGES = {"public/index.html", "public/make-money-with-ai/index.html", "public/prompts/index.html", "public/skills-directory/index.html",
+             "public/extensions-directory/index.html"}
 BLOCK = re.compile(r"<!-- feed:\w+:start.*?<!-- feed:\w+:end -->", re.S)
 FORBIDDEN_KEYS = {"stars", "star_count", "users", "user_count", "downloads", "download_count", "ratings", "rating", "reviews", "review_count"}
 
@@ -99,7 +102,7 @@ def check_build(site):
 
 
 def run_checks(site, files):
-    results = [("only the data folder and the four hub pages changed", check_paths(files)), ("change size is normal", check_size(files)),
+    results = [("only the data folder, the entry pages, the sitemap and the hub pages (home included) changed", check_paths(files)), ("change size is normal", check_size(files)),
                ("nothing outside the generated blocks moved", check_pages_outside_blocks(site, files)),
                ("every entry carries a fact-check and no popularity counts", check_data(site, files)),
                ("the site's own page check passes", check_build(site))]

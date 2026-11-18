@@ -13,11 +13,11 @@ OLD = "<main>\n<p>hand written</p>\n</main>"
 WITH_BLOCK = "<main>\n<p>hand written</p>\n<!-- feed:prompts:start -->\n<div>cards</div>\n<!-- feed:prompts:end -->\n</main>"
 
 
-def site_with(page_text):
+def site_with(page_text, page=PAGE):
     d = tempfile.TemporaryDirectory()
     _OPEN.append(d)
-    p = Path(d.name) / PAGE
-    p.parent.mkdir(parents=True)
+    p = Path(d.name) / page
+    p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(page_text)
     return d
 
@@ -27,11 +27,21 @@ class CheckTests(unittest.TestCase):
         while _OPEN:
             _OPEN.pop().cleanup()
 
-    def test_only_data_and_the_four_hub_pages_may_change(self):
+    def test_only_data_and_the_hub_pages_may_change(self):
         self.assertIsNone(site_pr.check_paths(["public/data/skills/x.json", "public/prompts/index.html", "public/extensions-directory/index.html"]))
         self.assertIn("unexpected", site_pr.check_paths(["public/data/a.json", "public/css/styles.css"]))
         self.assertIn("unexpected", site_pr.check_paths(["CLAUDE.md"]))
-        self.assertIn("unexpected", site_pr.check_paths(["public/index.html"]))
+        self.assertIn("unexpected", site_pr.check_paths(["public/css/home.css", "public/js/site.js", "public/about.html"]))
+        self.assertIsNone(site_pr.check_paths(["public/index.html"]))  # the homepage's "Latest" sliders (feed:home_* blocks) are generated too
+
+    def test_the_homepage_may_change_only_inside_its_feed_blocks(self):
+        home = "<main>hand written <!-- feed:home_prompts:start -->cards<!-- feed:home_prompts:end --></main>"
+        d = site_with(home.replace("cards", "NEW cards"), "public/index.html")
+        with mock.patch.object(site_pr, "git", lambda *a, **k: home):
+            self.assertIsNone(site_pr.check_pages_outside_blocks(d.name, ["public/index.html"]))
+        d2 = site_with(home.replace("hand written", "hand written, edited"), "public/index.html")
+        with mock.patch.object(site_pr, "git", lambda *a, **k: home):
+            self.assertIn("outside the generated feed block", site_pr.check_pages_outside_blocks(d2.name, ["public/index.html"]))
 
     def test_size_limit(self):
         self.assertIsNone(site_pr.check_size(["f"] * 10))
@@ -183,5 +193,5 @@ class ResearchPagePathTests(unittest.TestCase):
         from xplorekit import site_pr
         ok = ["public/data/prompts/a.json", "public/research/prompts/a.html", "public/sitemap.xml", "public/prompts/index.html"]
         self.assertIsNone(site_pr.check_paths(ok))
-        self.assertIn("unexpected", site_pr.check_paths(ok + ["public/index.html"]))
+        self.assertIn("unexpected", site_pr.check_paths(ok + ["public/css/home.css"]))
         self.assertIn("unexpected", site_pr.check_paths(["public/robots.txt"]))

@@ -98,8 +98,8 @@ the site**, and is re-run through the whole gate by `python -m xplorekit.run --r
 4. **Again at render time:** the site's `scripts/build-feed.py` applies the same identity and wording rules and shows each thing once.
 
 ## Publishing safety (what must pass before the pipeline merges by itself)
-`xplorekit/site_pr.py` (in `publish_mode` `"publish"` only) merges the pull request only if ALL of these pass: only `public/data/` and the four hub pages changed; the change is not unusually
-large (`auto_merge_max_files`, default 120); only `public/data/`, `public/research/` (the entry pages), `public/sitemap.xml` and the four hub pages changed; the hub pages and the sitemap changed only inside the generated feed blocks; every entry has a `fact_check:*` tag and no popularity-count
+`xplorekit/site_pr.py` (in `publish_mode` `"publish"` only) merges the pull request only if ALL of these pass: only `public/data/`, the entry pages, the sitemap and the hub pages (the four hubs plus the homepage) changed; the change is not unusually
+large (`auto_merge_max_files`, default 120); only `public/data/`, `public/research/` (the entry pages), `public/sitemap.xml` and the four hub pages changed; the hub pages (homepage included) and the sitemap changed only inside the generated feed blocks (the homepage's are `feed:home_prompts`, `feed:home_extensions`, `feed:home_skills`, `feed:home_money`); every entry has a `fact_check:*` tag and no popularity-count
 field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull request stays open with the failed checks listed, and the dashboard shows a warning.
 
 ## How we work on this repo (people and AI tools)
@@ -132,5 +132,5 @@ field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull req
 ## Owner decisions
 Decided 2026-11-17: cards go **inside the existing hub pages**; byline "Researched with AI, checked by Xplorekit"; Make Money cards **show income figures only when the
 source states them**, attributed; the pipeline **merges by itself** (safety checks above); **no duplicates**; schedule **every 3 hours**.
-Decided 2026-11-17/18 (later): the site UI is redesigned ("clean product directory"); the homepage's third tile is Prompts; the dashboard has a Posts tab and a control bar.
+Decided 2026-11-18: final UI (new type and logo, sliders of the latest entries on the home page and hub pages, Copy button on prompts; the homepage's feed blocks are generated and allowed by the safety check). Decided 2026-11-17/18 (later): the site UI is redesigned ("clean product directory"); the homepage's third tile is Prompts; the dashboard has a Posts tab and a control bar.
 Still open: whether `/data/` is hidden from search engines.
