@@ -44,7 +44,7 @@ class DatasetTests(unittest.TestCase):
             money = ds["sections"][0]
             self.assertEqual((money["stats"]["total"], money["stats"]["today"], money["stats"]["week"]), (1, 1, 1))
             self.assertEqual(money["stats"]["reasons_week"], {"money_gate": 1})  # the 2000-01-01 rejection is outside the week
-            self.assertEqual(money["caps"], {"daily": 3, "weekly": 15})
+            self.assertEqual(money["caps"], {"daily": 1, "weekly": 3})
             skills = [s for s in ds["sections"] if s["key"] == "skills"][0]
             self.assertEqual((skills["stats"]["stale"], skills["stats"]["rules_only"], skills["stats"]["week"]), (1, 1, 0))
             self.assertEqual(len(ds["rejected"]), 2)
