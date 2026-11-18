@@ -52,5 +52,35 @@
     "published_at": "2026-11-18",
     "pr": 78,
     "withdrawn_at": null
+  },
+  "text-aid-too-12f67d": {
+    "section": "extensions",
+    "published_at": "2026-11-18",
+    "pr": 79,
+    "withdrawn_at": null
+  },
+  "build-a-new-plugin-by-pointing-an-ai-coding-agent-at-referen-4b4d48": {
+    "section": "prompts",
+    "published_at": "2026-11-18",
+    "pr": 79,
+    "withdrawn_at": null
+  },
+  "rewrite-a-draft-prompt-to-be-clearer-with-examples-and-xml-s-23897b": {
+    "section": "prompts",
+    "published_at": "2026-11-18",
+    "pr": 79,
+    "withdrawn_at": null
+  },
+  "agency-agents-ec643c": {
+    "section": "skills",
+    "published_at": "2026-11-18",
+    "pr": 79,
+    "withdrawn_at": null
+  },
+  "graphify-dd6a9d": {
+    "section": "skills",
+    "published_at": "2026-11-18",
+    "pr": 79,
+    "withdrawn_at": null
   }
 }

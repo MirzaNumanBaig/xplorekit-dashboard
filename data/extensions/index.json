@@ -3,6 +3,16 @@
   "generated_at": "2026-11-18",
   "items": [
     {
+      "id": "text-aid-too-12f67d",
+      "title": "Text-Aid-Too",
+      "summary": "Lets you edit text on web pages in your own desktop text editor, such as Vim or Emacs. It works with ordinary text inputs and with contentEditable fields like the Gmail compose window. The page updates each time you save the file.",
+      "url": "https://github.com/smblott-github/text-aid-too",
+      "first_seen": "2026-11-18",
+      "last_checked": "2026-11-18",
+      "status": "active",
+      "quality_score": 91
+    },
+    {
       "id": "surfmind-cf61ec",
       "title": "SurfMind",
       "summary": "An AI assistant that opens as a browser sidebar, reads the page you are on and answers using the AI model you pick. It can connect MCP servers and skills, and can take actions on the page as well as answer questions.",

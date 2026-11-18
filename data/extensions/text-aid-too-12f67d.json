@@ -1,0 +1,43 @@
+{
+  "source_url": "https://github.com/smblott-github/text-aid-too",
+  "source_urls": [
+    "https://github.com/smblott-github/text-aid-too",
+    "https://chromewebstore.google.com/detail/text-aid-too/klbcooigafjpbiahdjccmajnaehomajc"
+  ],
+  "name": "Text-Aid-Too",
+  "summary": "Lets you edit text on web pages in your own desktop text editor, such as Vim or Emacs. It works with ordinary text inputs and with contentEditable fields like the Gmail compose window. The page updates each time you save the file.",
+  "audience": "People who prefer writing in a native editor such as Vim or Emacs and want to use it for text boxes on the web.",
+  "pros": [
+    "Works with contentEditable inputs such as the Gmail compose window, as well as ordinary HTML inputs",
+    "Updates the page whenever the file is saved, so changes can be previewed as you write",
+    "Temporary files get a .txt or .html extension, so the editor can detect the file type",
+    "Keyboard shortcut can be changed on the extension's options page",
+    "Optional Markdown markup in contentEditable inputs for writing rich-text Gmail messages"
+  ],
+  "cons": [
+    "Needs a separate local server, installed with npm and requiring Node.js, running alongside the extension",
+    "The editor command must stay in the foreground and not fork, so some editors need a special flag such as gvim -f",
+    "Markdown support in contentEditable inputs is described as experimental",
+    "Setup may involve configuring a port and shared secret on the options page"
+  ],
+  "pricing": "unknown",
+  "pricing_note": "",
+  "ai_related": false,
+  "store_url": "https://chromewebstore.google.com/detail/text-aid-too/klbcooigafjpbiahdjccmajnaehomajc",
+  "extension_last_updated": "unknown",
+  "alternatives": [],
+  "section": "extensions",
+  "first_seen": "2026-11-18",
+  "last_checked": "2026-11-18",
+  "status": "active",
+  "quality_score": 91,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "store_link_live",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "text-aid-too-12f67d"
+}

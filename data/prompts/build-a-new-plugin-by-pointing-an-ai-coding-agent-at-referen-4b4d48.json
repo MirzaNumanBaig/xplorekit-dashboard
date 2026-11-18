@@ -19,15 +19,15 @@
   ],
   "section": "prompts",
   "first_seen": "2026-11-16",
-  "last_checked": "2026-11-16",
+  "last_checked": "2026-11-18",
   "status": "active",
-  "quality_score": 79,
+  "quality_score": 72,
   "verified": [
     "schema",
     "not_duplicate",
     "link_live",
     "no_verbatim_copy",
-    "rules_only"
+    "fact_check:llm"
   ],
   "id": "build-a-new-plugin-by-pointing-an-ai-coding-agent-at-referen-4b4d48"
 }

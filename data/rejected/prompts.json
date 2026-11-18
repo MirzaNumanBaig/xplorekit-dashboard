@@ -5,5 +5,26 @@
     "title": "Improve a first-draft prompt against clear success criteria",
     "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
     "date": "2026-11-17"
+  },
+  {
+    "reason": "duplicate",
+    "detail": "same words in the title as accepted entry ('Rewrite a rough prompt into a clear, structured pr')",
+    "title": "Rewrite a vague prompt into a clear, direct, structured prompt",
+    "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+    "date": "2026-11-18"
+  },
+  {
+    "reason": "reverify_duplicate",
+    "detail": "same words in the title as accepted entry ('Build a new plugin by pointing an AI coding agent ')",
+    "title": "Build a new plugin by studying existing reference code first",
+    "url": "https://simonwillison.net/2026/Nov/15/datasette-maplibre/",
+    "date": "2026-11-18"
+  },
+  {
+    "reason": "reverify_duplicate",
+    "detail": "prompt wording overlaps accepted entry ('Rewrite a draft prompt to be clearer, with example')",
+    "title": "Rewrite a rough prompt into a clear, structured prompt with success criteria",
+    "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+    "date": "2026-11-18"
   }
 ]

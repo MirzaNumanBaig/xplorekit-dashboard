@@ -3,6 +3,16 @@
   "generated_at": "2026-11-18",
   "items": [
     {
+      "id": "agency-agents-ec643c",
+      "title": "Agency Agents",
+      "summary": "A collection of specialised AI agent definitions, each with its own domain focus, working style, process and expected deliverables. They can be installed into Claude Code and several other coding tools, either with an install script or by copying a category folder.",
+      "url": "https://github.com/msitarzewski/agency-agents",
+      "first_seen": "2026-11-18",
+      "last_checked": "2026-11-18",
+      "status": "active",
+      "quality_score": 88
+    },
+    {
       "id": "ecc-3429c7",
       "title": "ECC",
       "summary": "An MIT-licensed toolkit that adds a structured engineering workflow to coding agents: planning, testing, implementation, review, verification and memory, with reusable skills for repeated tasks. It works best with Claude Code and has adapters for other agent tools.",
@@ -28,9 +38,9 @@
       "summary": "A /graphify skill that turns a codebase and its docs, SQL schemas, configs and PDFs into a queryable knowledge graph. Code is parsed locally with deterministic AST parsing. Each connection is labelled as explicitly extracted or inferred, and it uses a graph rather than a vector store.",
       "url": "https://github.com/Graphify-Labs/graphify",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-16",
+      "last_checked": "2026-11-18",
       "status": "active",
-      "quality_score": 79
+      "quality_score": 88
     }
   ]
 }
