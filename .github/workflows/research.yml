@@ -1,7 +1,7 @@
 name: Research
 # Every 3 hours: collect -> Claude writes drafts -> Editor/Verifier gate -> re-verify older unchecked entries -> deliver to the site repo
 # (cards are rendered into the hub pages, safety checks run, then the pull request merges itself) -> rebuild the dashboard.
-# Settings live in xplorekit/config/settings.json: "paused", "auto_merge_site", caps, per_run_max. Instructions: AGENTS.md.
+# Settings live in xplorekit/config/settings.json: "paused", "publish_mode" (publish | pending | draft), caps, per_run_max. Instructions: AGENTS.md.
 on:
   schedule: [{cron: "17 */3 * * *"}]
   workflow_dispatch:

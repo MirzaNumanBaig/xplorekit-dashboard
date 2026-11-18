@@ -186,3 +186,17 @@ def tokens(text):
 def jaccard(a, b):
     ta, tb = tokens(a), tokens(b)
     return len(ta & tb) / len(ta | tb) if ta and tb else 0.0
+
+
+PUBLISH_MODES = ("publish", "pending", "draft")
+
+
+def publish_mode():
+    """Where new posts go. publish = delivered and merged by itself (live); pending = a pull request opens and a person merges it;
+    draft = research only, nothing is sent to the site. Old settings files with auto_merge_site still work.
+    Anything unrecognised or missing falls back to the SAFE side (pending: a person merges), never to publishing."""
+    s = settings()
+    mode = s.get("publish_mode")
+    if mode in PUBLISH_MODES:
+        return mode
+    return "publish" if s.get("auto_merge_site") is True else "pending"

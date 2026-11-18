@@ -66,7 +66,7 @@ class CheckTests(unittest.TestCase):
 class DeliverTests(unittest.TestCase):
     """The decision to publish: merge only when auto-merge is on AND every check passed."""
 
-    def run_deliver(self, files, checks_fail=None, auto=True):
+    def run_deliver(self, files, checks_fail=None, auto=True, mode=None):
         calls = []
         def fake_git(site, *args, **k):
             return "\n".join(f if "\t" in f else "M\t" + f for f in files) if args[:2] == ("diff", "--cached") else ""
@@ -82,7 +82,7 @@ class DeliverTests(unittest.TestCase):
         results = [("a check", checks_fail)]
         with tempfile.TemporaryDirectory() as d, mock.patch.object(site_pr, "git", fake_git), mock.patch.object(site_pr, "git_ok", lambda *a: True), mock.patch.object(site_pr, "api", fake_api), \
                 mock.patch.object(site_pr, "run_checks", lambda s, f: results), mock.patch.object(site_pr.subprocess, "run", lambda *a, **k: subprocess.CompletedProcess([], 0, "", "")), \
-                mock.patch.dict(site_pr.settings(), {"auto_merge_site": auto}):
+                mock.patch.dict(site_pr.settings(), {"publish_mode": mode or ("publish" if auto else "pending")}):
             body = Path(d) / "pr.md"
             body.write_text("Automated.")
             return site_pr.deliver(d, body, "owner/site"), calls
@@ -102,7 +102,7 @@ class DeliverTests(unittest.TestCase):
     def test_the_kill_switch_stops_merging_but_still_opens_the_pr(self):
         out, calls = self.run_deliver(["public/data/skills/a.json"], auto=False)
         self.assertEqual(out["state"], "open_for_review")
-        self.assertIn("switched off", out["reason"])
+        self.assertIn("pending", out["reason"])
         self.assertFalse([c for c in calls if c[0] == "PUT"])
         self.assertTrue([c for c in calls if c[0] == "POST"])
 
@@ -147,3 +147,32 @@ class PublishedRecordTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             site_pr.record_published(d, {**out, "date": "2026-11-17"})
             self.assertFalse(Path(d, "published.json").exists())
+
+
+class PublishModeTests(unittest.TestCase):
+    def test_draft_mode_touches_nothing_and_says_so(self):
+        out, calls = DeliverTests().run_deliver(["A\tpublic/data/skills/a.json"], mode="draft")
+        self.assertEqual(out["state"], "held_as_draft")
+        self.assertEqual(calls, [])  # no pull request, no merge, no API call at all
+
+    def test_pending_mode_opens_the_pr_but_never_merges_and_publish_mode_merges(self):
+        out, calls = DeliverTests().run_deliver(["A\tpublic/data/skills/a.json"], mode="pending")
+        self.assertEqual(out["state"], "open_for_review")
+        self.assertFalse([c for c in calls if c[0] == "PUT"])
+        self.assertTrue([c for c in calls if c[0] == "POST"])
+        out, calls = DeliverTests().run_deliver(["A\tpublic/data/skills/a.json"], mode="publish")
+        self.assertEqual(out["state"], "merged")
+
+    def test_the_old_auto_merge_setting_still_means_the_same_thing(self):
+        from xplorekit import common
+        with mock.patch.dict(common.settings(), {"auto_merge_site": False}, clear=False):
+            s = common.settings()
+            s.pop("publish_mode", None)
+            self.assertEqual(common.publish_mode(), "pending")
+        with mock.patch.dict(common.settings(), {"publish_mode": "draft"}):
+            self.assertEqual(common.publish_mode(), "draft")
+        with mock.patch.dict(common.settings(), {"publish_mode": "nonsense"}):
+            self.assertEqual(common.publish_mode(), "pending")  # a typo must never publish live: it falls back to the safe side
+        with mock.patch.dict(common.settings(), {"auto_merge_site": True}):
+            common.settings().pop("publish_mode", None)
+            self.assertEqual(common.publish_mode(), "publish")

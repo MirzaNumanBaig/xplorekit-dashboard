@@ -3,8 +3,8 @@
   python -m xplorekit.site_pr --site-dir site --body pr.md      env: GH_TOKEN (site repo token), SITE_REPO (owner/name)
 
 Order: (1) the site's own scripts/build-feed.py renders the cards into its hub pages; (2) only the allowed paths are staged on ONE rolling
-branch (feed/xplorekit-research); (3) safety checks; (4) commit, push, open or update the pull request; (5) if settings.auto_merge_site is
-true AND every check passed, squash-merge it (the site deploys on merge to main); otherwise the PR stays open for a human with the reason in
+branch (feed/xplorekit-research); (3) safety checks; (4) commit, push, open or update the pull request; (5) if settings.publish_mode is
+"publish" AND every check passed, squash-merge it (the site deploys on merge to main); otherwise the PR stays open for a human with the reason in
 its description. The outcome is written to data/site_pr.json for the dashboard.
 """
 import argparse
@@ -18,7 +18,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-from xplorekit.common import ROOT, load_json, save_json, settings, today
+from xplorekit.common import ROOT, load_json, publish_mode, save_json, settings, today
 
 BRANCH = "feed/xplorekit-research"
 HUB_PAGES = {"public/make-money-with-ai/index.html", "public/prompts/index.html", "public/skills-directory/index.html", "public/extensions-directory/index.html"}
@@ -138,6 +138,10 @@ def record_published(out_dir, outcome):
 def deliver(site, body_path, repo):
     """Returns the outcome dict. Never raises for an expected failure: it records why a human is needed."""
     out = {"date": today(), "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "state": "error", "reason": "", "pr": None, "files": 0}
+    mode = publish_mode()
+    if mode == "draft":  # research only: the site repo is not touched at all
+        out.update(state="held_as_draft", reason="publish mode is 'draft': nothing is sent to the site")
+        return out
     build = subprocess.run([sys.executable, "scripts/build-feed.py"], cwd=site, capture_output=True, text=True)
     if build.returncode != 0:
         out["reason"] = "the site's build-feed.py failed: " + (build.stdout + build.stderr).strip()[-160:]
@@ -157,9 +161,9 @@ def deliver(site, body_path, repo):
     results = run_checks(site, files)
     failed = [why for _, why in results if why]
     body = Path(body_path).read_text("utf-8") if Path(body_path).exists() else "Automated research update."
-    will_merge = settings().get("auto_merge_site", False) and not failed
+    will_merge = mode == "publish" and not failed
     note = ("This pull request merges itself because every safety check passed." if will_merge else
-            "**This pull request was NOT merged automatically** " + ("(auto-merge is switched off in settings.json)." if not failed else "because a safety check failed. A human needs to look.") + "\n")
+            "**This pull request was NOT merged automatically** " + ("(publish mode is 'pending': a person merges)." if not failed else "because a safety check failed. A human needs to look.") + "\n")
     body = f"{body}\n\n### Safety checks\n{checks_text(results)}\n\n{note}"
     git(site, "commit", "-q", "-m", f"Research feed: update verified entries ({today()})")
     if not git_ok(site, "push", "-q", "--force-with-lease", "origin", BRANCH):  # the rolling branch is ours alone, so a plain force is the fallback
@@ -179,7 +183,7 @@ def deliver(site, body_path, repo):
         out.update(state="open_for_review", reason="; ".join(failed))
         return out
     if not will_merge:
-        out.update(state="open_for_review", reason="auto-merge is switched off in settings.json")
+        out.update(state="open_for_review", reason="publish mode is 'pending': a person merges it")
         return out
     st, res = api("PUT", f"/repos/{repo}/pulls/{number}/merge", {"merge_method": "squash", "commit_title": f"Research feed: verified entries ({today()})"})
     if st == 200 and (res or {}).get("merged"):

@@ -145,5 +145,5 @@
     "extensions": 1,
     "skills": 1
   },
-  "auto_merge_site": true
+  "publish_mode": "publish"
 }
