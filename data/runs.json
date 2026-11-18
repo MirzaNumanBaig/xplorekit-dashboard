@@ -1090,5 +1090,190 @@
         "cost_usd": 1.1965
       }
     }
+  },
+  {
+    "type": "research",
+    "date": "2026-11-18",
+    "time": "2026-11-18T20:36:16+00:00",
+    "provider": "claude_cli",
+    "dry_run": false,
+    "sections": {
+      "money": {
+        "sources": [
+          {
+            "id": "hn-money",
+            "status": "ok",
+            "count": 4
+          },
+          {
+            "id": "gh-money",
+            "status": "ok",
+            "count": 2
+          },
+          {
+            "id": "reddit-sideproject",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "reddit-sidehustle",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "youtube-money",
+            "status": "ok",
+            "count": 16
+          },
+          {
+            "id": "earning-programs",
+            "status": "ok",
+            "count": 11
+          }
+        ],
+        "collected": 33,
+        "fresh": 14,
+        "status": "agent_failed",
+        "error": "claude CLI failed on every token: slot 1: exit 1",
+        "accepted": 0,
+        "rejected": 0
+      },
+      "prompts": {
+        "sources": [
+          {
+            "id": "hn-prompts",
+            "status": "ok",
+            "count": 7
+          },
+          {
+            "id": "gh-prompts",
+            "status": "ok",
+            "count": 23
+          },
+          {
+            "id": "reddit-prompts",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "openai-news",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "google-ai-blog",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "anthropic-prompt-docs",
+            "status": "ok",
+            "count": 1
+          },
+          {
+            "id": "simon-willison",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "vendor-prompt-guides",
+            "status": "ok",
+            "count": 3
+          }
+        ],
+        "collected": 79,
+        "fresh": 50,
+        "status": "agent_failed",
+        "error": "claude CLI failed on every token: slot 1: exit 1",
+        "accepted": 0,
+        "rejected": 0
+      },
+      "extensions": {
+        "sources": [
+          {
+            "id": "hn-ext",
+            "status": "ok",
+            "count": 3
+          },
+          {
+            "id": "gh-ext",
+            "status": "ok",
+            "count": 27
+          },
+          {
+            "id": "reddit-ext",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "ph-feed",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "google-chrome-blog",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "youtube-ext",
+            "status": "ok",
+            "count": 8
+          }
+        ],
+        "collected": 68,
+        "fresh": 14,
+        "status": "agent_failed",
+        "error": "claude CLI failed on every token: slot 1: exit 1",
+        "accepted": 0,
+        "rejected": 0
+      },
+      "skills": {
+        "sources": [
+          {
+            "id": "gh-skills",
+            "status": "ok",
+            "count": 30
+          },
+          {
+            "id": "gh-anthropic-skills",
+            "status": "ok",
+            "count": 1
+          },
+          {
+            "id": "hn-skills",
+            "status": "ok",
+            "count": 9
+          },
+          {
+            "id": "reddit-skills",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "github-blog-ai",
+            "status": "ok",
+            "count": 7
+          },
+          {
+            "id": "anthropic-skills-docs",
+            "status": "ok",
+            "count": 1
+          }
+        ],
+        "collected": 48,
+        "fresh": 23,
+        "status": "agent_failed",
+        "error": "claude CLI failed on every token: slot 1: exit 1",
+        "accepted": 0,
+        "rejected": 0
+      }
+    },
+    "llm": {
+      "calls": 4,
+      "failures": 4,
+      "token_slots_used": [],
+      "tokens": {}
+    }
   }
 ]
