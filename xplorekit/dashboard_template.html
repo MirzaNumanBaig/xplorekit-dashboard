@@ -62,6 +62,7 @@ tr:last-child td{border-bottom:0}
 .btn-small.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
 .btn-small:disabled{opacity:.55;cursor:not-allowed}
 .ctl-msg{flex:1 1 100%;padding:8px 10px;border-radius:8px;background:var(--chip)}.ctl-msg.ok{background:var(--ok-bg);color:var(--ok)}.ctl-msg.bad{background:var(--bad-bg);color:var(--bad)}.ctl-msg.warn{background:var(--warn-bg);color:var(--warn)}
+.ctl-x{margin-left:auto;border:0;background:none;color:inherit;font-size:18px;line-height:1;cursor:pointer;padding:0 4px}.ctl-msg{display:flex;gap:8px;align-items:flex-start}.ctl-pass{color:var(--ok)}.ctl-fail{color:var(--bad)}
 .ctl-card{margin-top:10px;display:grid;gap:8px;max-width:720px}.ctl-row{display:flex;gap:8px;flex-wrap:wrap}.ctl-row input[type=password]{flex:1 1 300px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
 .btn-small{padding:4px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
 .btn-small:hover{border-color:var(--brand)}.btn-small:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
@@ -280,11 +281,18 @@ P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
     if(t)h.Authorization="Bearer "+t;if(body)h["Content-Type"]="application/json";
     return fetch(API+path,{method:method,headers:h,body:body?JSON.stringify(body):undefined,cache:"no-store"}).then(function(r){return r.text().then(function(txt){var d=null;try{d=txt?JSON.parse(txt):null}catch(e){}return{status:r.status,data:d}})});
   }
-  function why(st){
-    if(st===401)return "GitHub rejected the token. Paste a fresh one.";
-    if(st===403||st===404)return "The token is missing a permission. It needs Actions and Contents (read and write) on this repository.";
-    if(st===409||st===422)return "The settings file changed at the same moment. Try again.";
-    return "GitHub answered "+st+". Try again in a minute.";
+  var STEP={read:"read settings.json",write:"change settings.json",run:"start the run"};
+  var NEED={read:"Contents: Read",write:"Contents: Read and write",run:"Actions: Read and write"};
+  /* r = the GitHub response, step = which call failed. Says what to change, and quotes GitHub so nothing is hidden. */
+  function why(r,step){
+    var st=r.status,gm=r.data&&r.data.message?String(r.data.message).slice(0,140):"",base;
+    if(st===401)base="GitHub does not accept the token (expired or mistyped). Paste a fresh one.";
+    else if(st===403||st===404)base=(st===404&&step==="read")
+      ?"The token cannot see this repository. On GitHub open the token and, under Repository access, choose Only select repositories and pick xplorekit-dashboard."
+      :"GitHub refused to "+STEP[step]+". Either this repository is not selected for the token, or the permission is wrong: open the token on GitHub and set Repository permissions to "+NEED[step]+".";
+    else if(st===409||st===422)base=step==="run"?"GitHub would not start the run.":"The settings file changed at the same moment, or the branch is protected.";
+    else base="GitHub answered "+st+". Try again in a minute.";
+    return base+(gm?" (GitHub says: "+gm+")":"")+" Use Check token to test each permission.";
   }
   function say(text,level){S.msg=text;S.msgLevel=level||"";draw()}
   /* schedule maths: the cron is "minute, every N hours" in UTC */
@@ -324,26 +332,26 @@ P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
   function putSetting(key,literal,message,retry){
     var path="/repos/"+REPO+"/contents/"+C.settings_path;
     return api("GET",path+"?ref="+C.branch).then(function(r){
-      if(r.status!==200)return r;
+      if(r.status!==200){r.step="read";return r}
       var text;try{text=decodeURIComponent(escape(atob(r.data.content.replace(/\n/g,""))))}catch(e){return{status:500}}
       var next=setKey(text,key,literal);if(next===null)return{status:422,data:{message:"key not found"}};
       if(next===text)return{status:200,data:{unchanged:true}};
       return api("PUT",path,{message:message,content:btoa(unescape(encodeURIComponent(next))),sha:r.data.sha,branch:C.branch});
-    }).then(function(r){return(r.status===409||r.status===422)&&retry!==false?putSetting(key,literal,message,false):r});
+    }).then(function(r){if(r.status!==200&&r.status!==201&&!r.step)r.step="write";return(r.status===409||r.status===422)&&retry!==false&&r.step==="write"?putSetting(key,literal,message,false):r});
   }
   function busy(on){S.busy=on;draw()}
   function setPaused(p){
     if(!tok())return needToken("Connect GitHub to "+(p?"pause":"resume")+" the pipeline.");
     busy(true);putSetting("paused",p?"true":"false","Dashboard: "+(p?"pause":"resume")+" the research pipeline").then(function(r){
       busy(false);
-      if(r.status===200||r.status===201){S.paused=p;say(p?"Paused. No new runs start until you resume. A run already in progress finishes.":"Resumed. The next run starts at its scheduled time.","ok")}else say(why(r.status),"bad");
+      if(r.status===200||r.status===201){S.paused=p;say(p?"Paused. No new runs start until you resume. A run already in progress finishes.":"Resumed. The next run starts at its scheduled time.","ok")}else say(why(r,r.step||"write"),"bad");
     },function(){busy(false);say("Could not reach GitHub.","bad")});
   }
   function setMode(m,selectEl){
     if(!tok()){selectEl.value=S.mode;return needToken("Connect GitHub to change where new posts go.")}
     busy(true);putSetting("publish_mode",'"'+m+'"',"Dashboard: new posts go to "+m).then(function(r){
       busy(false);
-      if(r.status===200||r.status===201){S.mode=m;say("Saved: new posts go to "+MODES.filter(function(x){return x[0]===m})[0][1]+". "+MODE_HELP[m]+" It applies from the next run.","ok")}else{selectEl.value=S.mode;say(why(r.status),"bad")}
+      if(r.status===200||r.status===201){S.mode=m;say("Saved: new posts go to "+MODES.filter(function(x){return x[0]===m})[0][1]+". "+MODE_HELP[m]+" It applies from the next run.","ok")}else{selectEl.value=S.mode;say(why(r,r.step||"write"),"bad")}
     },function(){busy(false);selectEl.value=S.mode;say("Could not reach GitHub.","bad")});
   }
   function runNow(){
@@ -351,8 +359,33 @@ P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
     if(S.paused)return say("It is paused. Resume it first, because a paused pipeline exits straight away.","warn");
     busy(true);api("POST","/repos/"+REPO+"/actions/workflows/"+C.workflow+"/dispatches",{ref:C.branch}).then(function(r){
       busy(false);
-      if(r.status===204){say("Started. GitHub can take a few minutes to begin it.","ok");setTimeout(refreshRun,6000)}else say(why(r.status),"bad");
+      if(r.status===204){say("Started. GitHub can take a few minutes to begin it.","ok");setTimeout(refreshRun,6000)}else say(why(r,"run"),"bad");
     },function(){busy(false);say("Could not reach GitHub.","bad")});
+  }
+  /* Check token: tests each permission WITHOUT changing anything visible. Contents-write is probed by creating one unused git object (it is
+     garbage-collected and shows nowhere). Actions-write cannot be probed safely, so it is only confirmed by pressing Run now. */
+  function showCheck(lines){
+    panel.textContent="";panel.removeAttribute("hidden");
+    var ok=lines.filter(function(l){return l.ok}).length,close=el("button",{type:"button",class:"btn-small",text:"Close"});close.addEventListener("click",function(){panel.setAttribute("hidden","")});
+    panel.appendChild(el("div",{class:"card ctl-card"},[el("strong",{text:"Token check: "+ok+" of "+lines.length+" passed"})].concat(lines.map(function(l){return el("div",{class:"small "+(l.ok?"ctl-pass":"ctl-fail"),text:(l.ok?"✓ ":"✗ ")+l.text})})).concat([el("div",{class:"ctl-row"},[close])])));
+  }
+  function checkToken(){
+    if(!tok())return needToken("Connect GitHub first, then check the token.");
+    var lines=[];function add(ok,t){lines.push({ok:ok,text:t})}
+    busy(true);
+    api("GET","/repos/"+REPO).then(function(r){
+      if(r.status===401){add(false,"GitHub does not accept this token (expired or mistyped). Paste a fresh one.");return false}
+      add(true,"GitHub accepts the token.");return true;
+    }).then(function(go){
+      if(!go)return;
+      return api("GET","/repos/"+REPO+"/contents/"+C.settings_path+"?ref="+C.branch).then(function(r){add(r.status===200,r.status===200?"Contents: can read settings.json.":"Contents: cannot read settings.json ("+((r.data&&r.data.message)||r.status)+").")})
+      .then(function(){return api("POST","/repos/"+REPO+"/git/blobs",{content:"xplorekit token check",encoding:"utf-8"})}).then(function(r){
+        add(r.status===201,r.status===201?"Contents: write works (checked by creating one unused object that shows nowhere).":"Contents: cannot write ("+((r.data&&r.data.message)||r.status)+"). Either this repository is not selected for the token (Repository access, Only select repositories, xplorekit-dashboard) or Contents is not Read and write.")})
+      .then(function(){return api("GET","/repos/"+REPO+"/actions/workflows/"+C.workflow)}).then(function(r){
+        if(r.status!==200)return add(false,"Could not read the Research workflow ("+r.status+").");
+        add(r.data.state==="active",r.data.state==="active"?"Actions: the Research workflow is enabled. Whether the token may START it can only be confirmed by pressing Run now (it needs Actions: Read and write).":"The Research workflow is "+r.data.state+". Enable it under Actions on GitHub, or Run now will be refused.");
+      });
+    }).then(function(){busy(false);showCheck(lines)},function(){busy(false);say("Could not reach GitHub.","bad")});
   }
   /* connect panel */
   function openPanel(note){
@@ -361,14 +394,19 @@ P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
     var save=el("button",{type:"button",class:"btn-small",text:"Save token"}),cancel=el("button",{type:"button",class:"btn-small",text:"Close"});
     save.addEventListener("click",function(){var v=inp.value.trim();if(!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(v)){say("That does not look like a GitHub token. It starts with github_pat_ (fine-grained).","bad");return}saveTok(v,rem.checked);panel.setAttribute("hidden","");say("Connected. The buttons above now work.","ok")});
     cancel.addEventListener("click",function(){panel.setAttribute("hidden","")});
+    var check=el("button",{type:"button",class:"btn-small",text:"Check token"});check.addEventListener("click",checkToken);
     var forget=el("button",{type:"button",class:"btn-small",text:"Forget token"});forget.addEventListener("click",function(){saveTok("");panel.setAttribute("hidden","");say("Token removed from this browser.","")});
     panel.appendChild(el("div",{class:"card ctl-card"},[
       el("strong",{text:note||"Connect GitHub"}),
-      el("p",{class:"small muted",text:"These buttons run, pause and configure the pipeline by writing to this repository through GitHub's API, so GitHub needs to know it is you. Create a fine-grained token for THIS repository only, with Actions and Contents set to read and write, then paste it here. It stays in this browser and is sent only to api.github.com."}),
-      el("p",{class:"small"},[link("Create a token on GitHub","https://github.com/settings/personal-access-tokens/new")," · expiry: pick a short one (for example 90 days)"]),
+      el("p",{class:"small muted",text:"These buttons run, pause and configure the pipeline by writing to this repository through GitHub's API, so GitHub needs to know it is you. The token stays in this browser and is sent only to api.github.com."}),
+      el("ol",{class:"small fl"},[el("li",{},[link("Create a fine-grained token on GitHub","https://github.com/settings/personal-access-tokens/new")," (or open the one you already made and choose Edit)."]),
+        el("li",{text:"Repository access: Only select repositories, then pick xplorekit-dashboard."}),
+        el("li",{text:"Repository permissions: set Actions to Read and write, and Contents to Read and write. (Metadata read-only is added automatically.)"}),
+        el("li",{text:"Generate (or Update) the token. Editing a token's permissions takes effect straight away, so an existing token does not need to be pasted again. Then press Check token below."}),
+        el("li",{text:"Using a classic token instead? Tick repo and workflow."})]),
       el("div",{class:"ctl-row"},[inp]),
       el("label",{class:"small",for:"remtok"},[rem," Remember it on this device (otherwise it is forgotten when you close this tab)"]),
-      el("div",{class:"ctl-row"},[save,cancel].concat(tok()?[forget]:[]))]));
+      el("div",{class:"ctl-row"},[save,cancel].concat(tok()?[check,forget]:[]))]));
     inp.focus();
   }
   function draw(){
@@ -382,7 +420,8 @@ P.runs.appendChild(table(["When","Kind","AI","Result"],D.runs.map(function(r){
     bar.appendChild(pause);bar.appendChild(run);
     bar.appendChild(el("label",{class:"ctl-label small muted"},["New posts go to "]));bar.lastChild.appendChild(sel);
     var c=el("button",{type:"button",class:"btn-small",text:tok()?"GitHub connected":"Connect GitHub"});c.addEventListener("click",function(){openPanel()});bar.appendChild(c);
-    if(S.msg)bar.appendChild(el("div",{class:"ctl-msg small "+S.msgLevel,role:"status",text:S.msg}));
+    if(tok()){var ck=el("button",{type:"button",class:"btn-small",text:"Check token"});ck.disabled=S.busy;ck.addEventListener("click",checkToken);bar.appendChild(ck)}
+    if(S.msg){var m=el("div",{class:"ctl-msg small "+S.msgLevel,role:"status"},[el("span",{text:S.msg})]),x=el("button",{type:"button",class:"ctl-x","aria-label":"Dismiss message",text:"×"});x.addEventListener("click",function(){S.msg="";draw()});m.appendChild(x);bar.appendChild(m)}
   }
   draw();refreshRun();
   setInterval(draw,30000);                                  /* keeps the countdown honest, no network */

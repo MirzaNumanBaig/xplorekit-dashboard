@@ -242,3 +242,28 @@ class ControlInfoTests(unittest.TestCase):
             self.assertIn(word, first["text"])
         with mock.patch.object(bd, "publish_mode", lambda: "publish"):
             self.assertEqual([x["level"] for x in bd.health([research_run()], [], today())], ["ok"])
+
+
+class TokenCheckTests(unittest.TestCase):
+    def test_the_page_can_only_read_post_and_put_and_posts_are_limited_to_two_harmless_calls(self):
+        import re
+        t = bd.TEMPLATE.read_text("utf-8")
+        methods = set(re.findall(r'api\("(\w+)"', t))
+        self.assertEqual(methods, {"GET", "POST", "PUT"})                     # never DELETE or PATCH: the page cannot remove or rewrite things
+        self.assertEqual(len(re.findall(r'api\("POST"', t)), 2)               # starting a run, and the unused-object probe in Check token
+        self.assertIn("/git/blobs", t)
+        self.assertEqual(len(re.findall(r'api\("PUT"', t)), 1)                # the single settings.json write
+
+    def test_errors_name_the_step_the_permission_and_quote_github(self):
+        t = bd.TEMPLATE.read_text("utf-8")
+        for needle in ("Contents: Read and write", "Actions: Read and write", "Only select repositories", "GitHub says:", "Check token", "xplorekit-dashboard"):
+            self.assertIn(needle, t)
+        self.assertNotIn("missing a permission", t)  # the old one-sentence message that hid which call failed
+
+    def test_check_token_never_triggers_a_run_or_rewrites_the_settings_file(self):
+        import re
+        t = bd.TEMPLATE.read_text("utf-8")
+        body = t[t.index("function checkToken()"):t.index("/* connect panel */")]
+        self.assertNotIn("dispatches", body)
+        self.assertNotIn('api("PUT"', body)
+        self.assertNotIn("putSetting", body)
