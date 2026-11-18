@@ -176,3 +176,12 @@ class PublishModeTests(unittest.TestCase):
         with mock.patch.dict(common.settings(), {"auto_merge_site": True}):
             common.settings().pop("publish_mode", None)
             self.assertEqual(common.publish_mode(), "publish")
+
+
+class ResearchPagePathTests(unittest.TestCase):
+    def test_entry_pages_and_sitemap_are_allowed_but_other_files_are_not(self):
+        from xplorekit import site_pr
+        ok = ["public/data/prompts/a.json", "public/research/prompts/a.html", "public/sitemap.xml", "public/prompts/index.html"]
+        self.assertIsNone(site_pr.check_paths(ok))
+        self.assertIn("unexpected", site_pr.check_paths(ok + ["public/index.html"]))
+        self.assertIn("unexpected", site_pr.check_paths(["public/robots.txt"]))

@@ -27,7 +27,7 @@ SEO, QA, web development and so on), a **Claude Skills library** and a **Chrome 
 - `Researcher-agents` (celebrity news) is a workflow reference only. Never copy its data, names or sources.
 - Status (2026-11-17): the pipeline and dashboard are built. Two real manual runs on 2026-11-16 worked (Claude CLI via the OAuth token, real entries,
   hand-off opened PR #76 on the site repo). On 2026-11-17 these were fixed and the site-side card builder was added (see Known gaps for what is not yet
-  proven live). Cards live in the existing hub pages, **not** on separate pages (owner decision).
+  proven live). Each entry has its own page at `/research/<section>/<id>` (built by the site's `build-feed.py`, owner decision 2026-11-18); the card on the existing hub page links to it.
 
 ## Where things are
 | What | Where |
@@ -99,7 +99,7 @@ the site**, and is re-run through the whole gate by `python -m xplorekit.run --r
 
 ## Publishing safety (what must pass before the pipeline merges by itself)
 `xplorekit/site_pr.py` (in `publish_mode` `"publish"` only) merges the pull request only if ALL of these pass: only `public/data/` and the four hub pages changed; the change is not unusually
-large (`auto_merge_max_files`, default 60); the hub pages changed only inside the generated feed blocks; every entry has a `fact_check:*` tag and no popularity-count
+large (`auto_merge_max_files`, default 120); only `public/data/`, `public/research/` (the entry pages), `public/sitemap.xml` and the four hub pages changed; the hub pages and the sitemap changed only inside the generated feed blocks; every entry has a `fact_check:*` tag and no popularity-count
 field; the site's `scripts/build-feed.py --check` passes. Otherwise the pull request stays open with the failed checks listed, and the dashboard shows a warning.
 
 ## How we work on this repo (people and AI tools)

@@ -21,6 +21,7 @@ from pathlib import Path
 from xplorekit.common import ROOT, load_json, publish_mode, save_json, settings, today
 
 BRANCH = "feed/xplorekit-research"
+SITEMAP = "public/sitemap.xml"  # may change only inside its feed block
 HUB_PAGES = {"public/make-money-with-ai/index.html", "public/prompts/index.html", "public/skills-directory/index.html", "public/extensions-directory/index.html"}
 BLOCK = re.compile(r"<!-- feed:\w+:start.*?<!-- feed:\w+:end -->", re.S)
 FORBIDDEN_KEYS = {"stars", "star_count", "users", "user_count", "downloads", "download_count", "ratings", "rating", "reviews", "review_count"}
@@ -55,12 +56,12 @@ def api(method, path, body=None):
 
 # ---- safety checks: each returns None (ok) or a short reason ----------------------------------------------------------------------------
 def check_paths(files):
-    bad = [f for f in files if not (f.startswith("public/data/") or f in HUB_PAGES)]
+    bad = [f for f in files if not (f.startswith(("public/data/", "public/research/")) or f in HUB_PAGES or f == SITEMAP)]
     return f"unexpected files changed: {', '.join(bad[:4])}" if bad else None
 
 
 def check_size(files):
-    limit = settings().get("auto_merge_max_files", 60)
+    limit = settings().get("auto_merge_max_files", 120)
     return f"{len(files)} files changed (limit {limit})" if len(files) > limit else None
 
 
@@ -68,7 +69,7 @@ def check_pages_outside_blocks(site, files):
     """The hub pages may change only inside the generated feed blocks. Compare the text outside them with main's version."""
     squash = lambda t: re.sub(r"\s+", "", BLOCK.sub("", t))
     for f in files:
-        if f in HUB_PAGES:
+        if f in HUB_PAGES or f == SITEMAP:
             try:
                 old = git(site, "show", f"origin/main:{f}")
             except RuntimeError:
@@ -147,7 +148,7 @@ def deliver(site, body_path, repo):
         out["reason"] = "the site's build-feed.py failed: " + (build.stdout + build.stderr).strip()[-160:]
         return out
     git(site, "checkout", "-B", BRANCH, "origin/main")
-    git(site, "add", "public/data", *sorted(HUB_PAGES))
+    git(site, "add", "-A", *[x for x in ("public/data", "public/research", SITEMAP, *sorted(HUB_PAGES)) if (Path(site) / x).exists()])
     changes = {}  # path -> A / M / D
     for line in git(site, "diff", "--cached", "--name-status").splitlines():
         status, _, path = line.partition("\t")
