@@ -5,5 +5,12 @@
     "title": "Earn ad revenue share through the YouTube Partner Program",
     "url": "https://support.google.com/youtube/answer/72851",
     "date": "2026-11-18"
+  },
+  {
+    "reason": "fact_check",
+    "detail": "The headline claim that participants can apply to paid AI evaluation studies is inferred. The source describes 'AI training & evaluation' as a service for researchers who want domain experts in front of their models. It never says participants are offered these projects, and the sample 'Available projects' list contains none.; 'models': ['chatgpt','claude','gemini'] has no support. The source names no AI models or tools.; The step 'create a profile that describes your professional background and expertise' is not in the source. It only says participants are identity-verified and screened.; The risk 'projects can be short or one-off, so this is not a steady income' is not stated in the source. It is the writer's inference.; The AI-evaluation description ('review model answers, test for problems and give feedback') is a loose paraphrase of the researcher-facing blurb ('evaluation, red-teaming, and human feedback'). It is presented as what a participant does.; The source is a researcher-recruiting marketing page, not a participant earning guide. The dollar amounts ($150, $30, $100) appear only in an illustrative mock-up, so correctly leaving income unstated is fine, but the 'domain expert AI evaluation income' framing is weakly grounded.; Supported parts: Respondent pays participants for studies, surveys and focus groups; pay varies by project; participants are identity-verified; there is a 'Become a participant' option; screeners exist; and researchers see flags for copy-pasted or AI-written answers.",
+    "title": "Get paid as a domain expert on AI evaluation studies via Respondent",
+    "url": "https://www.respondent.io/",
+    "date": "2026-11-19"
   }
 ]

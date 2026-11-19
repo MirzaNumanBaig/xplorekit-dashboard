@@ -1,0 +1,27 @@
+{
+  "source_url": "https://github.com/Egonex-AI/Understand-Anything",
+  "source_urls": [
+    "https://github.com/Egonex-AI/Understand-Anything"
+  ],
+  "name": "Understand Anything",
+  "summary": "A Claude Code plugin that analyzes a project with several cooperating agents and builds a knowledge graph of its files, functions, classes and dependencies. It then opens an interactive dashboard for browsing the graph, searching it, and viewing guided tours. A separate command can also map a markdown knowledge base.",
+  "install_steps": [
+    "See the repository README for install steps"
+  ],
+  "repo_url": "https://github.com/Egonex-AI/Understand-Anything",
+  "example_use_case": "You join a team with a large, unfamiliar codebase and want a visual map of how the parts connect, plus plain-English summaries, before reading any code.",
+  "skill_type": "agent-skill",
+  "section": "skills",
+  "first_seen": "2026-11-19",
+  "last_checked": "2026-11-19",
+  "status": "active",
+  "quality_score": 88,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "understand-anything-1bf417"
+}
