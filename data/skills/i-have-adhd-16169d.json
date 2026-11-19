@@ -1,0 +1,29 @@
+{
+  "source_url": "https://github.com/ayghri/i-have-adhd",
+  "source_urls": [
+    "https://github.com/ayghri/i-have-adhd"
+  ],
+  "name": "i-have-adhd",
+  "summary": "A skill for coding assistants that changes how replies are written. Answers lead with the next action, multi-step tasks are numbered, lists are capped at five items, and preambles, recaps and closing pleasantries are dropped. It is based on ten rules set out in its SKILL.md file.",
+  "install_steps": [
+    "Paste into your coding assistant's prompt a request to install the i-have-adhd skill from the repository, pointing it at the repo's AGENTS.md for instructions",
+    "Or follow the manual steps in the repository's INSTALL.md",
+    "Restart your coding assistant, then invoke the skill as /i-have-adhd"
+  ],
+  "repo_url": "https://github.com/ayghri/i-have-adhd",
+  "example_use_case": "You ask your coding agent how to fix a failing auth check and want a short answer that names the file and line, lists numbered steps and ends with one next step, instead of a long explanation.",
+  "skill_type": "claude-skill",
+  "section": "skills",
+  "first_seen": "2026-11-19",
+  "last_checked": "2026-11-19",
+  "status": "active",
+  "quality_score": 88,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "i-have-adhd-16169d"
+}

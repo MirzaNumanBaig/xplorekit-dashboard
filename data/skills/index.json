@@ -3,6 +3,16 @@
   "generated_at": "2026-11-19",
   "items": [
     {
+      "id": "i-have-adhd-16169d",
+      "title": "i-have-adhd",
+      "summary": "A skill for coding assistants that changes how replies are written. Answers lead with the next action, multi-step tasks are numbered, lists are capped at five items, and preambles, recaps and closing pleasantries are dropped. It is based on ten rules set out in its SKILL.md file.",
+      "url": "https://github.com/ayghri/i-have-adhd",
+      "first_seen": "2026-11-19",
+      "last_checked": "2026-11-19",
+      "status": "active",
+      "quality_score": 88
+    },
+    {
       "id": "understand-anything-1bf417",
       "title": "Understand Anything",
       "summary": "A Claude Code plugin that analyzes a project with several cooperating agents and builds a knowledge graph of its files, functions, classes and dependencies. It then opens an interactive dashboard for browsing the graph, searching it, and viewing guided tours. A separate command can also map a markdown knowledge base.",
