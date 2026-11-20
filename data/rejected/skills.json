@@ -5,5 +5,12 @@
     "title": "Anthropic Skills",
     "url": "https://raw.githubusercontent.com/anthropics/skills/main/README.md",
     "date": "2026-11-16"
+  },
+  {
+    "reason": "duplicate",
+    "detail": "title too similar to site page skills-directory/knowledge-management/obsidian-skills.html ('obsidian-skills')",
+    "title": "Obsidian Skills",
+    "url": "https://github.com/obsidianmd/obsidian-skills",
+    "date": "2026-11-20"
   }
 ]
