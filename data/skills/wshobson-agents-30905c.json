@@ -1,0 +1,30 @@
+{
+  "source_url": "https://github.com/wshobson/agents",
+  "source_urls": [
+    "https://github.com/wshobson/agents"
+  ],
+  "name": "wshobson/agents",
+  "summary": "A large collection of plugins, agents, skills and commands for AI coding tools, written once in Markdown in the Claude Code plugin format. Generators adapt it for Claude Code, Codex CLI, Cursor, OpenCode, Antigravity CLI, GitHub Copilot and Pi. Topics include Python and JavaScript development, code review, testing, infrastructure and security.",
+  "install_steps": [
+    "Pick the coding tool you use from the repository's multi-harness support table",
+    "For Claude Code or Cursor, install through the plugin marketplace route described in the README",
+    "For OpenCode, Antigravity CLI, GitHub Copilot or Pi, clone the repo and run the make install target for that tool",
+    "To install only individual skills, use the skills-only installer described in the README and select your coding tool"
+  ],
+  "repo_url": "https://github.com/wshobson/agents",
+  "example_use_case": "A team that uses both Claude Code and Cursor wants one shared set of code review and testing skills, without maintaining a separate copy of each skill for every tool.",
+  "skill_type": "collection",
+  "section": "skills",
+  "first_seen": "2026-11-21",
+  "last_checked": "2026-11-21",
+  "status": "active",
+  "quality_score": 91,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "wshobson-agents-30905c"
+}

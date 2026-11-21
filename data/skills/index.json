@@ -3,6 +3,16 @@
   "generated_at": "2026-11-21",
   "items": [
     {
+      "id": "wshobson-agents-30905c",
+      "title": "wshobson/agents",
+      "summary": "A large collection of plugins, agents, skills and commands for AI coding tools, written once in Markdown in the Claude Code plugin format. Generators adapt it for Claude Code, Codex CLI, Cursor, OpenCode, Antigravity CLI, GitHub Copilot and Pi. Topics include Python and JavaScript development, code review, testing, infrastructure and security.",
+      "url": "https://github.com/wshobson/agents",
+      "first_seen": "2026-11-21",
+      "last_checked": "2026-11-21",
+      "status": "active",
+      "quality_score": 91
+    },
+    {
       "id": "agentic-awesome-skills-909786",
       "title": "Agentic Awesome Skills",
       "summary": "A large library of installable SKILL.md playbooks for Claude Code, Codex, Cursor, Gemini CLI and other coding agents. Its AAS Core tool lets an agent search the local catalog, record which skills it chose, and preview a plan before anything in the target project changes.",
