@@ -13,6 +13,16 @@
       "quality_score": 91
     },
     {
+      "id": "claude-code-game-studios-5661de",
+      "title": "Claude Code Game Studios",
+      "summary": "A repository that turns Claude Code into a game-making setup with many specialised agents and workflow skills. You describe a game idea, answer a few questions, review a one-page brief, and it builds a first playable browser prototype that it checks before handing it over.",
+      "url": "https://github.com/Donchitos/Claude-Code-Game-Studios",
+      "first_seen": "2026-11-21",
+      "last_checked": "2026-11-21",
+      "status": "active",
+      "quality_score": 88
+    },
+    {
       "id": "agentic-awesome-skills-909786",
       "title": "Agentic Awesome Skills",
       "summary": "A large library of installable SKILL.md playbooks for Claude Code, Codex, Cursor, Gemini CLI and other coding agents. Its AAS Core tool lets an agent search the local catalog, record which skills it chose, and preview a plan before anything in the target project changes.",

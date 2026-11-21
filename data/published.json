@@ -106,5 +106,11 @@
     "published_at": "2026-11-21",
     "pr": 85,
     "withdrawn_at": null
+  },
+  "claude-code-game-studios-5661de": {
+    "section": "skills",
+    "published_at": "2026-11-21",
+    "pr": 86,
+    "withdrawn_at": null
   }
 }

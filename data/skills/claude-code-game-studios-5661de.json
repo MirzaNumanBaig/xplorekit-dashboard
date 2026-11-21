@@ -1,0 +1,31 @@
+{
+  "name": "Claude Code Game Studios",
+  "summary": "A repository that turns Claude Code into a game-making setup with many specialised agents and workflow skills. You describe a game idea, answer a few questions, review a one-page brief, and it builds a first playable browser prototype that it checks before handing it over.",
+  "install_steps": [
+    "Open Claude Code in a copy of the repository",
+    "Describe the game you want with the /prototype command",
+    "Answer the short round of questions, or let it pick the answers",
+    "Read the one-page brief it writes to design/game-brief.md and approve it or ask for changes",
+    "Open the generated prototype from the prototypes folder in a browser"
+  ],
+  "repo_url": "https://github.com/Donchitos/Claude-Code-Game-Studios",
+  "example_use_case": "You have a rough idea for a small browser game, such as a fishing game where rare fish only bite at dusk, and want a playable first version to react to before writing any code yourself.",
+  "skill_type": "collection",
+  "source_url": "https://github.com/Donchitos/Claude-Code-Game-Studios",
+  "source_urls": [
+    "https://github.com/Donchitos/Claude-Code-Game-Studios"
+  ],
+  "section": "skills",
+  "first_seen": "2026-11-21",
+  "last_checked": "2026-11-21",
+  "status": "active",
+  "quality_score": 88,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "claude-code-game-studios-5661de"
+}
