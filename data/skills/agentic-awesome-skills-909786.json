@@ -1,0 +1,29 @@
+{
+  "source_url": "https://github.com/sickn33/agentic-awesome-skills",
+  "source_urls": [
+    "https://github.com/sickn33/agentic-awesome-skills"
+  ],
+  "name": "Agentic Awesome Skills",
+  "summary": "A large library of installable SKILL.md playbooks for Claude Code, Codex, Cursor, Gemini CLI and other coding agents. Its AAS Core tool lets an agent search the local catalog, record which skills it chose, and preview a plan before anything in the target project changes.",
+  "install_steps": [
+    "Open the Claude Code setup guide linked from the repository README",
+    "Follow the repository's install-and-update guide that works without npm, since npm publishing is currently paused",
+    "See the repository README for any further install steps"
+  ],
+  "repo_url": "https://github.com/sickn33/agentic-awesome-skills",
+  "example_use_case": "You want a ready-made skill for a task in your project, so you search the catalog, read the full skill file, and keep a reviewable list of the skills you chose.",
+  "skill_type": "collection",
+  "section": "skills",
+  "first_seen": "2026-11-21",
+  "last_checked": "2026-11-21",
+  "status": "active",
+  "quality_score": 86,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "agentic-awesome-skills-909786"
+}

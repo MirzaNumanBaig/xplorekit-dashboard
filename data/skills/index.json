@@ -1,7 +1,17 @@
 {
   "section": "skills",
-  "generated_at": "2026-11-20",
+  "generated_at": "2026-11-21",
   "items": [
+    {
+      "id": "agentic-awesome-skills-909786",
+      "title": "Agentic Awesome Skills",
+      "summary": "A large library of installable SKILL.md playbooks for Claude Code, Codex, Cursor, Gemini CLI and other coding agents. Its AAS Core tool lets an agent search the local catalog, record which skills it chose, and preview a plan before anything in the target project changes.",
+      "url": "https://github.com/sickn33/agentic-awesome-skills",
+      "first_seen": "2026-11-21",
+      "last_checked": "2026-11-21",
+      "status": "active",
+      "quality_score": 86
+    },
     {
       "id": "i-have-adhd-16169d",
       "title": "i-have-adhd",
