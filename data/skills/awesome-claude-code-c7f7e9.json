@@ -1,0 +1,27 @@
+{
+  "name": "awesome-claude-code",
+  "summary": "A curated list of resources for Claude Code, organised into sections such as skills, agents, plugins, status lines, developer tooling, security and memory persistence. It works as a directory to browse, not a single skill.",
+  "install_steps": [
+    "See the repository README for install steps"
+  ],
+  "repo_url": "https://github.com/hesreallyhim/awesome-claude-code",
+  "example_use_case": "You want a ready-made skill for a recurring task, so you open the Skills section of the list, compare the options, and follow the link to the one that fits.",
+  "skill_type": "collection",
+  "source_url": "https://github.com/hesreallyhim/awesome-claude-code",
+  "source_urls": [
+    "https://github.com/hesreallyhim/awesome-claude-code"
+  ],
+  "section": "skills",
+  "first_seen": "2026-11-22",
+  "last_checked": "2026-11-22",
+  "status": "active",
+  "quality_score": 72,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "awesome-claude-code-c7f7e9"
+}
