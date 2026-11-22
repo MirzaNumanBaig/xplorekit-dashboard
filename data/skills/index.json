@@ -1,7 +1,17 @@
 {
   "section": "skills",
-  "generated_at": "2026-11-21",
+  "generated_at": "2026-11-22",
   "items": [
+    {
+      "id": "awesome-agent-skills-voltagent-eaa907",
+      "title": "Awesome Agent Skills (VoltAgent)",
+      "summary": "A curated list of agent skills made by official development teams and community contributors, grouped by publisher. It says the skills work with Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, OpenCode, Windsurf and other agents, and it points to each tool's skill path and documentation.",
+      "url": "https://github.com/VoltAgent/awesome-agent-skills",
+      "first_seen": "2026-11-22",
+      "last_checked": "2026-11-22",
+      "status": "active",
+      "quality_score": 84
+    },
     {
       "id": "wshobson-agents-30905c",
       "title": "wshobson/agents",

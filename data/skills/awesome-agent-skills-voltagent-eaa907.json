@@ -1,0 +1,27 @@
+{
+  "source_url": "https://github.com/VoltAgent/awesome-agent-skills",
+  "source_urls": [
+    "https://github.com/VoltAgent/awesome-agent-skills"
+  ],
+  "name": "Awesome Agent Skills (VoltAgent)",
+  "summary": "A curated list of agent skills made by official development teams and community contributors, grouped by publisher. It says the skills work with Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, OpenCode, Windsurf and other agents, and it points to each tool's skill path and documentation.",
+  "install_steps": [
+    "See the repository README for install steps"
+  ],
+  "repo_url": "https://github.com/VoltAgent/awesome-agent-skills",
+  "example_use_case": "You use Claude Code and want a ready-made skill for a tool such as Stripe or Supabase. Look through the publisher sections to find one that the vendor's own team wrote, instead of searching GitHub yourself.",
+  "skill_type": "collection",
+  "section": "skills",
+  "first_seen": "2026-11-22",
+  "last_checked": "2026-11-22",
+  "status": "active",
+  "quality_score": 84,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "awesome-agent-skills-voltagent-eaa907"
+}
