@@ -3,6 +3,16 @@
   "generated_at": "2026-11-23",
   "items": [
     {
+      "id": "build-a-single-page-specimen-sheet-of-every-way-to-style-a-u-8cc270",
+      "title": "Build a single-page specimen sheet of every way to style a UI element",
+      "summary": "A single HTML file with a default-rendering baseline followed by labelled styled variations of the chosen element, each with its CSS shown beneath it. It is laid out so screenshots from different browsers can be compared side by side. A short list of the variations follows the code.",
+      "url": "https://simonwillison.net/2026/Nov/22/select-styling/",
+      "first_seen": "2026-11-23",
+      "last_checked": "2026-11-23",
+      "status": "active",
+      "quality_score": 74
+    },
+    {
       "id": "define-success-criteria-and-test-cases-before-improving-a-pr-52857b",
       "title": "Define success criteria and test cases before improving a prompt",
       "summary": "A list of checkable success criteria, a set of test inputs with expected pass conditions, a blank scoring table, and a short note on which problems prompt changes can and cannot fix.",

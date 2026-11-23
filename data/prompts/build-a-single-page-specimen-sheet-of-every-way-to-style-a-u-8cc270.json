@@ -1,0 +1,33 @@
+{
+  "source_url": "https://simonwillison.net/2026/Nov/22/select-styling/",
+  "source_urls": [
+    "https://simonwillison.net/2026/Nov/22/select-styling/"
+  ],
+  "title": "Build a single-page specimen sheet of every way to style a UI element",
+  "prompt": "You are a front-end developer preparing a visual comparison page.\n\nTask: Build one self-contained HTML page (inline CSS, no external libraries or fonts) that shows every reasonable way the [HTML ELEMENT, e.g. select box] can be styled.\n\nContext: I will open this page in [LIST OF BROWSERS AND DEVICES, e.g. desktop and mobile browsers] and take screenshots, so I can compare how each variation renders and pick a favourite.\n\nRequirements:\n- Show the browser's default rendering first, as the baseline.\n- Then show [NUMBER, e.g. 10] distinct styled variations, each in its own labelled section.\n- Under every variation, show the exact CSS used in a readable code block so I can copy it.\n- Include a variation for each of these states where they apply: default, hover, focus, disabled, and [EXTRA STATE, e.g. invalid].\n- Keep the layout simple and the same width in every section so screenshots line up.\n- Make the page work on narrow phone screens without horizontal scrolling.\n- Add a short note next to any variation that is likely to look different between browsers, explaining why.\n\nOutput format: return only the complete HTML file in a single code block, followed by a short list of the variations in the order they appear.",
+  "models": [
+    "claude"
+  ],
+  "use_case": "coding",
+  "example_output_summary": "A single HTML file with a default-rendering baseline followed by labelled styled variations of the chosen element, each with its CSS shown beneath it. It is laid out so screenshots from different browsers can be compared side by side. A short list of the variations follows the code.",
+  "tags": [
+    "website",
+    "css",
+    "front-end",
+    "browser-testing",
+    "ui-specimen"
+  ],
+  "section": "prompts",
+  "first_seen": "2026-11-23",
+  "last_checked": "2026-11-23",
+  "status": "active",
+  "quality_score": 74,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "build-a-single-page-specimen-sheet-of-every-way-to-style-a-u-8cc270"
+}
