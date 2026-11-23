@@ -18,7 +18,7 @@
       "summary": "A list of checkable success criteria, a set of test inputs with expected pass conditions, a blank scoring table, and a short note on which problems prompt changes can and cannot fix.",
       "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-17",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 82
     },
@@ -28,7 +28,7 @@
       "summary": "A short list of problems found in the draft, followed by a rewritten prompt split into tagged sections with example inputs and outputs, and a brief explanation of the changes.",
       "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-18",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 76
     },
@@ -38,7 +38,7 @@
       "summary": "A new project scaffold that mirrors the reference projects' structure, with a list of created files, a report of which tests ran, a list of unverified parts, and a short README section.",
       "url": "https://simonwillison.net/2026/Nov/15/datasette-maplibre/",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-18",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 72
     }

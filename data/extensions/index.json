@@ -8,7 +8,7 @@
       "summary": "Lets you edit text on web pages in your own desktop text editor, such as Vim or Emacs. It works with ordinary text inputs and with contentEditable fields like the Gmail compose window. The page updates each time you save the file.",
       "url": "https://github.com/smblott-github/text-aid-too",
       "first_seen": "2026-11-18",
-      "last_checked": "2026-11-18",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 91
     },
@@ -18,7 +18,7 @@
       "summary": "An AI assistant that opens as a browser sidebar, reads the page you are on and answers using the AI model you pick. It can connect MCP servers and skills, and can take actions on the page as well as answer questions.",
       "url": "https://github.com/surfmind-space/awesome-surfmind",
       "first_seen": "2026-11-18",
-      "last_checked": "2026-11-18",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 88
     },
@@ -28,7 +28,7 @@
       "summary": "A simple Manifest V3 Chrome extension that lets you reach OpenAI's ChatGPT from any page on the web. You pin the toolbar icon, click it and ask your question without opening a separate ChatGPT tab.",
       "url": "https://github.com/kazuki-sf/ChatGPT_Extension",
       "first_seen": "2026-11-17",
-      "last_checked": "2026-11-17",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 72
     },
@@ -38,7 +38,7 @@
       "summary": "Translates text in a tooltip when you hover over it or select it on a web page. It also handles PDF files, YouTube dual subtitles, text in images through OCR, and spoken pronunciation.",
       "url": "https://github.com/ttop32/MouseTooltipTranslator",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-17",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 88
     },
@@ -48,7 +48,7 @@
       "summary": "A browser extension that brings AI writing help to editors on any web page. It uses OpenAI's GPT models to draft text such as emails and articles, and it can also help with translation and reading. It is positioned as an alternative to Notion AI.",
       "url": "https://github.com/anc95/writely",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-17",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 88
     },
@@ -58,7 +58,7 @@
       "summary": "Runs ChatGPT as a hands-free voice assistant in the background of the browser. You start it with a spoken trigger phrase or a keyboard shortcut, and it supports more than 60 languages and dialects.",
       "url": "https://github.com/idosal/assistant-chat-gpt",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-17",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 86
     },
@@ -68,7 +68,7 @@
       "summary": "An open-source extension that shows AI-generated summaries next to Google search results and on YouTube videos. It can also summarise other web pages, PDFs and emails, and adds side-by-side translation and web content Q&A.",
       "url": "https://github.com/sparticleinc/chatgpt-google-summary-extension",
       "first_seen": "2026-11-16",
-      "last_checked": "2026-11-17",
+      "last_checked": "2026-11-23",
       "status": "active",
       "quality_score": 82
     }
