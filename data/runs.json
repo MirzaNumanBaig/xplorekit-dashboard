@@ -4447,5 +4447,225 @@
         "cost_usd": 0.7242
       }
     }
+  },
+  {
+    "type": "research",
+    "date": "2026-11-24",
+    "time": "2026-11-24T13:48:39+00:00",
+    "provider": "claude_cli",
+    "dry_run": false,
+    "sections": {
+      "money": {
+        "sources": [
+          {
+            "id": "hn-money",
+            "status": "ok",
+            "count": 1
+          },
+          {
+            "id": "gh-money",
+            "status": "ok",
+            "count": 2
+          },
+          {
+            "id": "reddit-sideproject",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "reddit-sidehustle",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "youtube-money",
+            "status": "ok",
+            "count": 16
+          },
+          {
+            "id": "earning-programs",
+            "status": "ok",
+            "count": 11
+          }
+        ],
+        "collected": 30,
+        "fresh": 9,
+        "drafts": 0,
+        "status": "ok",
+        "accepted": 0,
+        "rejected": 0,
+        "reasons": {},
+        "accepted_items": [],
+        "rejected_items": []
+      },
+      "prompts": {
+        "sources": [
+          {
+            "id": "hn-prompts",
+            "status": "ok",
+            "count": 8
+          },
+          {
+            "id": "gh-prompts",
+            "status": "ok",
+            "count": 23
+          },
+          {
+            "id": "reddit-prompts",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "openai-news",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "google-ai-blog",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "anthropic-prompt-docs",
+            "status": "ok",
+            "count": 1
+          },
+          {
+            "id": "simon-willison",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "vendor-prompt-guides",
+            "status": "ok",
+            "count": 3
+          }
+        ],
+        "collected": 80,
+        "fresh": 46,
+        "drafts": 1,
+        "status": "ok",
+        "accepted": 0,
+        "rejected": 1,
+        "reasons": {
+          "duplicate": 1
+        },
+        "accepted_items": [],
+        "rejected_items": [
+          {
+            "title": "Build a single-page specimen sheet of every way to style one HTML form element",
+            "reason": "duplicate",
+            "url": "https://simonwillison.net/2026/Nov/22/select-styling/"
+          }
+        ]
+      },
+      "extensions": {
+        "sources": [
+          {
+            "id": "hn-ext",
+            "status": "ok",
+            "count": 3
+          },
+          {
+            "id": "gh-ext",
+            "status": "ok",
+            "count": 27
+          },
+          {
+            "id": "reddit-ext",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "ph-feed",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "google-chrome-blog",
+            "status": "ok",
+            "count": 15
+          },
+          {
+            "id": "youtube-ext",
+            "status": "ok",
+            "count": 8
+          }
+        ],
+        "collected": 68,
+        "fresh": 14,
+        "drafts": 0,
+        "status": "ok",
+        "accepted": 0,
+        "rejected": 0,
+        "reasons": {},
+        "accepted_items": [],
+        "rejected_items": []
+      },
+      "skills": {
+        "sources": [
+          {
+            "id": "gh-skills",
+            "status": "ok",
+            "count": 30
+          },
+          {
+            "id": "gh-anthropic-skills",
+            "status": "ok",
+            "count": 1
+          },
+          {
+            "id": "hn-skills",
+            "status": "ok",
+            "count": 6
+          },
+          {
+            "id": "reddit-skills",
+            "status": "skipped, missing REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET",
+            "count": 0
+          },
+          {
+            "id": "github-blog-ai",
+            "status": "ok",
+            "count": 7
+          },
+          {
+            "id": "anthropic-skills-docs",
+            "status": "ok",
+            "count": 1
+          }
+        ],
+        "collected": 45,
+        "fresh": 14,
+        "drafts": 1,
+        "status": "ok",
+        "accepted": 1,
+        "rejected": 0,
+        "reasons": {},
+        "accepted_items": [
+          {
+            "id": "ui-ux-pro-max-5f850b",
+            "title": "UI UX Pro Max",
+            "score": 82
+          }
+        ],
+        "rejected_items": []
+      }
+    },
+    "llm": {
+      "calls": 5,
+      "failures": 0,
+      "token_slots_used": [
+        1
+      ],
+      "tokens": {
+        "input": 12888,
+        "output": 2615,
+        "cache_read": 130466,
+        "cache_creation": 104953,
+        "turns": 5,
+        "cost_usd": 0.791
+      }
+    }
   }
 ]

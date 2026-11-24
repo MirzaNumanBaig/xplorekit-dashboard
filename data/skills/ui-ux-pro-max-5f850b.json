@@ -1,0 +1,27 @@
+{
+  "name": "UI UX Pro Max",
+  "summary": "An AI skill that helps with UI and UX design across several platforms and frameworks. Its design system generator reads your project requirements and produces a tailored set of recommendations covering page pattern, visual style, colors, typography, key effects and anti-patterns to avoid.",
+  "install_steps": [
+    "See the repository README for install steps"
+  ],
+  "repo_url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+  "example_use_case": "You are building a landing page for a wellness spa and want a complete design system, with page structure, color palette, font pairing and a pre-delivery checklist, before writing any front-end code.",
+  "skill_type": "agent-skill",
+  "source_url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+  "source_urls": [
+    "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"
+  ],
+  "section": "skills",
+  "first_seen": "2026-11-24",
+  "last_checked": "2026-11-24",
+  "status": "active",
+  "quality_score": 82,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "ui-ux-pro-max-5f850b"
+}

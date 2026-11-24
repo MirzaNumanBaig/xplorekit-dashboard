@@ -26,5 +26,12 @@
     "title": "Rewrite a rough prompt into a clear, structured prompt with success criteria",
     "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
     "date": "2026-11-18"
+  },
+  {
+    "reason": "duplicate",
+    "detail": "title too similar to accepted entry ('Build a single-page specimen sheet of every way to')",
+    "title": "Build a single-page specimen sheet of every way to style one HTML form element",
+    "url": "https://simonwillison.net/2026/Nov/22/select-styling/",
+    "date": "2026-11-24"
   }
 ]

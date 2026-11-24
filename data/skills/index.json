@@ -3,6 +3,16 @@
   "generated_at": "2026-11-24",
   "items": [
     {
+      "id": "ui-ux-pro-max-5f850b",
+      "title": "UI UX Pro Max",
+      "summary": "An AI skill that helps with UI and UX design across several platforms and frameworks. Its design system generator reads your project requirements and produces a tailored set of recommendations covering page pattern, visual style, colors, typography, key effects and anti-patterns to avoid.",
+      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "first_seen": "2026-11-24",
+      "last_checked": "2026-11-24",
+      "status": "active",
+      "quality_score": 82
+    },
+    {
       "id": "awesome-agent-skills-voltagent-eaa907",
       "title": "Awesome Agent Skills (VoltAgent)",
       "summary": "A curated list of agent skills made by official development teams and community contributors, grouped by publisher. It says the skills work with Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, OpenCode, Windsurf and other agents, and it points to each tool's skill path and documentation.",
