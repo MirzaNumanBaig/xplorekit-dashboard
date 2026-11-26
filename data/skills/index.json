@@ -3,6 +3,16 @@
   "generated_at": "2026-11-26",
   "items": [
     {
+      "id": "agent-skills-anthropic-official-documentation-5236ac",
+      "title": "Agent Skills (Anthropic official documentation)",
+      "summary": "Anthropic's reference for Agent Skills, which are reusable folders of instructions, metadata and optional scripts or templates that Claude loads on demand when a task is relevant. It explains the SKILL.md structure and where custom skills work: the Claude API, Claude Code and claude.ai.",
+      "url": "https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/overview",
+      "first_seen": "2026-11-26",
+      "last_checked": "2026-11-26",
+      "status": "active",
+      "quality_score": 93
+    },
+    {
       "id": "ui-ux-pro-max-5f850b",
       "title": "UI UX Pro Max",
       "summary": "An AI skill that helps with UI and UX design across several platforms and frameworks. Its design system generator reads your project requirements and produces a tailored set of recommendations covering page pattern, visual style, colors, typography, key effects and anti-patterns to avoid.",

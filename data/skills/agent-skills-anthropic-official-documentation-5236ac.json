@@ -1,0 +1,31 @@
+{
+  "source_url": "https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/overview",
+  "source_urls": [
+    "https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/overview"
+  ],
+  "name": "Agent Skills (Anthropic official documentation)",
+  "summary": "Anthropic's reference for Agent Skills, which are reusable folders of instructions, metadata and optional scripts or templates that Claude loads on demand when a task is relevant. It explains the SKILL.md structure and where custom skills work: the Claude API, Claude Code and claude.ai.",
+  "install_steps": [
+    "Create a folder for the skill with a SKILL.md file inside it",
+    "Start SKILL.md with YAML frontmatter that sets a name and a description",
+    "Write the step-by-step instructions and examples below the frontmatter",
+    "In Claude Code, place the folder in ~/.claude/skills/ (personal) or .claude/skills/ (project)",
+    "On claude.ai, upload the skill as a zip file; custom skills need a plan with code execution enabled"
+  ],
+  "repo_url": "https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/overview",
+  "example_use_case": "Package your team's repeatable review checklist as a skill so Claude applies it when relevant, instead of you pasting the same instructions into every conversation.",
+  "skill_type": "claude-skill",
+  "section": "skills",
+  "first_seen": "2026-11-26",
+  "last_checked": "2026-11-26",
+  "status": "active",
+  "quality_score": 93,
+  "verified": [
+    "schema",
+    "not_duplicate",
+    "link_live",
+    "no_verbatim_copy",
+    "fact_check:llm"
+  ],
+  "id": "agent-skills-anthropic-official-documentation-5236ac"
+}
